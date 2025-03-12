@@ -1,0 +1,2064 @@
+[{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2b4"
+  },
+  "studentId": "01-2223-222253",
+  "firstName": "Andres",
+  "middleName": "Joaquin",
+  "lastName": "Rios",
+  "email": "andres.rios@example.com",
+  "contactNumber": "09148417118",
+  "password": "$2a$10$w5vmk0DY.3LJlsksAaK7lOlK5JmAgMzN1ytsHu2NWpkV4.5QEHGj2",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.344Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2b7"
+  },
+  "studentId": "01-2223-484869",
+  "firstName": "Lucia",
+  "middleName": "Vicente",
+  "lastName": "Valdez",
+  "email": "lucia.valdez@example.com",
+  "contactNumber": "09842985330",
+  "password": "$2a$10$C17rjnq.p1QiRjMdMgCIm.8Pgun7xKM2JLug.iKqYLk9FrnZOODVK",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.442Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2ba"
+  },
+  "studentId": "01-2223-333803",
+  "firstName": "Daniela",
+  "middleName": "Gabriela",
+  "lastName": "Padilla",
+  "email": "daniela.padilla@example.com",
+  "contactNumber": "09384855809",
+  "password": "$2a$10$OdDwCiSny2Bi2VlXaTRDv.p//xD388K7v8ySEFJD.DoGYsk5rgmTu",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.525Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2bd"
+  },
+  "studentId": "01-2223-506366",
+  "firstName": "Oscar",
+  "middleName": "Vicente",
+  "lastName": "Valdez",
+  "email": "oscar.valdez@example.com",
+  "contactNumber": "09447313597",
+  "password": "$2a$10$9Es628gOJrQUPkoppLGVCep242dAbNvGmL1f1965XB/oRpj60ugsK",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.605Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2c0"
+  },
+  "studentId": "01-2223-408169",
+  "firstName": "Isabella",
+  "middleName": "Clarissa",
+  "lastName": "Padilla",
+  "email": "isabella.padilla@example.com",
+  "contactNumber": "09677294266",
+  "password": "$2a$10$adTnKbLnDesInHGstFNUzuJqqwFmQDN8ZQGy1MwaX8hukX/3J3xcm",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.684Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2c3"
+  },
+  "studentId": "01-2223-870436",
+  "firstName": "Javier",
+  "middleName": "Jose",
+  "lastName": "Velasquez",
+  "email": "javier.velasquez@example.com",
+  "contactNumber": "09467590553",
+  "password": "$2a$10$8QhyMXLAPjpvCtH8wYPsZeSVdcyjwaFNGMwFJpLC69nFWRsXkJSey",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.764Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2c6"
+  },
+  "studentId": "01-2223-779482",
+  "firstName": "Camila",
+  "middleName": "Raul",
+  "lastName": "Serrano",
+  "email": "camila.serrano@example.com",
+  "contactNumber": "09495771890",
+  "password": "$2a$10$Oj2agU0g258e5FZleEAxJeX6coDHlDLU8sNQZOC54SGXS3LTg.2j.",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.847Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff4f4da307b246a4c2c9"
+  },
+  "studentId": "01-2223-524692",
+  "firstName": "Antonio",
+  "middleName": "Celeste",
+  "lastName": "Miranda",
+  "email": "antonio.miranda@example.com",
+  "contactNumber": "09856416375",
+  "password": "$2a$10$PVCWRCDIfsudw/1cdMZsSuuEJ1lJgd6CsaxuP.j4NrwIRO1T8aGCO",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:55.927Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2cc"
+  },
+  "studentId": "01-2223-949231",
+  "firstName": "Antonio",
+  "middleName": "Vicente",
+  "lastName": "Castillo",
+  "email": "antonio.castillo@example.com",
+  "contactNumber": "09549614297",
+  "password": "$2a$10$ChAGN5FZQIRoPs7lZur5puIkpoOUBX5biilMxBdTkMarJosbNHOQ2",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.002Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2cf"
+  },
+  "studentId": "01-2223-875564",
+  "firstName": "Elena",
+  "middleName": "Antonia",
+  "lastName": "Fuentes",
+  "email": "elena.fuentes@example.com",
+  "contactNumber": "09123750748",
+  "password": "$2a$10$FUt2J0ODuBcHiY/E5hM5uOs/iIjkfui97ue1iCEqvlzdkcPVs0pJC",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.086Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2d2"
+  },
+  "studentId": "01-2223-809083",
+  "firstName": "Ricardo",
+  "middleName": "Rafael",
+  "lastName": "Flores",
+  "email": "ricardo.flores@example.com",
+  "contactNumber": "09610077232",
+  "password": "$2a$10$iDtJc4sQGVTEV5HmYgfs7eRZyeY31QojQa5ArZZAHnA9VQ8bTIfhm",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.167Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2d5"
+  },
+  "studentId": "01-2223-567641",
+  "firstName": "Eduardo",
+  "middleName": "Leonardo",
+  "lastName": "Padilla",
+  "email": "eduardo.padilla@example.com",
+  "contactNumber": "09619437956",
+  "password": "$2a$10$tbuSHI/XCc/jkHsrA2cJJ.2ZI/.Rc2X9VChWVZ2h0GYgK.eAAvImW",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.250Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2d8"
+  },
+  "studentId": "01-2223-126160",
+  "firstName": "Fernanda",
+  "middleName": "Lucille",
+  "lastName": "Ortega",
+  "email": "fernanda.ortega@example.com",
+  "contactNumber": "09924620236",
+  "password": "$2a$10$.4EwsuCC1oZGlIf5ybs8a.P88/YRRPH2CkVcizthvVLJW2Fk4cRL2",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.331Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2db"
+  },
+  "studentId": "01-2223-655762",
+  "firstName": "Sofia",
+  "middleName": "Hugo",
+  "lastName": "Aguilar",
+  "email": "sofia.aguilar@example.com",
+  "contactNumber": "09155095827",
+  "password": "$2a$10$6Logwjf6XTySBPAngfp5Ze4CyzDRn/gEyTQChyhWmcgpAtgd1RnuK",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2de"
+  },
+  "studentId": "01-2223-715343",
+  "firstName": "Samuel",
+  "middleName": "Ricardo",
+  "lastName": "Bautista",
+  "email": "samuel.bautista@example.com",
+  "contactNumber": "09145682435",
+  "password": "$2a$10$fqVQS3fNKmhB/im8cWV47uRKGEQz69Z65Adc/vdvwz3YOeDo9xeOW",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.490Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2e1"
+  },
+  "studentId": "01-2223-378610",
+  "firstName": "Nicolas",
+  "middleName": "Nadine",
+  "lastName": "Torres",
+  "email": "nicolas.torres@example.com",
+  "contactNumber": "09211068584",
+  "password": "$2a$10$D1NvLHkyNHjFEIlEG7qibOS.KvD85pkRkDSQv.nrhg4avcDlZrFtq",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.573Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2e4"
+  },
+  "studentId": "01-2223-206216",
+  "firstName": "Maria",
+  "middleName": "Monica",
+  "lastName": "Mejia",
+  "email": "maria.mejia@example.com",
+  "contactNumber": "09977585918",
+  "password": "$2a$10$4Cyek19rUAyo0zEND5RRo.n0c7EiPjiBowkqnIFoOuh6VDC4YOt9.",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.656Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2e7"
+  },
+  "studentId": "01-2223-672559",
+  "firstName": "Juan",
+  "middleName": "Andrea",
+  "lastName": "Castillo",
+  "email": "juan.castillo@example.com",
+  "contactNumber": "09546635716",
+  "password": "$2a$10$MK.0c25w1oQVZZ/HP2JIeOcbXNmCHTutbYx9CogqJLd9ZNjueGRbC",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.738Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2ea"
+  },
+  "studentId": "01-2223-444970",
+  "firstName": "Daniela",
+  "middleName": "Vanessa",
+  "lastName": "Mendoza",
+  "email": "daniela.mendoza@example.com",
+  "contactNumber": "09668763875",
+  "password": "$2a$10$2xZx2yHTlEvHsbQTmGRE2eBss/JwTJe6mAgyZnN38FBJyn3GEqe26",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.822Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff504da307b246a4c2ed"
+  },
+  "studentId": "01-2223-647653",
+  "firstName": "Isabella",
+  "middleName": "Elena",
+  "lastName": "Navarro",
+  "email": "isabella.navarro@example.com",
+  "contactNumber": "09356953183",
+  "password": "$2a$10$k95/D1J2UvqPVltLyk2WNOlDRS9txJmFXvgPim4Qp.HlTzb6tFCwK",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:56.919Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2f0"
+  },
+  "studentId": "01-2223-115837",
+  "firstName": "Samuel",
+  "middleName": "Elena",
+  "lastName": "Salinas",
+  "email": "samuel.salinas@example.com",
+  "contactNumber": "09170554970",
+  "password": "$2a$10$1v7D7dyOnv3iuOOj2N0fjeHDhLDBW7iJqEdvgTinxiARs2.X29C0S",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.006Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2f3"
+  },
+  "studentId": "01-2223-206296",
+  "firstName": "Juan",
+  "middleName": "Andrea",
+  "lastName": "Santiago",
+  "email": "juan.santiago@example.com",
+  "contactNumber": "09794250462",
+  "password": "$2a$10$AVNyAfnVxOddoBeowOLg7uS44bUBgGrDdl3ZnuHUkbXyveQRAH5na",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.086Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2f6"
+  },
+  "studentId": "01-2223-585175",
+  "firstName": "Sofia",
+  "middleName": "Joaquin",
+  "lastName": "Santos",
+  "email": "sofia.santos@example.com",
+  "contactNumber": "09728735096",
+  "password": "$2a$10$L58tB1Xl2eX9ICY4Oy5dLuGhuiBsMv93Uuutxc3MkgpCiyZNLAKqi",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.173Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2f9"
+  },
+  "studentId": "01-2223-310378",
+  "firstName": "Elena",
+  "middleName": "Miguel",
+  "lastName": "Flores",
+  "email": "elena.flores@example.com",
+  "contactNumber": "09895696517",
+  "password": "$2a$10$IzXv5Zh63SPFfM7jokLzBuyhZg09eR5dzMJ6eLvEEq7jEOihlHdBC",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.258Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2fc"
+  },
+  "studentId": "01-2223-956712",
+  "firstName": "Raquel",
+  "middleName": "Pablo",
+  "lastName": "Aguilar",
+  "email": "raquel.aguilar@example.com",
+  "contactNumber": "09148399034",
+  "password": "$2a$10$WUMS4kfpAWjjQrAsF2uiNuZ5QhDGf.JiVsQgCMEJs.zIBpTBLjPX.",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.346Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c2ff"
+  },
+  "studentId": "01-2223-289112",
+  "firstName": "Andres",
+  "middleName": "Lorena",
+  "lastName": "Mendoza",
+  "email": "andres.mendoza@example.com",
+  "contactNumber": "09325475341",
+  "password": "$2a$10$Agcd2A6i4QXaJtsQUbzldelYxDsuuHsvQvB/yEPXz1/Jh5a7EKLkq",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.431Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c302"
+  },
+  "studentId": "01-2223-142776",
+  "firstName": "Oscar",
+  "middleName": "Estella",
+  "lastName": "Santos",
+  "email": "oscar.santos@example.com",
+  "contactNumber": "09372306753",
+  "password": "$2a$10$AxAGx7YhEZNXMaxIXpO/Ke2.myV7r1ZLPmsy4FiN2ZLLft3tQtn2G",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.516Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c305"
+  },
+  "studentId": "01-2223-145358",
+  "firstName": "Hector",
+  "middleName": "Hugo",
+  "lastName": "Valdez",
+  "email": "hector.valdez@example.com",
+  "contactNumber": "09408557397",
+  "password": "$2a$10$5o4Ed24tTU9w/AFb1GG4DOEU37E6uv3YFZ3q0ggQ7/XGZDsu/A9Vy",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.599Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c308"
+  },
+  "studentId": "01-2223-608746",
+  "firstName": "Fernando",
+  "middleName": "Hugo",
+  "lastName": "Vargas",
+  "email": "fernando.vargas@example.com",
+  "contactNumber": "09966572196",
+  "password": "$2a$10$FMRHUCFMkGLtJVw1yj6VJ./YpQl/F0tNND8GGP.4Jq/GNdjIiEyNK",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.683Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c30b"
+  },
+  "studentId": "01-2223-717281",
+  "firstName": "Antonio",
+  "middleName": "Mauricio",
+  "lastName": "Cruz",
+  "email": "antonio.cruz@example.com",
+  "contactNumber": "09520475504",
+  "password": "$2a$10$PoattWGhK/SgnXM1a7f.S.g8N3NnuRBhGfKx9h1ziQ8uBgsHqV84e",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.761Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c30e"
+  },
+  "studentId": "01-2223-487511",
+  "firstName": "Daniela",
+  "middleName": "Estella",
+  "lastName": "Gonzales",
+  "email": "daniela.gonzales@example.com",
+  "contactNumber": "09762425891",
+  "password": "$2a$10$XPuXBCfu0Ry5UwqacxL/luO38YwRCpTXEpDGGBmlEPo.giU7HFbxW",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.843Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff514da307b246a4c311"
+  },
+  "studentId": "01-2223-391945",
+  "firstName": "Maria",
+  "middleName": "Lucille",
+  "lastName": "Santos",
+  "email": "maria.santos@example.com",
+  "contactNumber": "09937826654",
+  "password": "$2a$10$WcP9LDyQHyURfgkVZa05T.Ymsjldn5tXcLxGuRHKs1KHzpLXrOtPa",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:57.922Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c314"
+  },
+  "studentId": "01-2223-630761",
+  "firstName": "Valeria",
+  "middleName": "Monica",
+  "lastName": "Cabrera",
+  "email": "valeria.cabrera@example.com",
+  "contactNumber": "09502088239",
+  "password": "$2a$10$X435cAebikE/7h9u.v04C.R64sl8j9hdtV9z29F0e4JUlfP6vEhqq",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.002Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c317"
+  },
+  "studentId": "01-2223-673030",
+  "firstName": "Pedro",
+  "middleName": "Lorena",
+  "lastName": "Montoya",
+  "email": "pedro.montoya@example.com",
+  "contactNumber": "09133983644",
+  "password": "$2a$10$TNk9.GrHuOMiGsmR35aIQ.727yghqyVr73.8OEleKVdWVAeAdSF0q",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.083Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c31a"
+  },
+  "studentId": "01-2223-513662",
+  "firstName": "Francisco",
+  "middleName": "Gerardo",
+  "lastName": "Castillo",
+  "email": "francisco.castillo@example.com",
+  "contactNumber": "09630505273",
+  "password": "$2a$10$W2JPEbGGJQDv5JSQ2Z2LLOVZyz4gL62mwvdEuxebGc2tatj.vbgle",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.171Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c31d"
+  },
+  "studentId": "01-2223-783852",
+  "firstName": "Javier",
+  "middleName": "Clarissa",
+  "lastName": "Miranda",
+  "email": "javier.miranda@example.com",
+  "contactNumber": "09841012415",
+  "password": "$2a$10$weZEx37sw9UvKCVRsPX/7uQTM45VSxgPEFW4BbjvbZcqT3KqGBDL6",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.247Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c320"
+  },
+  "studentId": "01-2223-439613",
+  "firstName": "Eduardo",
+  "middleName": "Nina",
+  "lastName": "Fuentes",
+  "email": "eduardo.fuentes@example.com",
+  "contactNumber": "09805922182",
+  "password": "$2a$10$TrYteN7XHmP6u95ABhz79ulq.lcfZFnwxGOwAi3BNdZQEEQRw0KGq",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.320Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c323"
+  },
+  "studentId": "01-2223-472913",
+  "firstName": "Martina",
+  "middleName": "Gerardo",
+  "lastName": "Santiago",
+  "email": "martina.santiago@example.com",
+  "contactNumber": "09631205880",
+  "password": "$2a$10$J5MP0YFfA/TwK/eVdkeSouHvNB6/rzOHfmkJG0xxZv9SI.A/lX6u.",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.392Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c326"
+  },
+  "studentId": "01-2223-862436",
+  "firstName": "Camila",
+  "middleName": "Mauricio",
+  "lastName": "Mendoza",
+  "email": "camila.mendoza@example.com",
+  "contactNumber": "09894944779",
+  "password": "$2a$10$aPtRX9EeV6SKYO6XA.BOfes6chl7L3ZkGMKQ.4dmPwpZ4TEjMHVl6",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.466Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c329"
+  },
+  "studentId": "01-2223-800462",
+  "firstName": "Valeria",
+  "middleName": "Antonia",
+  "lastName": "Vargas",
+  "email": "valeria.vargas@example.com",
+  "contactNumber": "09440617608",
+  "password": "$2a$10$pCGIWg2FpGpEiXbosJg4bO6M2Eo9cIOLN8kXp0Fi.RNfqMfMTiIQG",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.544Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c32c"
+  },
+  "studentId": "01-2223-617267",
+  "firstName": "Andres",
+  "middleName": "Antonia",
+  "lastName": "Flores",
+  "email": "andres.flores@example.com",
+  "contactNumber": "09658277756",
+  "password": "$2a$10$s/4sNspc5CaHuuTlwOpqLuWxP/uHTE1uQNV4djOh2ZNmNRM2DA2wa",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.618Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c32f"
+  },
+  "studentId": "01-2223-119358",
+  "firstName": "Fernando",
+  "middleName": "Vicente",
+  "lastName": "Castillo",
+  "email": "fernando.castillo@example.com",
+  "contactNumber": "09402390936",
+  "password": "$2a$10$A8a7OMHX2vZ/YPE2eYmm4ubnh7xxUbbcWAfWjB7Tgb4aQte3ZoMRm",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.693Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c332"
+  },
+  "studentId": "01-2223-865747",
+  "firstName": "Samuel",
+  "middleName": "Celeste",
+  "lastName": "Flores",
+  "email": "samuel.flores@example.com",
+  "contactNumber": "09971576270",
+  "password": "$2a$10$QVPS2Rzh6mXiE/5IoznR0u5q9ucRMxzUpyHC4684OzCiadOBfNGu.",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.768Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c335"
+  },
+  "studentId": "01-2223-584942",
+  "firstName": "Juan",
+  "middleName": "Nina",
+  "lastName": "Cabrera",
+  "email": "juan.cabrera@example.com",
+  "contactNumber": "09110103434",
+  "password": "$2a$10$hgxZUhqbQGOm9AQIHaJaxO8PorBkkVgZGwGM5CKWzhx6/YWIVRxum",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.841Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c338"
+  },
+  "studentId": "01-2223-599540",
+  "firstName": "Ricardo",
+  "middleName": "Vanessa",
+  "lastName": "Valdez",
+  "email": "ricardo.valdez@example.com",
+  "contactNumber": "09375292719",
+  "password": "$2a$10$UA.FYwDoJ4euB.Yx/JHM7O48xc/7lHstC37v.c.53sGJLQ6.K8Zai",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.917Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff524da307b246a4c33b"
+  },
+  "studentId": "01-2223-451117",
+  "firstName": "Camila",
+  "middleName": "Andrea",
+  "lastName": "Aguilar",
+  "email": "camila.aguilar@example.com",
+  "contactNumber": "09164878980",
+  "password": "$2a$10$Dds4xZpxx2WwXkI8CqCkVuSX/t19tjq2x8YjkyXUaU.k9MM5N.1Jq",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:58.996Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c33e"
+  },
+  "studentId": "01-2223-321406",
+  "firstName": "Juan",
+  "middleName": "Gabriel",
+  "lastName": "Campos",
+  "email": "juan.campos@example.com",
+  "contactNumber": "09250553634",
+  "password": "$2a$10$F7HkYRx/PfTTC2Qejm0Fi.LJ26LBV5XzTFwR3whEytnuyuKifuhAO",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.075Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c341"
+  },
+  "studentId": "01-2223-194079",
+  "firstName": "Ricardo",
+  "middleName": "Estella",
+  "lastName": "Ramos",
+  "email": "ricardo.ramos@example.com",
+  "contactNumber": "09348238451",
+  "password": "$2a$10$abalz/TyPB3Oxm5NnpvasOFrAmrNCGGroPApNzSnvj6PWQ6LPoUQ2",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.152Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c344"
+  },
+  "studentId": "01-2223-843362",
+  "firstName": "Hector",
+  "middleName": "Celeste",
+  "lastName": "Montoya",
+  "email": "hector.montoya@example.com",
+  "contactNumber": "09966737654",
+  "password": "$2a$10$Si8/9YR98cwLHxFGPoOVXewht9TuV5u6KEuk3nwTUyEvGsQsBuSLu",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.231Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c347"
+  },
+  "studentId": "01-2223-678709",
+  "firstName": "Francisco",
+  "middleName": "Clarissa",
+  "lastName": "Salinas",
+  "email": "francisco.salinas@example.com",
+  "contactNumber": "09800246059",
+  "password": "$2a$10$3d/Oq0huUNotcRKZydcW.OnBjqUK6uQKUlpAn8K70UhH4j992Uba6",
+  "year": "1st",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.311Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c34a"
+  },
+  "studentId": "01-2223-996476",
+  "firstName": "Gabriela",
+  "middleName": "Leonardo",
+  "lastName": "Delgado",
+  "email": "gabriela.delgado@example.com",
+  "contactNumber": "09396454188",
+  "password": "$2a$10$c3fhMxUEGiu/Vjufz1sHlulfVPnbRCwBCXTgAMeaH9s2HHgUTzOY2",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.389Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c34d"
+  },
+  "studentId": "01-2223-722987",
+  "firstName": "Fernanda",
+  "middleName": "Gabriela",
+  "lastName": "Montoya",
+  "email": "fernanda.montoya@example.com",
+  "contactNumber": "09790617018",
+  "password": "$2a$10$JwTCvGHIdbmtNppv.Bpyh..r1ASk1a4OjN9v5ErXiqTci4/UZt3GW",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.466Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c350"
+  },
+  "studentId": "01-2223-362562",
+  "firstName": "Raquel",
+  "middleName": "Antonia",
+  "lastName": "Ramos",
+  "email": "raquel.ramos@example.com",
+  "contactNumber": "09739030218",
+  "password": "$2a$10$hgGIaGAWBY9DZiTObpAKnOgQA7qAI4YUcAnxfn3NrMUqVUKRAoEn.",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.545Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c353"
+  },
+  "studentId": "01-2223-829955",
+  "firstName": "Eduardo",
+  "middleName": "Nina",
+  "lastName": "Mendoza",
+  "email": "eduardo.mendoza@example.com",
+  "contactNumber": "09151859269",
+  "password": "$2a$10$W9SPRCAYbM8WgZSX0wmaL.62CprnJFgcft/e8PX1nVFLfbTvCMQGi",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.623Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c356"
+  },
+  "studentId": "01-2223-981681",
+  "firstName": "Camila",
+  "middleName": "Gerardo",
+  "lastName": "Ramos",
+  "email": "camila.ramos@example.com",
+  "contactNumber": "09285770691",
+  "password": "$2a$10$JkFs67y7SqJkV76JgZ4K4OGv/QMPdhDxZ0236PZpWD8jQHXUS1xJe",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.695Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c359"
+  },
+  "studentId": "01-2223-172583",
+  "firstName": "Gabriela",
+  "middleName": "Vicente",
+  "lastName": "Bautista",
+  "email": "gabriela.bautista@example.com",
+  "contactNumber": "09820982432",
+  "password": "$2a$10$yQZ5oL5NqblCHg1t8DBRveTl4WDqY1/LKoqsBdQtz11WVPpzB69HK",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.770Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c35c"
+  },
+  "studentId": "01-2223-989247",
+  "firstName": "Eduardo",
+  "middleName": "Santiago",
+  "lastName": "Rios",
+  "email": "eduardo.rios@example.com",
+  "contactNumber": "09442055918",
+  "password": "$2a$10$P9.OVSh5xNy.f/7bDYNw8O6g1un3Of.LUwIWpTZVl2FGlTBOrP3ZS",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.847Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c35f"
+  },
+  "studentId": "01-2223-403073",
+  "firstName": "Ricardo",
+  "middleName": "Pablo",
+  "lastName": "Delgado",
+  "email": "ricardo.delgado@example.com",
+  "contactNumber": "09637488394",
+  "password": "$2a$10$gUSl6BAMj2UNs6X..k4OO.U4S7.v0/pIE1JRWKjfPGQg4gbHCbjra",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.919Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff534da307b246a4c362"
+  },
+  "studentId": "01-2223-869996",
+  "firstName": "Andres",
+  "middleName": "Miguel",
+  "lastName": "Serrano",
+  "email": "andres.serrano@example.com",
+  "contactNumber": "09751009648",
+  "password": "$2a$10$wpwEj0wdBglDvtrABLWcPuhzqx34YzEX0Rhayxxa6fvh3wSDrFbH.",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:26:59.990Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cbff544da307b246a4c365"
+  },
+  "studentId": "01-2223-300432",
+  "firstName": "Patricia",
+  "middleName": "Monica",
+  "lastName": "Reyes",
+  "email": "patricia.reyes@example.com",
+  "contactNumber": "09326026528",
+  "password": "$2a$10$Wxf6DUziYfmTIbcPyL.c6esAbiYLPNmmsLu3exEiuIEDwspqiHA7C",
+  "year": "1st",
+  "section": "South 2",
+  "academicYears": {
+    "startYear": 2025,
+    "endYear": 2029
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:27:00.065Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0392fd31b7ed7b85a690"
+  },
+  "studentId": "01-2223-030689",
+  "firstName": "Gillian Andrei",
+  "middleName": "Ragandap",
+  "lastName": "Sanchez",
+  "email": "gillian@gmail.com",
+  "contactNumber": "009986174791",
+  "password": "$2a$10$9e24gTPGspW6eVIJNErsD.htOCW3qvr.tuljvrMtS2VpSpc/9nBbG",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:45:06.883Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6c8"
+  },
+  "studentId": "01-2223-810940",
+  "firstName": "Patricia",
+  "middleName": "Lucille",
+  "lastName": "Roman",
+  "email": "patricia.roman@example.com",
+  "contactNumber": "09300099788",
+  "password": "$2a$10$F1ws37XB2TxjfLcTpkhXOeReoKNW.IjxMBFKNaDleywIweKbS9aPy",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.215Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6cb"
+  },
+  "studentId": "01-2223-381133",
+  "firstName": "Valeria",
+  "middleName": "Francisco",
+  "lastName": "Bautista",
+  "email": "valeria.bautista@example.com",
+  "contactNumber": "09804420236",
+  "password": "$2a$10$jwdp4ZaJfTT.9W9fV2Jc.eB8C/yFAo5YEUudh0WOR8Xizs8neBQZO",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.335Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6ce"
+  },
+  "studentId": "01-2223-639141",
+  "firstName": "Francisco",
+  "middleName": "Ricardo",
+  "lastName": "Navarro",
+  "email": "francisco.navarro@example.com",
+  "contactNumber": "09918134759",
+  "password": "$2a$10$.O/W4Pm3iLTHf423S4W9oe1wcQKCeNAThbah7MANzsbhpV72Efnxi",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.454Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6d1"
+  },
+  "studentId": "01-2223-858178",
+  "firstName": "Carlos",
+  "middleName": "Gabriela",
+  "lastName": "Padilla",
+  "email": "carlos.padilla@example.com",
+  "contactNumber": "09965821474",
+  "password": "$2a$10$SzxcA9dTeh7grw.AmhxK3u7IoBDgzmMwCGYcORFqyffjDjt0UMQ2O",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.558Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6d5"
+  },
+  "studentId": "01-2223-377905",
+  "firstName": "Martina",
+  "middleName": "Nina",
+  "lastName": "Padilla",
+  "email": "martina.padilla@example.com",
+  "contactNumber": "09643049946",
+  "password": "$2a$10$CRspwOgkCG5Y9f1zRuLIPe5//4p0/35xXbSpThEWyfk.rpu9GEYHW",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.659Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6d9"
+  },
+  "studentId": "01-2223-777694",
+  "firstName": "Ana",
+  "middleName": "Gabriela",
+  "lastName": "Gonzales",
+  "email": "ana.gonzales@example.com",
+  "contactNumber": "09603827583",
+  "password": "$2a$10$cyF9KSK9FLax6uM4OVf4OOBcGdufaluYn7vvozGhn2MTm.Nub6sai",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.759Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6dc"
+  },
+  "studentId": "01-2223-467573",
+  "firstName": "Lucia",
+  "middleName": "Francisco",
+  "lastName": "Campos",
+  "email": "lucia.campos@example.com",
+  "contactNumber": "09909411608",
+  "password": "$2a$10$9cBhmfnfeLSbJ/8yzBoYaOZYCBDLJEIuGreNFuRo9xsSA7dYMZAKy",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.847Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0615fd31b7ed7b85a6df"
+  },
+  "studentId": "01-2223-517767",
+  "firstName": "Fernanda",
+  "middleName": "Ricardo",
+  "lastName": "Reyes",
+  "email": "fernanda.reyes@example.com",
+  "contactNumber": "09541635830",
+  "password": "$2a$10$AFULM9NLI4CrACErXy51IOOc9Yq0d0F5KwaNEU/Y01EmNKsScmaNq",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:49.922Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6e2"
+  },
+  "studentId": "01-2223-816848",
+  "firstName": "Javier",
+  "middleName": "Nadine",
+  "lastName": "Fuentes",
+  "email": "javier.fuentes@example.com",
+  "contactNumber": "09632132194",
+  "password": "$2a$10$PsMc0IzPMIay9pNC4b0ptOJzzWZXX2Z70Z5a9FjW0A66H5DWvl/x6",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.003Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6e6"
+  },
+  "studentId": "01-2223-621374",
+  "firstName": "Ana",
+  "middleName": "Beatriz",
+  "lastName": "Valdez",
+  "email": "ana.valdez@example.com",
+  "contactNumber": "09396662713",
+  "password": "$2a$10$v8NQcwR3VAYI8aL1W.eeU.hryfiWJtjU2wcSbUuxSCQZj2ZoTvOa6",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.088Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6e9"
+  },
+  "studentId": "01-2223-667862",
+  "firstName": "Sofia",
+  "middleName": "Elena",
+  "lastName": "Serrano",
+  "email": "sofia.serrano@example.com",
+  "contactNumber": "09587145260",
+  "password": "$2a$10$Qw3GCBF7EKkeXey/LpHl.uoctB9Smnfkh6s7J05jPMrylLj8n50PO",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.172Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6ec"
+  },
+  "studentId": "01-2223-514641",
+  "firstName": "Daniela",
+  "middleName": "Elena",
+  "lastName": "Ortega",
+  "email": "daniela.ortega@example.com",
+  "contactNumber": "09196288623",
+  "password": "$2a$10$6XGsYkMg/L/DLLi1m9HCyO0HS8oeqGJBovuGdIKVw1bAss67ugSBy",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.255Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6ef"
+  },
+  "studentId": "01-2223-140852",
+  "firstName": "Gabriela",
+  "middleName": "Lucille",
+  "lastName": "Valdez",
+  "email": "gabriela.valdez@example.com",
+  "contactNumber": "09516071675",
+  "password": "$2a$10$vjv8fAmbUmqth2i3Mz5dUuLd0P.HFRv7SCJrSZwFpAh4TDBrb.GSC",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.336Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6f2"
+  },
+  "studentId": "01-2223-806377",
+  "firstName": "Eduardo",
+  "middleName": "Rafael",
+  "lastName": "Reyes",
+  "email": "eduardo.reyes@example.com",
+  "contactNumber": "09159936000",
+  "password": "$2a$10$KZDe.HW51.PRFcSyePl.gedsZJtyjMdF.luHBIjoPs1uQdgbQqYYq",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6f5"
+  },
+  "studentId": "01-2223-461390",
+  "firstName": "Patricia",
+  "middleName": "Antonia",
+  "lastName": "Castillo",
+  "email": "patricia.castillo@example.com",
+  "contactNumber": "09409910950",
+  "password": "$2a$10$DLP72N5l1i86xzrsJCG9o.h9Iyiqv80/LKmisBQYFvkrTJF3HL7lG",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.479Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6f8"
+  },
+  "studentId": "01-2223-514288",
+  "firstName": "Isabella",
+  "middleName": "Gabriela",
+  "lastName": "Serrano",
+  "email": "isabella.serrano@example.com",
+  "contactNumber": "09284691891",
+  "password": "$2a$10$Vqr5B.ceR4LKVg4VVPkaEef76IVZRQb9IRweLEWcwOzzoznckchf.",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.557Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6fb"
+  },
+  "studentId": "01-2223-221876",
+  "firstName": "Francisco",
+  "middleName": "Vanessa",
+  "lastName": "Valdez",
+  "email": "francisco.valdez@example.com",
+  "contactNumber": "09522255337",
+  "password": "$2a$10$m6fgJun.d5qe6xGwbCGgnuYVivQpvKhb.E.JVuLiilI1JJ..5X0Im",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.639Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a6fe"
+  },
+  "studentId": "01-2223-649069",
+  "firstName": "Patricia",
+  "middleName": "Rafael",
+  "lastName": "Serrano",
+  "email": "patricia.serrano@example.com",
+  "contactNumber": "09775567947",
+  "password": "$2a$10$45ISRxmbyp84N6/rLcpRSuyaVL2HED7SVVNUubw50F40kTf88U06C",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.723Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a701"
+  },
+  "studentId": "01-2223-823325",
+  "firstName": "Nicolas",
+  "middleName": "Gabriel",
+  "lastName": "Padilla",
+  "email": "nicolas.padilla@example.com",
+  "contactNumber": "09234998458",
+  "password": "$2a$10$cLn0245kWfvd2A0qvP8mAeZw4lhGocGeP6qvcvqMugPLb2Et2yOqG",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.805Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a704"
+  },
+  "studentId": "01-2223-204386",
+  "firstName": "Hector",
+  "middleName": "Miguel",
+  "lastName": "Delgado",
+  "email": "hector.delgado@example.com",
+  "contactNumber": "09332407213",
+  "password": "$2a$10$5S0OPQ1HTJKUiabj4rgpduYRhh6KERoyrpUgbpDp5BxJye38F4nrC",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.887Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0616fd31b7ed7b85a707"
+  },
+  "studentId": "01-2223-923039",
+  "firstName": "Maria",
+  "middleName": "Francisco",
+  "lastName": "Torres",
+  "email": "maria.torres@example.com",
+  "contactNumber": "09711311515",
+  "password": "$2a$10$lzBkGPZW3KuZYDgmFPlmluM10exB8T6QZ8FYmc1zckE0RTTp9PJkO",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:50.958Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0617fd31b7ed7b85a70b"
+  },
+  "studentId": "01-2223-461464",
+  "firstName": "Pedro",
+  "middleName": "Andrea",
+  "lastName": "Ramos",
+  "email": "pedro.ramos@example.com",
+  "contactNumber": "09495282464",
+  "password": "$2a$10$FOb.fg699/I7qOxkL3WuH.kQBNZlUiHlwCtKc1llHdMR4NKjkz8Ka",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:51.040Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0617fd31b7ed7b85a70e"
+  },
+  "studentId": "01-2223-861608",
+  "firstName": "Patricia",
+  "middleName": "Vanessa",
+  "lastName": "Cabrera",
+  "email": "patricia.cabrera@example.com",
+  "contactNumber": "09643049133",
+  "password": "$2a$10$SVeqEnFvA0pOWf1jPzwu/Om1W.o07F9z7E.iS7dHKM6Iqb6g/Wkey",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:51.123Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0617fd31b7ed7b85a711"
+  },
+  "studentId": "01-2223-154614",
+  "firstName": "Raquel",
+  "middleName": "Beatriz",
+  "lastName": "Roman",
+  "email": "raquel.roman@example.com",
+  "contactNumber": "09617164110",
+  "password": "$2a$10$cw09ortL0QctbigKoZd.qeaaDg3UNCoG9VcXSMKxo0q5dOF4jm5E6",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:51.207Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc0617fd31b7ed7b85a714"
+  },
+  "studentId": "01-2223-741918",
+  "firstName": "Luis",
+  "middleName": "Hugo",
+  "lastName": "Mejia",
+  "email": "luis.mejia@example.com",
+  "contactNumber": "09191548417",
+  "password": "$2a$10$3kkEJBBhO5e0/IWpGXpzp.5bgHO3ZW3eXdqj31PkHI2Pl8iN0YAqa",
+  "year": "2nd",
+  "section": "South 1",
+  "academicYears": {
+    "startYear": 2024,
+    "endYear": 2028
+  },
+  "attendance": [],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T08:55:51.277Z"
+  },
+  "__v": 0
+}]

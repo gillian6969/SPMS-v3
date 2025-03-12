@@ -1,0 +1,2373 @@
+[{
+  "_id": {
+    "$oid": "67cc0bddfd31b7ed7b85a7a6"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "year": "2nd",
+  "section": "South 1",
+  "subject": "ITE 101",
+  "students": [
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6cb"
+      },
+      "studentNumber": "01-2223-381133",
+      "firstName": "Valeria",
+      "lastName": "Bautista",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7a7"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a70e"
+      },
+      "studentNumber": "01-2223-861608",
+      "firstName": "Patricia",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7a8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6dc"
+      },
+      "studentNumber": "01-2223-467573",
+      "firstName": "Lucia",
+      "lastName": "Campos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7a9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f5"
+      },
+      "studentNumber": "01-2223-461390",
+      "firstName": "Patricia",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7aa"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a704"
+      },
+      "studentNumber": "01-2223-204386",
+      "firstName": "Hector",
+      "lastName": "Delgado",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7ab"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e2"
+      },
+      "studentNumber": "01-2223-816848",
+      "firstName": "Javier",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7ac"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d9"
+      },
+      "studentNumber": "01-2223-777694",
+      "firstName": "Ana",
+      "lastName": "Gonzales",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7ad"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a714"
+      },
+      "studentNumber": "01-2223-741918",
+      "firstName": "Luis",
+      "lastName": "Mejia",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7ae"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6ce"
+      },
+      "studentNumber": "01-2223-639141",
+      "firstName": "Francisco",
+      "lastName": "Navarro",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7af"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6ec"
+      },
+      "studentNumber": "01-2223-514641",
+      "firstName": "Daniela",
+      "lastName": "Ortega",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d1"
+      },
+      "studentNumber": "01-2223-858178",
+      "firstName": "Carlos",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b1"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d5"
+      },
+      "studentNumber": "01-2223-377905",
+      "firstName": "Martina",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b2"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a701"
+      },
+      "studentNumber": "01-2223-823325",
+      "firstName": "Nicolas",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b3"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a70b"
+      },
+      "studentNumber": "01-2223-461464",
+      "firstName": "Pedro",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b4"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f2"
+      },
+      "studentNumber": "01-2223-806377",
+      "firstName": "Eduardo",
+      "lastName": "Reyes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b5"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6df"
+      },
+      "studentNumber": "01-2223-517767",
+      "firstName": "Fernanda",
+      "lastName": "Reyes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b6"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6c8"
+      },
+      "studentNumber": "01-2223-810940",
+      "firstName": "Patricia",
+      "lastName": "Roman",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b7"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a711"
+      },
+      "studentNumber": "01-2223-154614",
+      "firstName": "Raquel",
+      "lastName": "Roman",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0392fd31b7ed7b85a690"
+      },
+      "studentNumber": "01-2223-030689",
+      "firstName": "Gillian Andrei",
+      "lastName": "Sanchez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7b9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f8"
+      },
+      "studentNumber": "01-2223-514288",
+      "firstName": "Isabella",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7ba"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6fe"
+      },
+      "studentNumber": "01-2223-649069",
+      "firstName": "Patricia",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7bb"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e9"
+      },
+      "studentNumber": "01-2223-667862",
+      "firstName": "Sofia",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7bc"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a707"
+      },
+      "studentNumber": "01-2223-923039",
+      "firstName": "Maria",
+      "lastName": "Torres",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7bd"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e6"
+      },
+      "studentNumber": "01-2223-621374",
+      "firstName": "Ana",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7be"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6fb"
+      },
+      "studentNumber": "01-2223-221876",
+      "firstName": "Francisco",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7bf"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6ef"
+      },
+      "studentNumber": "01-2223-140852",
+      "firstName": "Gabriela",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc0bddfd31b7ed7b85a7c0"
+      }
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T09:20:29.163Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T09:20:29.163Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc5208b5570b4f7edb87cd"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "year": "1st",
+  "section": "South 1",
+  "subject": "ITE 103",
+  "students": [
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c33b"
+      },
+      "studentNumber": "01-2223-451117",
+      "firstName": "Camila",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87ce"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2fc"
+      },
+      "studentNumber": "01-2223-956712",
+      "firstName": "Raquel",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87cf"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2db"
+      },
+      "studentNumber": "01-2223-655762",
+      "firstName": "Sofia",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2de"
+      },
+      "studentNumber": "01-2223-715343",
+      "firstName": "Samuel",
+      "lastName": "Bautista",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d1"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c335"
+      },
+      "studentNumber": "01-2223-584942",
+      "firstName": "Juan",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d2"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c314"
+      },
+      "studentNumber": "01-2223-630761",
+      "firstName": "Valeria",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d3"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c33e"
+      },
+      "studentNumber": "01-2223-321406",
+      "firstName": "Juan",
+      "lastName": "Campos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d4"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2cc"
+      },
+      "studentNumber": "01-2223-949231",
+      "firstName": "Antonio",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d5"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c32f"
+      },
+      "studentNumber": "01-2223-119358",
+      "firstName": "Fernando",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d6"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c31a"
+      },
+      "studentNumber": "01-2223-513662",
+      "firstName": "Francisco",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d7"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e7"
+      },
+      "studentNumber": "01-2223-672559",
+      "firstName": "Juan",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c30b"
+      },
+      "studentNumber": "01-2223-717281",
+      "firstName": "Antonio",
+      "lastName": "Cruz",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87d9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c32c"
+      },
+      "studentNumber": "01-2223-617267",
+      "firstName": "Andres",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87da"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f9"
+      },
+      "studentNumber": "01-2223-310378",
+      "firstName": "Elena",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87db"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d2"
+      },
+      "studentNumber": "01-2223-809083",
+      "firstName": "Ricardo",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87dc"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c332"
+      },
+      "studentNumber": "01-2223-865747",
+      "firstName": "Samuel",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87dd"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c320"
+      },
+      "studentNumber": "01-2223-439613",
+      "firstName": "Eduardo",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87de"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2cf"
+      },
+      "studentNumber": "01-2223-875564",
+      "firstName": "Elena",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87df"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c30e"
+      },
+      "studentNumber": "01-2223-487511",
+      "firstName": "Daniela",
+      "lastName": "Gonzales",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5208b5570b4f7edb87e0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e4"
+      },
+      "studentNumber": "01-2223-206216",
+      "firstName": "Maria",
+      "lastName": "Mejia",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e1"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2ff"
+      },
+      "studentNumber": "01-2223-289112",
+      "firstName": "Andres",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e2"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c326"
+      },
+      "studentNumber": "01-2223-862436",
+      "firstName": "Camila",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e3"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2ea"
+      },
+      "studentNumber": "01-2223-444970",
+      "firstName": "Daniela",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e4"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c9"
+      },
+      "studentNumber": "01-2223-524692",
+      "firstName": "Antonio",
+      "lastName": "Miranda",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e5"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c31d"
+      },
+      "studentNumber": "01-2223-783852",
+      "firstName": "Javier",
+      "lastName": "Miranda",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e6"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c344"
+      },
+      "studentNumber": "01-2223-843362",
+      "firstName": "Hector",
+      "lastName": "Montoya",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e7"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c317"
+      },
+      "studentNumber": "01-2223-673030",
+      "firstName": "Pedro",
+      "lastName": "Montoya",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2ed"
+      },
+      "studentNumber": "01-2223-647653",
+      "firstName": "Isabella",
+      "lastName": "Navarro",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87e9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d8"
+      },
+      "studentNumber": "01-2223-126160",
+      "firstName": "Fernanda",
+      "lastName": "Ortega",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ea"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2ba"
+      },
+      "studentNumber": "01-2223-333803",
+      "firstName": "Daniela",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87eb"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d5"
+      },
+      "studentNumber": "01-2223-567641",
+      "firstName": "Eduardo",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ec"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c0"
+      },
+      "studentNumber": "01-2223-408169",
+      "firstName": "Isabella",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ed"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c341"
+      },
+      "studentNumber": "01-2223-194079",
+      "firstName": "Ricardo",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ee"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2b4"
+      },
+      "studentNumber": "01-2223-222253",
+      "firstName": "Andres",
+      "lastName": "Rios",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ef"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c347"
+      },
+      "studentNumber": "01-2223-678709",
+      "firstName": "Francisco",
+      "lastName": "Salinas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f0"
+      },
+      "studentNumber": "01-2223-115837",
+      "firstName": "Samuel",
+      "lastName": "Salinas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f1"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f3"
+      },
+      "studentNumber": "01-2223-206296",
+      "firstName": "Juan",
+      "lastName": "Santiago",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f2"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c323"
+      },
+      "studentNumber": "01-2223-472913",
+      "firstName": "Martina",
+      "lastName": "Santiago",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f3"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c311"
+      },
+      "studentNumber": "01-2223-391945",
+      "firstName": "Maria",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f4"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c302"
+      },
+      "studentNumber": "01-2223-142776",
+      "firstName": "Oscar",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f5"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f6"
+      },
+      "studentNumber": "01-2223-585175",
+      "firstName": "Sofia",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f6"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c6"
+      },
+      "studentNumber": "01-2223-779482",
+      "firstName": "Camila",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f7"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e1"
+      },
+      "studentNumber": "01-2223-378610",
+      "firstName": "Nicolas",
+      "lastName": "Torres",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c305"
+      },
+      "studentNumber": "01-2223-145358",
+      "firstName": "Hector",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87f9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2b7"
+      },
+      "studentNumber": "01-2223-484869",
+      "firstName": "Lucia",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87fa"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2bd"
+      },
+      "studentNumber": "01-2223-506366",
+      "firstName": "Oscar",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87fb"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c338"
+      },
+      "studentNumber": "01-2223-599540",
+      "firstName": "Ricardo",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87fc"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c308"
+      },
+      "studentNumber": "01-2223-608746",
+      "firstName": "Fernando",
+      "lastName": "Vargas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87fd"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c329"
+      },
+      "studentNumber": "01-2223-800462",
+      "firstName": "Valeria",
+      "lastName": "Vargas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87fe"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c3"
+      },
+      "studentNumber": "01-2223-870436",
+      "firstName": "Javier",
+      "lastName": "Velasquez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cc5209b5570b4f7edb87ff"
+      }
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-08T14:19:53.053Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:19:53.053Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cdf73a4206560f9dbb6a8c"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "year": "2nd",
+  "section": "South 1",
+  "subject": "ITE 103",
+  "students": [
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6cb"
+      },
+      "studentNumber": "01-2223-381133",
+      "firstName": "Valeria",
+      "lastName": "Bautista",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a8d"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a70e"
+      },
+      "studentNumber": "01-2223-861608",
+      "firstName": "Patricia",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a8e"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6dc"
+      },
+      "studentNumber": "01-2223-467573",
+      "firstName": "Lucia",
+      "lastName": "Campos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a8f"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f5"
+      },
+      "studentNumber": "01-2223-461390",
+      "firstName": "Patricia",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a90"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a704"
+      },
+      "studentNumber": "01-2223-204386",
+      "firstName": "Hector",
+      "lastName": "Delgado",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a91"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e2"
+      },
+      "studentNumber": "01-2223-816848",
+      "firstName": "Javier",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a92"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d9"
+      },
+      "studentNumber": "01-2223-777694",
+      "firstName": "Ana",
+      "lastName": "Gonzales",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a93"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a714"
+      },
+      "studentNumber": "01-2223-741918",
+      "firstName": "Luis",
+      "lastName": "Mejia",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a94"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6ce"
+      },
+      "studentNumber": "01-2223-639141",
+      "firstName": "Francisco",
+      "lastName": "Navarro",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a95"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6ec"
+      },
+      "studentNumber": "01-2223-514641",
+      "firstName": "Daniela",
+      "lastName": "Ortega",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a96"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d1"
+      },
+      "studentNumber": "01-2223-858178",
+      "firstName": "Carlos",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a97"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6d5"
+      },
+      "studentNumber": "01-2223-377905",
+      "firstName": "Martina",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a98"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a701"
+      },
+      "studentNumber": "01-2223-823325",
+      "firstName": "Nicolas",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a99"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a70b"
+      },
+      "studentNumber": "01-2223-461464",
+      "firstName": "Pedro",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9a"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f2"
+      },
+      "studentNumber": "01-2223-806377",
+      "firstName": "Eduardo",
+      "lastName": "Reyes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9b"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6df"
+      },
+      "studentNumber": "01-2223-517767",
+      "firstName": "Fernanda",
+      "lastName": "Reyes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9c"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0615fd31b7ed7b85a6c8"
+      },
+      "studentNumber": "01-2223-810940",
+      "firstName": "Patricia",
+      "lastName": "Roman",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9d"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0617fd31b7ed7b85a711"
+      },
+      "studentNumber": "01-2223-154614",
+      "firstName": "Raquel",
+      "lastName": "Roman",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9e"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0392fd31b7ed7b85a690"
+      },
+      "studentNumber": "01-2223-030689",
+      "firstName": "Gillian Andrei",
+      "lastName": "Sanchez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6a9f"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6f8"
+      },
+      "studentNumber": "01-2223-514288",
+      "firstName": "Isabella",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6fe"
+      },
+      "studentNumber": "01-2223-649069",
+      "firstName": "Patricia",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa1"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e9"
+      },
+      "studentNumber": "01-2223-667862",
+      "firstName": "Sofia",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa2"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a707"
+      },
+      "studentNumber": "01-2223-923039",
+      "firstName": "Maria",
+      "lastName": "Torres",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa3"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6e6"
+      },
+      "studentNumber": "01-2223-621374",
+      "firstName": "Ana",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa4"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6fb"
+      },
+      "studentNumber": "01-2223-221876",
+      "firstName": "Francisco",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa5"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cc0616fd31b7ed7b85a6ef"
+      },
+      "studentNumber": "01-2223-140852",
+      "firstName": "Gabriela",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cdf73a4206560f9dbb6aa6"
+      }
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-09T20:16:58.967Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T20:16:58.967Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cf0aeccc3161dcd3173b55"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "year": "1st",
+  "section": "South 1",
+  "subject": "ITE 101",
+  "students": [
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c33b"
+      },
+      "studentNumber": "01-2223-451117",
+      "firstName": "Camila",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b56"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2fc"
+      },
+      "studentNumber": "01-2223-956712",
+      "firstName": "Raquel",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b57"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2db"
+      },
+      "studentNumber": "01-2223-655762",
+      "firstName": "Sofia",
+      "lastName": "Aguilar",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b58"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2de"
+      },
+      "studentNumber": "01-2223-715343",
+      "firstName": "Samuel",
+      "lastName": "Bautista",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b59"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c335"
+      },
+      "studentNumber": "01-2223-584942",
+      "firstName": "Juan",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5a"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c314"
+      },
+      "studentNumber": "01-2223-630761",
+      "firstName": "Valeria",
+      "lastName": "Cabrera",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5b"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c33e"
+      },
+      "studentNumber": "01-2223-321406",
+      "firstName": "Juan",
+      "lastName": "Campos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5c"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2cc"
+      },
+      "studentNumber": "01-2223-949231",
+      "firstName": "Antonio",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5d"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c32f"
+      },
+      "studentNumber": "01-2223-119358",
+      "firstName": "Fernando",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5e"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c31a"
+      },
+      "studentNumber": "01-2223-513662",
+      "firstName": "Francisco",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b5f"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e7"
+      },
+      "studentNumber": "01-2223-672559",
+      "firstName": "Juan",
+      "lastName": "Castillo",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b60"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c30b"
+      },
+      "studentNumber": "01-2223-717281",
+      "firstName": "Antonio",
+      "lastName": "Cruz",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b61"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c32c"
+      },
+      "studentNumber": "01-2223-617267",
+      "firstName": "Andres",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b62"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f9"
+      },
+      "studentNumber": "01-2223-310378",
+      "firstName": "Elena",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b63"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d2"
+      },
+      "studentNumber": "01-2223-809083",
+      "firstName": "Ricardo",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b64"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c332"
+      },
+      "studentNumber": "01-2223-865747",
+      "firstName": "Samuel",
+      "lastName": "Flores",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b65"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c320"
+      },
+      "studentNumber": "01-2223-439613",
+      "firstName": "Eduardo",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b66"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2cf"
+      },
+      "studentNumber": "01-2223-875564",
+      "firstName": "Elena",
+      "lastName": "Fuentes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b67"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c30e"
+      },
+      "studentNumber": "01-2223-487511",
+      "firstName": "Daniela",
+      "lastName": "Gonzales",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b68"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e4"
+      },
+      "studentNumber": "01-2223-206216",
+      "firstName": "Maria",
+      "lastName": "Mejia",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b69"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2ff"
+      },
+      "studentNumber": "01-2223-289112",
+      "firstName": "Andres",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6a"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c326"
+      },
+      "studentNumber": "01-2223-862436",
+      "firstName": "Camila",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6b"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2ea"
+      },
+      "studentNumber": "01-2223-444970",
+      "firstName": "Daniela",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6c"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c9"
+      },
+      "studentNumber": "01-2223-524692",
+      "firstName": "Antonio",
+      "lastName": "Miranda",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6d"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c31d"
+      },
+      "studentNumber": "01-2223-783852",
+      "firstName": "Javier",
+      "lastName": "Miranda",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6e"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c344"
+      },
+      "studentNumber": "01-2223-843362",
+      "firstName": "Hector",
+      "lastName": "Montoya",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b6f"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c317"
+      },
+      "studentNumber": "01-2223-673030",
+      "firstName": "Pedro",
+      "lastName": "Montoya",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b70"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2ed"
+      },
+      "studentNumber": "01-2223-647653",
+      "firstName": "Isabella",
+      "lastName": "Navarro",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b71"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d8"
+      },
+      "studentNumber": "01-2223-126160",
+      "firstName": "Fernanda",
+      "lastName": "Ortega",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b72"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2ba"
+      },
+      "studentNumber": "01-2223-333803",
+      "firstName": "Daniela",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b73"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2d5"
+      },
+      "studentNumber": "01-2223-567641",
+      "firstName": "Eduardo",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b74"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c0"
+      },
+      "studentNumber": "01-2223-408169",
+      "firstName": "Isabella",
+      "lastName": "Padilla",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b75"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c341"
+      },
+      "studentNumber": "01-2223-194079",
+      "firstName": "Ricardo",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b76"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2b4"
+      },
+      "studentNumber": "01-2223-222253",
+      "firstName": "Andres",
+      "lastName": "Rios",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b77"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c347"
+      },
+      "studentNumber": "01-2223-678709",
+      "firstName": "Francisco",
+      "lastName": "Salinas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b78"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f0"
+      },
+      "studentNumber": "01-2223-115837",
+      "firstName": "Samuel",
+      "lastName": "Salinas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b79"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f3"
+      },
+      "studentNumber": "01-2223-206296",
+      "firstName": "Juan",
+      "lastName": "Santiago",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7a"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c323"
+      },
+      "studentNumber": "01-2223-472913",
+      "firstName": "Martina",
+      "lastName": "Santiago",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7b"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c311"
+      },
+      "studentNumber": "01-2223-391945",
+      "firstName": "Maria",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7c"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c302"
+      },
+      "studentNumber": "01-2223-142776",
+      "firstName": "Oscar",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7d"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c2f6"
+      },
+      "studentNumber": "01-2223-585175",
+      "firstName": "Sofia",
+      "lastName": "Santos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7e"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c6"
+      },
+      "studentNumber": "01-2223-779482",
+      "firstName": "Camila",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b7f"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff504da307b246a4c2e1"
+      },
+      "studentNumber": "01-2223-378610",
+      "firstName": "Nicolas",
+      "lastName": "Torres",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b80"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c305"
+      },
+      "studentNumber": "01-2223-145358",
+      "firstName": "Hector",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b81"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2b7"
+      },
+      "studentNumber": "01-2223-484869",
+      "firstName": "Lucia",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b82"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2bd"
+      },
+      "studentNumber": "01-2223-506366",
+      "firstName": "Oscar",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b83"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c338"
+      },
+      "studentNumber": "01-2223-599540",
+      "firstName": "Ricardo",
+      "lastName": "Valdez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b84"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff514da307b246a4c308"
+      },
+      "studentNumber": "01-2223-608746",
+      "firstName": "Fernando",
+      "lastName": "Vargas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b85"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff524da307b246a4c329"
+      },
+      "studentNumber": "01-2223-800462",
+      "firstName": "Valeria",
+      "lastName": "Vargas",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b86"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff4f4da307b246a4c2c3"
+      },
+      "studentNumber": "01-2223-870436",
+      "firstName": "Javier",
+      "lastName": "Velasquez",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67cf0aeccc3161dcd3173b87"
+      }
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-10T15:53:16.797Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-10T15:53:16.797Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025cdac91f6fa4d31b5d7"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "year": "1st",
+  "section": "South 2",
+  "subject": "ITE 104",
+  "students": [
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c359"
+      },
+      "studentNumber": "01-2223-172583",
+      "firstName": "Gabriela",
+      "lastName": "Bautista",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5d8"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c34a"
+      },
+      "studentNumber": "01-2223-996476",
+      "firstName": "Gabriela",
+      "lastName": "Delgado",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5d9"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c35f"
+      },
+      "studentNumber": "01-2223-403073",
+      "firstName": "Ricardo",
+      "lastName": "Delgado",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5da"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c353"
+      },
+      "studentNumber": "01-2223-829955",
+      "firstName": "Eduardo",
+      "lastName": "Mendoza",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5db"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c34d"
+      },
+      "studentNumber": "01-2223-722987",
+      "firstName": "Fernanda",
+      "lastName": "Montoya",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5dc"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c356"
+      },
+      "studentNumber": "01-2223-981681",
+      "firstName": "Camila",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5dd"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c350"
+      },
+      "studentNumber": "01-2223-362562",
+      "firstName": "Raquel",
+      "lastName": "Ramos",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5de"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff544da307b246a4c365"
+      },
+      "studentNumber": "01-2223-300432",
+      "firstName": "Patricia",
+      "lastName": "Reyes",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5df"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c35c"
+      },
+      "studentNumber": "01-2223-989247",
+      "firstName": "Eduardo",
+      "lastName": "Rios",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5e0"
+      }
+    },
+    {
+      "studentId": {
+        "$oid": "67cbff534da307b246a4c362"
+      },
+      "studentNumber": "01-2223-869996",
+      "firstName": "Andres",
+      "lastName": "Serrano",
+      "scores": {},
+      "assessments": [],
+      "attendance": [],
+      "_id": {
+        "$oid": "67d025cdac91f6fa4d31b5e1"
+      }
+    }
+  ],
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-03-11T12:00:13.978Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:13.978Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,198 @@
+[{
+  "_id": {
+    "$oid": "67ceeef0737dd19f5db3e091"
+  },
+  "type": "Quiz",
+  "number": 1,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "section": "South 1",
+  "subject": "ITE 101",
+  "date": {
+    "$date": "2025-03-04T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-381133": 10,
+    "01-2223-451117": 50
+  },
+  "createdAt": {
+    "$date": "2025-03-10T13:53:52.357Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:30:18.643Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ceef0a737dd19f5db3e513"
+  },
+  "type": "Quiz",
+  "number": 2,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "section": "South 1",
+  "subject": "ITE 101",
+  "date": {
+    "$date": "2025-03-09T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-381133": 99,
+    "01-2223-861608": 60,
+    "01-2223-451117": 50,
+    "01-2223-956712": 59
+  },
+  "createdAt": {
+    "$date": "2025-03-10T13:54:18.499Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-10T20:29:51.911Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cf4bf1a0f9516aad827a77"
+  },
+  "type": "Activity",
+  "number": 1,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "section": "South 1",
+  "subject": "ITE 101",
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-381133": 90
+  },
+  "createdAt": {
+    "$date": "2025-03-10T20:30:41.213Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-10T20:30:43.691Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d028c6ac91f6fa4d31c881"
+  },
+  "type": "Quiz",
+  "number": 1,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "section": "South 1",
+  "subject": "ITE 103",
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-451117": 100,
+    "01-2223-956712": 50,
+    "01-2223-655762": 20,
+    "01-2223-715343": 40,
+    "01-2223-584942": 40,
+    "01-2223-630761": 40,
+    "01-2223-321406": 4
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:12:54.527Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:49:39.871Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d028d6ac91f6fa4d31c9b2"
+  },
+  "type": "Activity",
+  "number": 1,
+  "maxScore": 10,
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "section": "South 1",
+  "subject": "ITE 103",
+  "date": {
+    "$date": "2025-03-07T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-451117": 2
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:13:10.417Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:27:18.693Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02c45ac91f6fa4d31dc11"
+  },
+  "type": "Activity",
+  "number": 3,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "section": "South 1",
+  "subject": "ITE 103",
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-451117": 60,
+    "01-2223-956712": 20,
+    "01-2223-655762": 30,
+    "01-2223-715343": 4,
+    "01-2223-584942": 40,
+    "01-2223-321406": 4,
+    "01-2223-630761": 40
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:27:49.913Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:49:41.972Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02c62ac91f6fa4d31e054"
+  },
+  "type": "Quiz",
+  "number": 3,
+  "maxScore": 100,
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "section": "South 1",
+  "subject": "ITE 103",
+  "date": {
+    "$date": "2025-03-07T16:00:00.000Z"
+  },
+  "scores": {
+    "01-2223-451117": 80
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:28:18.559Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:28:20.667Z"
+  },
+  "__v": 0
+}]

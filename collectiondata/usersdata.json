@@ -1,0 +1,120 @@
+[{
+  "_id": {
+    "$oid": "679f68625bbdb8fd32962089"
+  },
+  "firstName": "CIT",
+  "lastName": "Head",
+  "email": "y@gmail.com",
+  "password": "$2b$10$3nK4ukKFYZsxhv55fTjxFuHNR8WwjbyW0iKJybRUwjf4HYa.1Va9S",
+  "role": "citHead",
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-02-02T12:43:14.710Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "firstName": "Gillian Andreisss",
+  "lastName": "Sanchezpogi",
+  "email": "g@gmail.com",
+  "password": "$2a$10$hdM7LHeYVuGXusKdRjvh6.8ZnphRxJxYKaxbKqrpf29MdDOgyLORa",
+  "role": "teacher",
+  "teachingYear": "1st",
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-02-02T18:05:56.827Z"
+  },
+  "__v": 1,
+  "subjects": [
+    "ITE 103",
+    "ITE 104"
+  ],
+  "preferences": {
+    "selectedYear": "1st",
+    "selectedSection": "South 1",
+    "selectedSubject": "ITE 103",
+    "currentPage": 1
+  }
+},
+{
+  "_id": {
+    "$oid": "67a250e0c0b704ded7c8ce13"
+  },
+  "firstName": "Danica",
+  "lastName": "Navarro",
+  "email": "danica@gmail.com",
+  "password": "$2a$10$qZycw4aN0HqD/1xLXpUUsOueFTOLrgEt6mPvtWEMlJyyDaJ6u9jey",
+  "role": "teacher",
+  "teachingYear": "2nd",
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-02-04T17:39:44.356Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "firstName": "Aira",
+  "lastName": "Lucero",
+  "email": "aira@gmail.com",
+  "password": "$2a$10$wD2cmlPi12z0jN9B0fuoleOu/DLQ2grNukeoiy7Cg4YSgRW.YRtiq",
+  "role": "teacher",
+  "teachingYear": "1st",
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-02-13T02:58:26.520Z"
+  },
+  "__v": 1,
+  "subjects": [
+    "ITE 101",
+    "ITE 102"
+  ],
+  "preferences": {
+    "selectedYear": "1st",
+    "selectedSection": "South 1",
+    "selectedSubject": "ITE 101",
+    "currentPage": 1
+  }
+},
+{
+  "_id": {
+    "$oid": "67bcc374739365b84e5f7a08"
+  },
+  "firstName": "JJ",
+  "lastName": "Orong",
+  "email": "jj@gmail.com",
+  "password": "$2a$10$c3uMOh3psgrwwsnFxygcju/bb62UAsd2PW6ZolGomc6cOEsD48uIe",
+  "role": "teacher",
+  "teachingYear": "3rd",
+  "subjects": [
+    "ITE 304",
+    "ITE 303"
+  ],
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-02-24T19:07:32.039Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ce167bf82797cb09ecbea5"
+  },
+  "firstName": "April Ashley",
+  "lastName": "Sanchez",
+  "email": "ashley@gmail.com",
+  "password": "$2a$10$FTF057qNnWb0pfgpSCS/3uk62BA38QcogGUfN88gxBbClTc2tugUu",
+  "role": "ssp",
+  "teachingYear": "1st",
+  "subjects": [],
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-03-09T22:30:19.878Z"
+  },
+  "__v": 0
+}]

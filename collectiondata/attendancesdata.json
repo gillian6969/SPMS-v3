@@ -1,0 +1,486 @@
+[{
+  "_id": {
+    "$oid": "67cf1468a9c30eb52408b83d"
+  },
+  "studentId": {
+    "$oid": "67cbff524da307b246a4c33b"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T00:17:23.914Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-10T16:33:44.381Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T00:17:23.933Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b5ee"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c359"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.116Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.118Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.118Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b5f0"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c34a"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.123Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.125Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.125Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b5f2"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c35f"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.135Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.139Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.139Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b5f4"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c353"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.142Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.144Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.144Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b5f6"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c356"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.157Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.159Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.159Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b601"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c350"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.227Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.228Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.228Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b603"
+  },
+  "studentId": {
+    "$oid": "67cbff544da307b246a4c365"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.230Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.231Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.231Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b605"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c34d"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.232Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.233Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.233Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b607"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c35c"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.234Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.235Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.235Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d025ceac91f6fa4d31b609"
+  },
+  "studentId": {
+    "$oid": "67cbff534da307b246a4c362"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 104",
+  "section": "South 2",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:00:14.239Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:00:14.244Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:00:14.244Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02651ac91f6fa4d31b8f4"
+  },
+  "studentId": {
+    "$oid": "67cbff524da307b246a4c33b"
+  },
+  "teacherId": {
+    "$oid": "679fb404a65db4d31a65dae0"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 103",
+  "section": "South 1",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:12:13.260Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:02:25.256Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:12:13.290Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d03ac91f6fa4d31e8a2"
+  },
+  "studentId": {
+    "$oid": "67cc0615fd31b7ed7b85a6cb"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "absent",
+  "lastModified": {
+    "$date": "2025-03-11T12:33:14.571Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:30:59.087Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:33:14.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d50ac91f6fa4d31e9a4"
+  },
+  "studentId": {
+    "$oid": "67cc0615fd31b7ed7b85a6cb"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-07T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "present",
+  "lastModified": {
+    "$date": "2025-03-11T12:32:16.236Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:32:16.254Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:32:16.254Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d54ac91f6fa4d31e9ad"
+  },
+  "studentId": {
+    "$oid": "67cc0617fd31b7ed7b85a70e"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-07T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "absent",
+  "lastModified": {
+    "$date": "2025-03-11T12:32:20.768Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:32:20.785Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:32:20.785Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d55ac91f6fa4d31e9b1"
+  },
+  "studentId": {
+    "$oid": "67cc0615fd31b7ed7b85a6dc"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-07T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "absent",
+  "lastModified": {
+    "$date": "2025-03-11T12:32:21.710Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:32:21.732Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:32:21.732Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d56ac91f6fa4d31e9bb"
+  },
+  "studentId": {
+    "$oid": "67cc0616fd31b7ed7b85a6f5"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "late",
+  "lastModified": {
+    "$date": "2025-03-11T12:32:22.712Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:32:22.734Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:32:22.734Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d02d57ac91f6fa4d31e9bf"
+  },
+  "studentId": {
+    "$oid": "67cc0616fd31b7ed7b85a704"
+  },
+  "teacherId": {
+    "$oid": "67ad5fd2073067ed9b163ccd"
+  },
+  "date": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "subject": "ITE 101",
+  "section": "South 1",
+  "status": "late",
+  "lastModified": {
+    "$date": "2025-03-11T12:32:23.685Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-11T12:32:23.699Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T12:32:23.699Z"
+  },
+  "__v": 0
+}]
