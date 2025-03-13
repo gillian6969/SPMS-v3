@@ -6,6 +6,7 @@ const User = require('../models/User');
 const TeacherClassRecord = require('../models/TeacherClassRecord');
 const moment = require('moment');
 const Assessment = require('../models/Assessment');
+const Attendance = require('../models/Attendance')
 
 // Get dashboard statistics
 router.get('/stats', auth, async (req, res) => {
@@ -25,6 +26,11 @@ router.get('/stats', auth, async (req, res) => {
     const totalTeachers = await User.countDocuments({ role: 'teacher' });
     const totalAdvisers = await User.countDocuments({ role: 'adviser' });
 
+    const today = new Date();
+    const attendance = await Attendance.find({ "$expr": { "$eq": [{ "$month": "$date" }, today.getMonth() + 1] } });
+    const numberOfDays = 31;
+    const totalAttendance = attendance.length / numberOfDays;
+
     // Get active sections with year information
     const sections = await Student.aggregate([
       { $match: query },
@@ -35,7 +41,7 @@ router.get('/stats', auth, async (req, res) => {
             year: '$year'
           },
           studentCount: { $sum: 1 },
-          performance: { $avg: '$averageScore' }
+          performance: { $avg: '$averageScore' },
         }
       },
       {
@@ -44,7 +50,7 @@ router.get('/stats', auth, async (req, res) => {
           name: '$_id.section',
           year: '$_id.year',
           studentCount: 1,
-          performance: { $round: ['$performance', 1] }
+          performance: { $round: ['$performance', 1] },
         }
       },
       { $sort: { year: 1, name: 1 } }
@@ -200,7 +206,8 @@ router.get('/stats', auth, async (req, res) => {
       performanceDistribution: gradeDistribution,
       assessmentTypeDistribution,
       performanceTrends,
-      sections
+      sections,
+      averageAttendance : 0
     });
   } catch (error) {
     console.error('Dashboard stats error:', error);
@@ -464,4 +471,24 @@ router.get('/teacher/:teacherId/stats', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+
+router.get('/failing/analytics', async (req, res) => {
+  // Per Assessments
+  const assessmentTypes = ['Quiz', 'Activity', 'Performance Task'];
+  const today = new Date();
+  const analytics = []
+  const assessmentData = await Assessment.find({ "$expr": { "$eq": [{ "$month": "$date" }, today.getMonth() + 1] } });
+  assessmentTypes.forEach(async (type) => {
+    analytics.push(
+      {
+        type : type,
+        data : assessmentData.filter(a => a.type === type)
+      }
+    )
+  })
+
+  res.send(analytics)
+
+})
+
+module.exports = router;

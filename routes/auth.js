@@ -145,21 +145,41 @@ router.post('/login', async (req, res) => {
       timestamp: new Date().toISOString()
     });
 
-    if (loginType === 'citHead' && user.role !== 'citHead') {
-      console.log('Access denied: Non-CIT Head trying to use CIT Head login');
-      return res.status(403).json({ 
-        message: 'Access denied. Please use the Teacher/Student login.',
-        error: 'invalid_login_type'
-      });
+    if(loginType === 'citHead'){
+      if(user.role === 'teacher' || user.role === 'spp'){
+        console.log('Access denied: Non-CIT Head trying to use CIT Head login');
+        return res.status(403).json({ 
+          message: 'Access denied. Please use the Teacher/Student login.',
+          error: 'invalid_login_type'
+        });
+      }
     }
 
-    if (loginType === 'user' && user.role === 'citHead') {
-      console.log('Access denied: CIT Head trying to use regular login');
-      return res.status(403).json({ 
-        message: 'Access denied. Please use the CIT Head login.',
-        error: 'invalid_login_type'
-      });
+    if(loginType === 'user'){
+      if(user.role === 'citHead' || user.role === 'sspHead'){
+        console.log('Access denied: CIT Head trying to use regular login');
+        return res.status(403).json({ 
+          message: 'Access denied. Please use the CIT Head login.',
+          error: 'invalid_login_type'
+        });
+      }
     }
+
+    // if (loginType === 'citHead' && (user.role !== 'sspHead' || user.role !== 'citHead')) {
+    //   console.log('Access denied: Non-CIT Head trying to use CIT Head login');
+    //   return res.status(403).json({ 
+    //     message: 'Access denied. Please use the Teacher/Student login.',
+    //     error: 'invalid_login_type'
+    //   });
+    // }
+
+    // if (loginType === 'user' && (user.role === 'citHead' || user.role === 'sspHead')) {
+    //   console.log('Access denied: CIT Head trying to use regular login');
+    //   return res.status(403).json({ 
+    //     message: 'Access denied. Please use the CIT Head login.',
+    //     error: 'invalid_login_type'
+    //   });
+    // }
 
     console.log('Login type validation successful');
 

@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['citHead', 'teacher', 'ssp', 'student'],
+    enum: ['citHead', 'teacher', 'sspHead', 'ssp', 'student'],
     required: true,
   },
   // Student specific fields
