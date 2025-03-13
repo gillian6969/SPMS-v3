@@ -155,19 +155,37 @@ export default {
         const user = response.data.user
         
         // Check login type before proceeding
-        if (loginType.value === 'citHead' && user.role !== 'citHead') {
-          console.log('Access denied: Non-CIT Head using CIT Head login')
-          error.value = 'Access denied. Please use the Teacher/Student login.'
-          await store.dispatch('logout')
-          return
+        if(loginType.value === 'citHead'){
+          if(user.role === 'teacher' || user.role === 'ssp'){
+            console.log('Access denied: Non-CIT Head using CIT Head login')
+            error.value = 'Access denied. Please use the Teacher/Student login.'
+            await store.dispatch('logout')
+            return
+          }
         }
+
+        if(loginType === 'user'){
+          if(user.role === 'citHead' || user.role === 'sspHead'){
+            console.log('Access denied: CIT Head using regular login')
+            error.value = 'Access denied. Please use the CIT Head login.'
+            await store.dispatch('logout')
+            return
+          }
+        }
+
+        // if (loginType.value === 'citHead' && user.role !== 'citHead') {
+        //   console.log('Access denied: Non-CIT Head using CIT Head login')
+        //   error.value = 'Access denied. Please use the Teacher/Student login.'
+        //   await store.dispatch('logout')
+        //   return
+        // }
         
-        if (loginType.value === 'user' && user.role === 'citHead') {
-          console.log('Access denied: CIT Head using regular login')
-          error.value = 'Access denied. Please use the CIT Head login.'
-          await store.dispatch('logout')
-          return
-        }
+        // if (loginType.value === 'user' && user.role === 'citHead') {
+        //   console.log('Access denied: CIT Head using regular login')
+        //   error.value = 'Access denied. Please use the CIT Head login.'
+        //   await store.dispatch('logout')
+        //   return
+        // }
 
         router.push('/dashboard')
       } catch (err) {

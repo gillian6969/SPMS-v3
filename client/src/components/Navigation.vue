@@ -42,8 +42,8 @@
           </router-link>
         </template>
 
-        <!-- SSP Navigation -->
-        <template v-if="isSSP">
+        <!-- SSPHead Navigation -->
+        <template v-if="isSSPHead">
           <!-- Analytics Category -->
           <div class="nav-category">Analytics</div>
           <router-link to="/ssp-dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
@@ -51,12 +51,11 @@
             <span v-show="!isSidebarCollapsed">Dashboard</span>
           </router-link>
 
-
           <!-- Management Category -->
           <div class="nav-category">Management</div>
-          <router-link to="/student-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
-            <i class="fas fa-users"></i>
-            <span v-show="!isSidebarCollapsed">Student Management</span>
+          <router-link to="/register" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
+            <i class="fas fa-user-plus"></i>
+            <span v-show="!isSidebarCollapsed">Add Teacher/SSP</span>
           </router-link>
         </template>
 
@@ -193,6 +192,7 @@ export default {
     const isCITHead = computed(() => store.getters.isCITHead)
     const isTeacher = computed(() => store.getters.isTeacher)
     const isSSP = computed(() => store.getters.isSSP)
+    const isSSPHead = computed(() => store.getters.isSSPHead)
     
     const userInitials = computed(() => {
       if (!user.value) return ''
@@ -210,8 +210,8 @@ export default {
           return 'Dashboard'
         case 'TeacherDashboard':
           return 'Dashboard'
-        case 'SSPDashboard':
-          return 'Dashboard'
+        case 'SSPHead Dashboard':
+          return 'SPP Head Dashboard'
         case 'StudentManagement':
           return 'Student Management'
         case 'TeacherManagement':
@@ -251,6 +251,7 @@ export default {
       isCITHead,
       isTeacher,
       isSSP,
+      isSSPHead,
       userInitials,
       isSidebarCollapsed,
       toggleSidebar,

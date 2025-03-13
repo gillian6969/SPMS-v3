@@ -10,7 +10,8 @@ const getters = {
   currentUser: state => state.user,
   isCITHead: state => state.user?.role === 'citHead',
   isTeacher: state => state.user?.role === 'teacher',
-  isSSP: state => state.user?.role === 'ssp'
+  isSSPHead: state => state.user?.role === 'sspHead',
+  isSSP: state => state.user?.role === 'ssp',
 }
 
 const actions = {

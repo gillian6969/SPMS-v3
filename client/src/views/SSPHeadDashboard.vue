@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import AssessmentAnalytics from '../components/AssessmentAnalytics.vue'
 import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
@@ -22,6 +23,7 @@ const assessmentCompletion = ref(0)
 const recentActivities = ref([])
 const sections = ref([])
 const subjects = ref([])
+const quizzesGrades = ref([]);
 
 // Filter refs
 const selectedYear = ref(localStorage.getItem('selectedYear') || '')
@@ -127,7 +129,7 @@ const fetchDashboardData = async () => {
       endDate: selectedEndDate.value
     });
 
-    const response = await axios.get(`http://localhost:8000/api/dashboard/teacher/${teacherId}/stats`, {
+    const response = await axios.get(`http://localhost:8000/api/dashboard/stats`, {
       params: {
         year: selectedYear.value,
         section: selectedSection.value,
@@ -166,7 +168,7 @@ const fetchDashboardData = async () => {
         });
       }
 
-      if (Array.isArray(response.data.assessmentTypeDistribution)) {
+      if (response.data.assessmentTypeDistribution){
         updateAssessmentTypeChart(response.data.assessmentTypeDistribution);
       } else {
         console.warn('Invalid assessment type distribution data:', response.data.assessmentTypeDistribution);
@@ -646,6 +648,27 @@ onMounted(async () => {
       // Fetch actual dashboard data
       await fetchDashboardData();
       console.log('Initial data fetch completed');
+
+      // Fetch Grades
+      const grades = await axios.get('http://localhost:8000/api/dashboard/failing/analytics',);
+      const quizzes = grades.data.filter(a => a.type === 'Quiz') || [];
+      
+      const activity = grades.data.filter(a => a.type === 'Activity') || [];
+      const performanceTask = grades.data.filter(a => a.type === 'Performance Task') || [];
+
+      quizzes[0].data.map((datas) => {
+        // console.log(datas.scores);
+        let temp = 0
+        let counter = 0;
+        Object.entries(datas.scores).forEach(([id, score]) => {
+          if(score <= 50){
+            temp = temp + score;
+            counter++;
+          }
+        })
+        quizzesGrades.value.push({average : Number((temp / counter).toFixed(2)) || 0, subject : datas.subject});
+      });
+      
     } catch (error) {
       console.error('Error during initialization:', error);
     }
@@ -744,6 +767,27 @@ onMounted(async () => {
             </div>
         </div>
 
+        <div class="row mt-4">
+          <div class="dashboard-card mx-3">
+            <div class="icon-container">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="card-info">
+              <h3 class="stat-title">Quizzes</h3>
+              <div class="stat-value">
+                
+              </div>
+              <div>
+                
+                <div v-for="quiz in quizzesGrades">
+                  Subject : <span class="font-bold">{{ quiz.subject }}</span><br>
+                  Average : <span class="font-bold">{{ quiz.average }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Secondary Stats Row -->
         <div class="row mt-4">
             <div class="col-md-6">
@@ -765,7 +809,7 @@ onMounted(async () => {
                     </div>
                     <div class="card-info">
                         <h3 class="stat-title">Assessment Completion</h3>
-                        <div class="stat-value" v-if="hasAssessmentData">{{ assessmentCompletion }}%</div>
+                        <div class="stat-value" v-if="hasAssessmentData">{{ assessmentCompletion.toFixed(2) }}%</div>
                         <div class="no-data" v-else>No assessment data available</div>
                     </div>
                 </div>
@@ -823,34 +867,6 @@ onMounted(async () => {
                             <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Recent Activity</h5>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Activity</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="!hasActivity">
-                                <td colspan="3" class="text-center">No recent activity</td>
-                            </tr>
-                            <tr v-for="activity in recentActivities" :key="activity.id">
-                                <td>{{ formatDate(activity.date) }}</td>
-                                <td>{{ activity.type }}</td>
-                                <td>{{ activity.details }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

@@ -6,7 +6,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Dashboard from '../views/Dashboard.vue'
 import TeacherDashboard from '../views/TeacherDashboard.vue'
-import SSPDashboard from '@/views/SSPDashboard.vue'
+import SSPHeadDashboard from '@/views/SSPHeadDashboard.vue'
 import StudentManagement from '../views/StudentManagement.vue'
 import ClassRecords from '../views/ClassRecords.vue'
 import Attendance from '../views/Attendance.vue'
@@ -51,8 +51,8 @@ const routes = [
       },
       {
         path: 'ssp-dashboard',
-        name: 'SSPDashboard',
-        component: SSPDashboard,
+        name: 'SSPHead Dashboard',
+        component: SSPHeadDashboard,
         meta: { requiresAuth: true, sspOnly : true }
       },
       {
@@ -112,6 +112,7 @@ router.beforeEach((to, from, next) => {
   const isCITHead = store.getters.isCITHead
   const isTeacher = store.getters.isTeacher
   const isSSP = store.getters.isSSP
+  const isSSPHead = store.getters.isSSPHead
 
   // Routes that require authentication 
   if (to.matched.some(record => record.meta.requiresAuth)) {
@@ -146,7 +147,7 @@ router.beforeEach((to, from, next) => {
         next('/dashboard')
       } else if (isTeacher) {
         next('/teacher-dashboard')
-      } else {
+      } else if(isSSPHead) {
         next('/ssp-dashboard')
       }
       return
@@ -158,7 +159,7 @@ router.beforeEach((to, from, next) => {
     if (isTeacher) {
       next('/teacher-dashboard')
       return
-    } else if (isSSP) {
+    } else if (isSSPHead) {
       next('/ssp-dashboard')
       return
     }
