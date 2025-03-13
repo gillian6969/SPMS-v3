@@ -7,7 +7,8 @@ const isCITHead = require('../middleware/isCITHead')
 // Get all teachers
 router.get('/', auth, isCITHead, async (req, res) => {
   try {
-    const teachers = await User.find({ role: 'teacher' })
+    const isSSP = req.query.isSSP;
+    const teachers = await User.find({ role: isSSP ? 'ssp' : 'teacher' })
       .select('-password')
       .sort({ lastName: 1, firstName: 1 })
     
@@ -21,7 +22,7 @@ router.get('/', auth, isCITHead, async (req, res) => {
 // Update teacher
 router.put('/:id', auth, isCITHead, async (req, res) => {
   try {
-    const { firstName, lastName, email, teachingYear, subjects } = req.body
+    const { firstName, lastName, email, counselingYear, role, subjects } = req.body
     const teacherId = req.params.id
 
     // Check if email is already taken by another user
@@ -32,17 +33,17 @@ router.put('/:id', auth, isCITHead, async (req, res) => {
 
     const teacher = await User.findById(teacherId)
     if (!teacher) {
-      return res.status(404).json({ message: 'Teacher not found' })
+      return res.status(404).json({ message: 'SSP not found' })
     }
 
-    if (teacher.role !== 'teacher') {
-      return res.status(400).json({ message: 'User is not a teacher' })
+    if (teacher.role !== 'ssp') {
+      return res.status(400).json({ message: 'User is not a SSP' })
     }
 
     teacher.firstName = firstName
     teacher.lastName = lastName
     teacher.email = email
-    teacher.teachingYear = teachingYear
+    teacher.counselingYear = counselingYear
     teacher.subjects = subjects
 
     await teacher.save()

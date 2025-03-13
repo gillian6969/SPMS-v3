@@ -53,9 +53,30 @@
 
           <!-- Management Category -->
           <div class="nav-category">Management</div>
-          <router-link to="/register" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
+          <router-link to="/register-ssp" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
             <i class="fas fa-user-plus"></i>
-            <span v-show="!isSidebarCollapsed">Add Teacher/SSP</span>
+            <span v-show="!isSidebarCollapsed">Add SSP Adviser</span>
+          </router-link>
+          <router-link to="/ssp-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span v-show="!isSidebarCollapsed">SSP Adviser Management</span>
+          </router-link>
+        </template>
+
+        <!-- SSP Adviser Navigation -->
+        <template v-if="isSSP">
+          <!-- Analytics Category -->
+          <div class="nav-category">Analytics</div>
+          <router-link to="/ssp-dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+            <i class="fas fa-chart-line"></i>
+            <span v-show="!isSidebarCollapsed">Dashboard</span>
+          </router-link>
+
+          <!-- Management Category -->
+          <div class="nav-category">Management</div>
+          <router-link to="/ssp-student-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
+            <i class="fas fa-users"></i>
+            <span v-show="!isSidebarCollapsed">Student Management</span>
           </router-link>
         </template>
 

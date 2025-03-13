@@ -4,6 +4,7 @@ import store from '../store'
 // Import components
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import RegisterSSP from '../views/RegisterSSP.vue'
 import Dashboard from '../views/Dashboard.vue'
 import TeacherDashboard from '../views/TeacherDashboard.vue'
 import SSPHeadDashboard from '@/views/SSPHeadDashboard.vue'
@@ -15,6 +16,8 @@ import EditProfile from '@/views/EditProfile.vue'
 import ChangePassword from '@/views/ChangePassword.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TeacherManagement from '../views/TeacherManagement.vue'
+import SSPManagement from '../views/SSPManagement.vue'
+import FailingStudents from '../views/FailingStudents.vue'
 
 const routes = [
   {
@@ -41,6 +44,12 @@ const routes = [
         path: 'register',
         name: 'Register',
         component: Register,
+        meta: { requiresAuth: true, citHeadOnly: true }
+      },
+      {
+        path: 'register-ssp',
+        name: 'Register SSP',
+        component: RegisterSSP,
         meta: { requiresAuth: true, citHeadOnly: true }
       },
       {
@@ -95,6 +104,18 @@ const routes = [
         path: 'teacher-management',
         name: 'TeacherManagement',
         component: TeacherManagement,
+        meta: { requiresAuth: true, roles: ['citHead'] }
+      },
+      {
+        path: 'ssp-management',
+        name: 'SSPManagement',
+        component: SSPManagement,
+        meta: { requiresAuth: true, roles: ['citHead'] }
+      },
+      {
+        path: 'ssp-student-management',
+        name: 'SSPStudentManagement',
+        component: FailingStudents,
         meta: { requiresAuth: true, roles: ['citHead'] }
       }
     ]

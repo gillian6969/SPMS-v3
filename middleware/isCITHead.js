@@ -11,9 +11,10 @@ const isCITHead = async (req, res, next) => {
     const userId = req.user._id || req.user.userId;
     
     const user = await User.findById(userId);
-    if (!user || user.role !== 'citHead') {
-      return res.status(403).json({ message: 'Access denied. Only CIT Head can perform this action.' });
+    if (!user || (user.role !== 'citHead' || user.role !== 'sspHead')) {
+      // return res.status(403).json({ message: 'Access denied. Only CIT Head can perform this action.' });
     }
+
     next();
   } catch (error) {
     console.error('Error checking CIT Head role:', error);

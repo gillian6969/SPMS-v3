@@ -2,7 +2,7 @@
   <div class="register-container">
     <div class="register-box">
       <h2 class="text-center mb-4">Create New Account</h2>
-      <p class="text-center text-muted mb-4">Register new teachers and SSP advisers</p>
+      <p class="text-center text-muted mb-4">Register SSP advisers</p>
       
       <form @submit.prevent="handleRegister">
         <!-- First Name -->
@@ -62,8 +62,8 @@
 
         <!-- Teaching Year -->
         <div class="mb-3">
-          <label class="form-label">Teaching Year</label>
-          <select class="form-select" v-model="teachingYear" required @change="handleYearChange">
+          <label class="form-label">Counseling Year</label>
+          <select class="form-select" v-model="counselingYear" required @change="handleYearChange">
             <option value="">Select Year</option>
             <option value="1st">1st Year</option>
             <option value="2nd">2nd Year</option>
@@ -72,51 +72,12 @@
           </select>
         </div>
 
-        <!-- Subjects -->
-        <div class="mb-3">
-          <label class="form-label">Subjects</label>
-          <div class="subject-selection">
-            <div v-for="subject in availableSubjects" :key="subject" class="form-check">
-              <input 
-                type="checkbox" 
-                class="form-check-input" 
-                :id="subject"
-                :value="subject"
-                v-model="selectedSubjects"
-              >
-              <label class="form-check-label" :for="subject">{{ subject }}</label>
-            </div>
-          </div>
-
-          <!-- Custom Subject Input -->
-          <div class="mt-3">
-            <div class="input-group">
-              <input 
-                type="text" 
-                class="form-control" 
-                v-model="customSubject"
-                placeholder="Add custom subject"
-                :disabled="!teachingYear"
-              >
-              <button 
-                class="btn btn-outline-primary" 
-                type="button"
-                @click="addCustomSubject"
-                :disabled="!customSubject || !teachingYear"
-              >
-                Add
-              </button>
-            </div>
-            <small class="text-muted">Enter a custom subject code (e.g., ITE 105)</small>
-          </div>
-        </div>
-
         <!-- Role -->
         <div class="mb-3">
           <label class="form-label">Role</label>
           <select class="form-select" v-model="role" required>
-            <option value="">Select Role</option>
-            <option value="teacher">Teacher</option>
+            <option value="ssp">Select Role</option>
+            <option value="ssp">SSP Adviser</option>
           </select>
         </div>
 
@@ -154,6 +115,7 @@ export default {
     const password = ref('')
     const confirmPassword = ref('')
     const teachingYear = ref('')
+    const counselingYear = ref('')
     const role = ref('')
     const error = ref('')
     const success = ref('')
@@ -170,7 +132,7 @@ export default {
 
     const handleYearChange = () => {
       selectedSubjects.value = []
-      availableSubjects.value = teachingYear.value ? subjectsByYear[teachingYear.value] : []
+      availableSubjects.value = counselingYear.value ? subjectsByYear[counselingYear.value] : []
     }
 
     const addCustomSubject = () => {
@@ -201,7 +163,8 @@ export default {
           email: email.value,
           password: password.value,
           confirmPassword: confirmPassword.value,
-          teachingYear: teachingYear.value,
+          counselingYear: counselingYear.value,
+          teachingYear: " ",
           role: role.value,
           subjects: selectedSubjects.value
         }
@@ -241,6 +204,7 @@ export default {
       password,
       confirmPassword,
       teachingYear,
+      counselingYear,
       role,
       error,
       success,

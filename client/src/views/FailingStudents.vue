@@ -1,14 +1,6 @@
 <template>
     <div class="student-management">
         <div class="sticky-controls">
-            <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-primary" @click="showAddStudentModal = true">
-                    <i class="fas fa-plus me-1"></i> Add Student List
-                </button>
-                <button class="btn btn-success" @click="showAddSingleStudentModal = true">
-                    <i class="fas fa-user-plus me-1"></i> Add Single Student
-                </button>
-            </div>
 
             <!-- Table Controls -->
             <div class="table-controls mb-3">
@@ -115,14 +107,14 @@
                 </thead>
                 <tbody>
                     <template v-if="paginatedStudents.length > 0">
-                        <tr v-for="student in paginatedStudents" :key="student.studentId" @click="viewStudent(student)"
+                        <tr v-for="student in paginatedStudents" :key="student.studentId" @click="viewStudent(student.info)"
                             class="clickable-row">
-                            <td>{{ student.studentId }}</td>
-                            <td>{{ student.lastName }}</td>
-                            <td>{{ student.firstName }}</td>
-                            <td>{{ student.email }}</td>
-                            <td>{{ student.year }}</td>
-                            <td>{{ student.section }}</td>
+                            <td>{{ student.info.studentId }}</td>
+                            <td>{{ student.info.lastName }}</td>
+                            <td>{{ student.info.firstName }}</td>
+                            <td>{{ student.info.email }}</td>
+                            <td>{{ student.info.year }}</td>
+                            <td>{{ student.info.section }}</td>
                         </tr>
                     </template>
                     <tr v-else>
@@ -656,13 +648,13 @@ export default {
             return students.value.filter(student => {
                 const searchLower = searchQuery.value.toLowerCase();
                 const matchesSearch =
-                    student.studentId.toLowerCase().includes(searchLower) ||
-                    student.firstName.toLowerCase().includes(searchLower) ||
-                    student.lastName.toLowerCase().includes(searchLower);
+                    student.info.studentId.toLowerCase().includes(searchLower) ||
+                    student.info.firstName.toLowerCase().includes(searchLower) ||
+                    student.info.lastName.toLowerCase().includes(searchLower);
 
                 // Apply year and section filters
-                const matchesYear = !selectedYear.value || student.year === selectedYear.value;
-                const matchesSection = !selectedSection.value || student.section === selectedSection.value;
+                const matchesYear = !selectedYear.value || student.info.year === selectedYear.value;
+                const matchesSection = !selectedSection.value || student.info.section === selectedSection.value;
 
                 return matchesSearch && matchesYear && matchesSection;
             });
@@ -963,7 +955,7 @@ export default {
         const fetchStudents = async () => {
             try {
                 const token = store.state.auth.token;
-                const response = await api.get('/students', {
+                const response = await api.get('/students/failing/list', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
