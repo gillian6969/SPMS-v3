@@ -9,7 +9,7 @@ const axios = require('axios');
 
 // Middleware to check if user is CITHead
 const isCITHead = (req, res, next) => {
-  if (req.user && req.user.role === 'citHead') {
+  if (req.user && (req.user.role === 'citHead' || req.user.role === 'sspHead')) {
     next();
   } else {
     res.status(403).json({ message: 'Access denied. Only CIT Head can register new users.' });
@@ -32,7 +32,7 @@ const verifyRecaptcha = async (token) => {
 // Register Teacher/SSP (CITHead only)
 router.post('/register', auth, isCITHead, async (req, res) => {
   try {
-    const { firstName, lastName, email, password, confirmPassword, teachingYear, role, subjects } = req.body;
+    const { firstName, lastName, email, password, confirmPassword, counselingYear, teachingYear, role, subjects } = req.body;
 
     // Validate password match
     if (password !== confirmPassword) {
@@ -63,13 +63,14 @@ router.post('/register', auth, isCITHead, async (req, res) => {
       password,
       role,
       teachingYear,
+      counselingYear,
       subjects: role === 'teacher' ? subjects : undefined
     });
 
     await user.save();
 
     // Log user registration details
-    console.log('Registering user:', { firstName, lastName, email, role, teachingYear, subjects });
+    console.log('Registering user:', { firstName, lastName, email, role, counselingYear, subjects });
 
     res.status(201).json({
       success: true,
@@ -80,7 +81,7 @@ router.post('/register', auth, isCITHead, async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
-        teachingYear: user.teachingYear,
+        counselingYear: user.counselingYear,
         subjects: user.subjects
       }
     });

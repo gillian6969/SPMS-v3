@@ -51,10 +51,13 @@ const userSchema = new mongoose.Schema({
   // Teacher specific fields
   teachingYear: {
     type: String,
-    enum: ['1st', '2nd', '3rd', '4th'],
+    //enum: ['1st', '2nd', '3rd', '4th'],
     required: function() {
       return this.role === 'teacher' || this.role === 'ssp';
     }
+  },
+  counselingYear : {
+    type: String,
   },
   subjects: {
     type: [String],
