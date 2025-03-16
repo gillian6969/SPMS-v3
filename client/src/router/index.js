@@ -18,6 +18,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TeacherManagement from '../views/TeacherManagement.vue'
 import SSPManagement from '../views/SSPManagement.vue'
 import FailingStudents from '../views/FailingStudents.vue'
+import SurveyForm from '../views/SurveyForm'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: { guest: true }
+  },
+  {
+    path : '/survey',
+    name : 'Survey',
+    component: SurveyForm,
   },
   {
     path: '/',

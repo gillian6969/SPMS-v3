@@ -87,21 +87,45 @@ router.get('/date/:date', auth, async (req, res) => {
 
     console.log('Attendance query:', query);
 
-    const attendanceRecords = await Attendance.find(query)
-      .populate('studentId', 'firstName lastName studentNumber')
-      .sort({ lastModified: -1 }); // Sort by lastModified in descending order
+    // const attendanceRecords = await Attendance.find(query)
+    //   .populate('studentId', 'firstName lastName studentNumber')
+    //   .sort({ lastModified: -1 }); // Sort by lastModified in descending order
+
+    const attendanceRecords = await Attendance.aggregate([
+      {
+        $lookup:
+          {
+            from: 'students',
+            localField: 'studentId',
+            foreignField: '_id',
+            as: 'students_data',
+            pipeline: [
+              {
+                $project: {
+                  status: 0,
+                }
+              },
+            ]
+          }
+          
+     },
+     {
+      "$match": { "date" : { "$eq" : query.date } }
+     }
+    ]).sort({ lastModified: -1 }); // Sort by lastModified in descending order
 
     console.log('Attendance records found:', attendanceRecords.length);
 
     // Map the records to include createdAt for the frontend
     const mappedRecords = attendanceRecords.map(record => {
-      const recordObj = record.toObject();
+      // const recordObj = record.toObject();
       return {
-        ...recordObj,
+        // ...recordObj,
+        ...record,
         createdAt: record.lastModified || record.createdAt || record.updatedAt
       };
     });
-
+    // console.log(mappedRecords)
     res.json(mappedRecords);
   } catch (error) {
     console.error('Error fetching attendance:', error);
@@ -112,10 +136,12 @@ router.get('/date/:date', auth, async (req, res) => {
 // Get attendance history for a student
 router.get('/:studentId/history', auth, async (req, res) => {
   try {
+    const allAttendance = req.query?.all || false;
     const { studentId } = req.params;
     const { subject, startDate, endDate } = req.query;
 
     const query = { studentId, subject };
+    let attendanceRecords = [];
 
     // Add date range filter if provided
     if (startDate && endDate) {
@@ -124,11 +150,19 @@ router.get('/:studentId/history', auth, async (req, res) => {
         $lte: moment(endDate).tz('Asia/Manila').endOf('day').toDate()
       };
     }
+    attendanceRecords = await Attendance.find(query)
+    .sort({ date: -1 })
+    .populate('studentId', 'firstName lastName studentNumber')
+    .lean();
 
-    const attendanceRecords = await Attendance.find(query)
+    if(allAttendance){
+      delete query.subject;
+      attendanceRecords = await Attendance.find(query)
       .sort({ date: -1 })
       .populate('studentId', 'firstName lastName studentNumber')
       .lean();
+    }
+    
 
     // Calculate attendance statistics
     const total = attendanceRecords.length;

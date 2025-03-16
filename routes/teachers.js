@@ -36,9 +36,9 @@ router.put('/:id', auth, isCITHead, async (req, res) => {
       return res.status(404).json({ message: 'SSP not found' })
     }
 
-    if (teacher.role !== 'ssp') {
-      return res.status(400).json({ message: 'User is not a SSP' })
-    }
+    // if (teacher.role !== 'ssp') {
+    //   return res.status(400).json({ message: 'User is not a SSP' })
+    // }
 
     teacher.firstName = firstName
     teacher.lastName = lastName

@@ -1,191 +1,205 @@
   <template>
-  <div class="navigation-wrapper" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
-    <!-- Sidebar -->
-    <aside class="sidebar" :class="{ 'collapsed': isSidebarCollapsed }">
-      <!-- Sidebar Header with SPMS Logo -->
-      <div class="sidebar-header">
-        <img src="@/assets/logo2.png" alt="SPMS Logo" class="sidebar-logo">
-        <div class="title-container">
-          <h3 class="sidebar-title" v-show="!isSidebarCollapsed">SPMS</h3>
-          <h4 class="sidebar-subtitle" v-show="!isSidebarCollapsed">Student Performance Monitoring System</h4>
+    <div class="navigation-wrapper" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+      <!-- Sidebar -->
+      <aside class="sidebar" :class="{ 'collapsed': isSidebarCollapsed }">
+        <!-- Sidebar Header with SPMS Logo -->
+        <div class="sidebar-header">
+          <img src="@/assets/logo2.png" alt="SPMS Logo" class="sidebar-logo">
+          <div class="title-container">
+            <h3 class="sidebar-title" v-show="!isSidebarCollapsed">SPMS</h3>
+            <h4 class="sidebar-subtitle" v-show="!isSidebarCollapsed">Student Performance Monitoring System</h4>
+          </div>
+          <button class="collapse-btn" @click="toggleSidebar">
+            <i :class="isSidebarCollapsed ? 'fas fa-angle-right' : 'fas fa-angle-left'"></i>
+          </button>
         </div>
-        <button class="collapse-btn" @click="toggleSidebar">
-          <i :class="isSidebarCollapsed ? 'fas fa-angle-right' : 'fas fa-angle-left'"></i>
-        </button>
-      </div>
 
-      <!-- Navigation Menu -->
-      <nav class="sidebar-nav">
-        <!-- CIT Head Navigation -->
-        <template v-if="isCITHead">
-          <!-- Analytics Category -->
-          <div class="nav-category">Analytics</div>
-          <router-link to="/dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
-            <i class="fas fa-chart-line"></i>
-            <span v-show="!isSidebarCollapsed">Dashboard</span>
-          </router-link>
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+          <!-- CIT Head Navigation -->
+          <template v-if="isCITHead">
+            <!-- Analytics Category -->
+            <div class="nav-category">Analytics</div>
+            <router-link to="/dashboard" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+              <i class="fas fa-chart-line"></i>
+              <span v-show="!isSidebarCollapsed">Dashboard</span>
+            </router-link>
 
 
-          <!-- Management Category -->
-          <div class="nav-category">Management</div>
-          <router-link to="/student-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
-            <i class="fas fa-users"></i>
-            <span v-show="!isSidebarCollapsed">Student Management</span>
-          </router-link>
-          <router-link to="/teacher-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <span v-show="!isSidebarCollapsed">Teacher Management</span>
-          </router-link>
-          <router-link to="/register" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
-            <i class="fas fa-user-plus"></i>
-            <span v-show="!isSidebarCollapsed">Add Teacher/SSP</span>
-          </router-link>
-        </template>
+            <!-- Management Category -->
+            <div class="nav-category">Management</div>
+            <router-link to="/student-management" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
+              <i class="fas fa-users"></i>
+              <span v-show="!isSidebarCollapsed">Student Management</span>
+            </router-link>
+            <router-link to="/teacher-management" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span v-show="!isSidebarCollapsed">Teacher Management</span>
+            </router-link>
+            <router-link to="/register" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
+              <i class="fas fa-user-plus"></i>
+              <span v-show="!isSidebarCollapsed">Add Teacher/SSP</span>
+            </router-link>
+          </template>
 
-        <!-- SSPHead Navigation -->
-        <template v-if="isSSPHead">
-          <!-- Analytics Category -->
-          <div class="nav-category">Analytics</div>
-          <router-link to="/ssp-dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
-            <i class="fas fa-chart-line"></i>
-            <span v-show="!isSidebarCollapsed">Dashboard</span>
-          </router-link>
+          <!-- SSPHead Navigation -->
+          <template v-if="isSSPHead">
+            <!-- Analytics Category -->
+            <div class="nav-category">Analytics</div>
+            <router-link to="/ssp-dashboard" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+              <i class="fas fa-chart-line"></i>
+              <span v-show="!isSidebarCollapsed">Dashboard</span>
+            </router-link>
 
-          <!-- Management Category -->
-          <div class="nav-category">Management</div>
-          <router-link to="/register-ssp" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
-            <i class="fas fa-user-plus"></i>
-            <span v-show="!isSidebarCollapsed">Add SSP Adviser</span>
-          </router-link>
-          <router-link to="/ssp-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <span v-show="!isSidebarCollapsed">SSP Adviser Management</span>
-          </router-link>
-        </template>
+            <!-- Management Category -->
+            <div class="nav-category">Management</div>
+            <router-link to="/register-ssp" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
+              <i class="fas fa-user-plus"></i>
+              <span v-show="!isSidebarCollapsed">Add SSP Adviser</span>
+            </router-link>
+            <router-link to="/ssp-management" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span v-show="!isSidebarCollapsed">SSP Adviser Management</span>
+            </router-link>
+          </template>
 
-        <!-- SSP Adviser Navigation -->
-        <template v-if="isSSP">
-          <!-- Analytics Category -->
-          <div class="nav-category">Analytics</div>
-          <router-link to="/ssp-dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
-            <i class="fas fa-chart-line"></i>
-            <span v-show="!isSidebarCollapsed">Dashboard</span>
-          </router-link>
+          <!-- SSP Adviser Navigation -->
+          <template v-if="isSSP">
+            <!-- Analytics Category -->
+            <div class="nav-category">Analytics</div>
+            <router-link to="/ssp-dashboard" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+              <i class="fas fa-chart-line"></i>
+              <span v-show="!isSidebarCollapsed">Dashboard</span>
+            </router-link>
 
-          <!-- Management Category -->
-          <div class="nav-category">Management</div>
-          <router-link to="/ssp-student-management" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
-            <i class="fas fa-users"></i>
-            <span v-show="!isSidebarCollapsed">Student Management</span>
-          </router-link>
-        </template>
+            <!-- Management Category -->
+            <div class="nav-category">Management</div>
+            <router-link to="/ssp-student-management" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
+              <i class="fas fa-users"></i>
+              <span v-show="!isSidebarCollapsed">Student Management</span>
+            </router-link>
+          </template>
 
-        <!-- Teacher Navigation -->
-        <template v-if="isTeacher">
-          <!-- Analytics Category -->
-          <div class="nav-category">Analytics</div>
-          <router-link to="/teacher-dashboard" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
-            <i class="fas fa-chart-line"></i>
-            <span v-show="!isSidebarCollapsed">Dashboard</span>
-          </router-link>
+          <!-- Teacher Navigation -->
+          <template v-if="isTeacher">
+            <!-- Analytics Category -->
+            <div class="nav-category">Analytics</div>
+            <router-link to="/teacher-dashboard" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+              <i class="fas fa-chart-line"></i>
+              <span v-show="!isSidebarCollapsed">Dashboard</span>
+            </router-link>
 
-          <!-- Records Category -->
-          <div class="nav-category">Records</div>
-          <router-link to="/class-records" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Class Records' : ''">
-            <i class="fas fa-book"></i>
-            <span v-show="!isSidebarCollapsed">Class Records</span>
-          </router-link>
-          <router-link to="/attendance" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Attendance' : ''">
-            <i class="fas fa-clipboard-list"></i>
-            <span v-show="!isSidebarCollapsed">Attendance</span>
-          </router-link>
-        </template>
-      </nav>
+            <!-- Records Category -->
+            <div class="nav-category">Records</div>
+            <router-link to="/class-records" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Class Records' : ''">
+              <i class="fas fa-book"></i>
+              <span v-show="!isSidebarCollapsed">Class Records</span>
+            </router-link>
+            <router-link to="/attendance" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Attendance' : ''">
+              <i class="fas fa-clipboard-list"></i>
+              <span v-show="!isSidebarCollapsed">Attendance</span>
+            </router-link>
+          </template>
+        </nav>
 
-      <!-- Bottom Section with Profile and Logout -->
-      <div class="sidebar-bottom">
-        <div class="nav-category">Account</div>
-        <router-link to="/profile/view" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Profile' : ''">
-          <i class="fas fa-user-circle"></i>
-          <span v-show="!isSidebarCollapsed">View Profile</span>
-        </router-link>
-        <router-link to="/profile/edit" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Edit Profile' : ''">
-          <i class="fas fa-user-edit"></i>
-          <span v-show="!isSidebarCollapsed">Edit Profile</span>
-        </router-link>
-        <router-link to="/profile/password" class="nav-item" active-class="active" v-tooltip="isSidebarCollapsed ? 'Change Password' : ''">
-          <i class="fas fa-lock"></i>
-          <span v-show="!isSidebarCollapsed">Change Password</span>
-        </router-link>
-        <a @click.prevent="handleLogout" class="nav-item" v-tooltip="isSidebarCollapsed ? 'Logout' : ''">
-          <i class="fas fa-sign-out-alt"></i>
-          <span v-show="!isSidebarCollapsed">Logout</span>
-        </a>
-      </div>
-    </aside>
+        <!-- Bottom Section with Profile and Logout -->
+        <div class="sidebar-bottom">
+          <div class="nav-category">Account</div>
+          <router-link to="/profile/view" class="nav-item" active-class="active"
+            v-tooltip="isSidebarCollapsed ? 'Profile' : ''">
+            <i class="fas fa-user-circle"></i>
+            <span v-show="!isSidebarCollapsed">View Profile</span>
+          </router-link>
+          <router-link to="/profile/edit" class="nav-item" active-class="active"
+            v-tooltip="isSidebarCollapsed ? 'Edit Profile' : ''">
+            <i class="fas fa-user-edit"></i>
+            <span v-show="!isSidebarCollapsed">Edit Profile</span>
+          </router-link>
+          <router-link to="/profile/password" class="nav-item" active-class="active"
+            v-tooltip="isSidebarCollapsed ? 'Change Password' : ''">
+            <i class="fas fa-lock"></i>
+            <span v-show="!isSidebarCollapsed">Change Password</span>
+          </router-link>
+          <a @click.prevent="handleLogout" class="nav-item" v-tooltip="isSidebarCollapsed ? 'Logout' : ''">
+            <i class="fas fa-sign-out-alt"></i>
+            <span v-show="!isSidebarCollapsed">Logout</span>
+          </a>
+        </div>
+      </aside>
 
-    <!-- Main Content Wrapper -->
-    <div class="content-wrapper">
-      <!-- Page Header -->
-      <div class="page-header">
-        <div class="d-flex align-items-center">
-          <h2 class="page-title">{{ pageTitle }}</h2>
-          <div v-if="route.name === 'ClassRecords' || route.name === 'Attendance'" class="ms-3 page-subtitle">
-            <span v-if="selectedInfo">of {{ selectedInfo }}</span>
+      <!-- Main Content Wrapper -->
+      <div class="content-wrapper">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="d-flex align-items-center">
+            <h2 class="page-title">{{ pageTitle }}</h2>
+            <div v-if="route.name === 'ClassRecords' || route.name === 'Attendance'" class="ms-3 page-subtitle">
+              <span v-if="selectedInfo">of {{ selectedInfo }}</span>
+            </div>
+          </div>
+
+          <!-- Profile Dropdown -->
+          <div class="dropdown">
+            <button class="profile-button" type="button" id="profileDropdown" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <div class="avatar">
+                {{ userInitials }}
+              </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
+              <li class="profile-header">
+                <div class="user-name">{{ user?.firstName }} {{ user?.lastName }}</div>
+                <div class="user-role">{{ user?.role === 'citHead' ? 'CIT Head' : 'Teacher' }}</div>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/profile/view">
+                  <i class="fas fa-user-circle"></i> View Profile
+                </router-link>
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/profile/edit">
+                  <i class="fas fa-user-edit"></i> Edit Profile
+                </router-link>
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/profile/password">
+                  <i class="fas fa-lock"></i> Change Password
+                </router-link>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item text-danger" href="#" @click.prevent="handleLogout">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-        
-        <!-- Profile Dropdown -->
-        <div class="dropdown">
-          <button 
-            class="profile-button" 
-            type="button" 
-            id="profileDropdown" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false"
-          >
-            <div class="avatar">
-              {{ userInitials }}
-            </div>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
-            <li class="profile-header">
-              <div class="user-name">{{ user?.firstName }} {{ user?.lastName }}</div>
-              <div class="user-role">{{ user?.role === 'citHead' ? 'CIT Head' : 'Teacher' }}</div>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <router-link class="dropdown-item" to="/profile/view">
-                <i class="fas fa-user-circle"></i> View Profile
-              </router-link>
-            </li>
-            <li>
-              <router-link class="dropdown-item" to="/profile/edit">
-                <i class="fas fa-user-edit"></i> Edit Profile
-              </router-link>
-            </li>
-            <li>
-              <router-link class="dropdown-item" to="/profile/password">
-                <i class="fas fa-lock"></i> Change Password
-              </router-link>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a class="dropdown-item text-danger" href="#" @click.prevent="handleLogout">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
 
-      <!-- Main Content -->
-      <main class="main-content">
-        <slot></slot>
-      </main>
+        <!-- Main Content -->
+        <main class="main-content">
+          <slot></slot>
+        </main>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 
 <script>
 import { ref, computed } from 'vue'
@@ -214,12 +228,12 @@ export default {
     const isTeacher = computed(() => store.getters.isTeacher)
     const isSSP = computed(() => store.getters.isSSP)
     const isSSPHead = computed(() => store.getters.isSSPHead)
-    
+
     const userInitials = computed(() => {
       if (!user.value) return ''
       return `${user.value.firstName?.charAt(0) || ''}${user.value.lastName?.charAt(0) || ''}`
     })
-    
+
     const pageTitle = computed(() => {
       const routeName = route.name
       switch (routeName) {
@@ -416,6 +430,7 @@ export default {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -439,7 +454,7 @@ export default {
   padding: 1rem 1.5rem;
   color: rgb(255, 255, 255);
   text-decoration: none;
-  transition: all 0.2s ease;  
+  transition: all 0.2s ease;
   font-size: 1rem;
   font-weight: 500;
   position: relative;
