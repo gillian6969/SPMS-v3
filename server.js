@@ -10,6 +10,9 @@ const assessmentRoutes = require('./routes/assessments');
 const dashboardRoutes = require('./routes/dashboard');
 const teacherRoutes = require('./routes/teachers');
 const attendanceRoutes = require('./routes/attendance');
+const surveyRoutes = require('./routes/survey');
+const { send } = require('./scripts/mailer');
+const { getFailingStudents, main } = require('./scripts/emailStudents');
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +50,7 @@ app.use('/api/teacher-class-records', teacherClassRecordsRoutes);
 app.use('/api/assessments', assessmentRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/survey', surveyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -55,6 +59,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
+  main();
   console.log(`Server running on port ${PORT}`);
 }); 

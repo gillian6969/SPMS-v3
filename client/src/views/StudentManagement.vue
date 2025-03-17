@@ -296,15 +296,19 @@
                           </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="record in selectedStudent.attendanceHistory" :key="record.date">
-                          <td>{{ formatDate(record.date) }}</td>
+                        <tr v-for="record in selectedStudent.attendanceHistory?.records" :key="record._id">
+                          <td>{{ formatDate (record.date) }}</td>
                           <td>{{ record.subject }}</td>
                           <td>
                             <span 
-                              class="badge"
-                              :class="record.status === 'present' ? 'bg-success' : 'bg-danger'"
+                              class="badge capitalize"
+                              :class="{
+                                'bg-success': record.status === 'present',
+                                'bg-danger': record.status === 'absent',
+                                'bg-warning': record.status === 'late'
+                              }"
                             >
-                              {{ record.status === 'present' ? 'Present' : 'Absent' }}
+                              {{ record.status}}
                               </span>
                             </td>
                           </tr>
@@ -528,6 +532,7 @@ import { useStore } from 'vuex'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
 import { Dropdown } from 'bootstrap'
+import { formatDate } from '../utils'
 
 // Create axios instance with correct base URL
 const api = axios.create({
@@ -926,8 +931,27 @@ return selectedYear.value || selectedSection.value;
 });
 
 // Add viewStudent function
-const viewStudent = (student) => {
+const viewStudent = async (student) => {
 selectedStudent.value = student;
+
+// Fetch student's attendance
+const response = await api.get(
+  `/attendance/${student._id}/history`,
+  {
+    params: {
+      all : true,
+      subject: '',
+      startDate: '',
+      endDate: ''
+    },
+    headers: { 'Authorization': `Bearer ${store.state.auth.token}` }
+  }
+)
+selectedStudent.value = {
+  ...selectedStudent.value,
+  attendanceHistory : response.data
+}
+
 // Initialize charts if needed
 if (performanceChart.value) {
 const ctx = performanceChart.value.getContext('2d');
@@ -1110,7 +1134,8 @@ totalPages,
 paginatedStudents,
 paginationInfo,
 nextPage,
-previousPage
+previousPage,
+formatDate
     }
   }
 }

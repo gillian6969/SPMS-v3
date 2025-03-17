@@ -23,6 +23,7 @@
     "echarts": "^5.4.3",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.47",
+    "tailwind": "^4.0.0",
     "vue": "^3.5.13",
     "vue-chartjs": "^5.3.2",
     "vue-echarts": "^6.6.8",

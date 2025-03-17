@@ -167,9 +167,9 @@
                         @click.stop
                       >
                         <option value="none">Not marked</option>
-                        <option value="present">Present</option>
-                        <option value="absent">Absent</option>
-                        <option value="late">Late</option>
+                        <option :selected="student.currentStatus === 'present'" value="present">Present</option>
+                        <option :selected="student.currentStatus === 'absent'" value="absent">Absent</option>
+                        <option :selected="student.currentStatus === 'late'" value="late">Late</option>
                       </select>
                       <div 
                         class="status-indicator" 
@@ -691,31 +691,44 @@ export default {
           });
         }
 
+        // Assign Attendance data to specific student
+        // students.value = response.data.map((att) => {
+          
+        // })
+        
+
         // Update students with attendance data
         if (students.value && students.value.length > 0) {
-          students.value = students.value.map(student => {
-            const studentIdStr = String(student.studentId);
-            const status = studentMap.get(studentIdStr);
-            
-            // Store the attendance status for this date
-            if (!student.attendanceByDate) {
-              student.attendanceByDate = {};
-            }
-            
-            if (status) {
-              student.attendanceByDate[date] = status;
-            }
-            
-            // Use the stored status for this date if available, otherwise use the fetched status
-            const currentStatus = student.attendanceByDate[date] || status || student.currentStatus || 'none';
-            
-            console.log(`Setting status for student ${studentIdStr}: ${currentStatus}`);
-            
-            return {
+          // Merge attendance data into students array
+          // This will fix the updating of attendance data
+          students.value = students.value
+            .map(student => ({
               ...student,
-              currentStatus: currentStatus
-            };
-          });
+              currentStatus: response.data.find(att => att.studentId === student.studentId)?.status
+            }));
+          // students.value = students.value.map(student => {
+          //   const studentIdStr = String(student.studentId);
+          //   const status = studentMap.get(studentIdStr);
+            
+          //   // Store the attendance status for this date
+          //   if (!student.attendanceByDate) {
+          //     student.attendanceByDate = {};
+          //   }
+            
+          //   if (status) {
+          //     student.attendanceByDate[date] = status;
+          //   }
+            
+          //   // Use the stored status for this date if available, otherwise use the fetched status
+          //   const currentStatus = status || student.currentStatus || 'none';
+            
+          //   console.log(`Setting status for student ${studentIdStr}: ${currentStatus}`);
+            
+          //   return {
+          //     ...student,
+          //     currentStatus: currentStatus
+          //   };
+          // });
           
           // Force a UI update
           await nextTick();
@@ -1233,7 +1246,7 @@ export default {
         currentDate.value = newDate.toDate()
         
         // Refresh attendance data
-        fetchAttendance()
+        fetchAttendance(currentDate.value)
         
         setTimeout(() => {
           slideDirection.value = ''
