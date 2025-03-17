@@ -53,15 +53,6 @@ module.exports = {
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
       },
-      keyframes: {
-        slideIn: {
-          "0%": { opacity: 0, transform: "translateX(100%)" },
-          "100%": { opacity: 1, transform: "translateX(0)" }
-        }
-      },
-      animation: {
-        slideIn: "slideIn .25s ease-in-out forwards 0.25"
-      }
     },
   },
   plugins: [

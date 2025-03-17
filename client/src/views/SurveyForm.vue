@@ -132,7 +132,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
         acadProblems,
         distractions
     ])
-
+  
 
     async function refreshButtons(rate, desc) {
         const allButtons = document.querySelectorAll('.rate-btn');
@@ -152,15 +152,13 @@ import { nextTick, onMounted, ref, watch } from 'vue';
     }
 
     function handleClick(type, desc, rate, id){
-        // Check if rate exists, it will only update the rate
-
-
         //Find index of specific object using findIndex method.    
         let objIndex = 0;
         objIndex = problems.value[page.value].findIndex(obj => obj.id === id);
         //Update object's name property.
         problems.value[page.value][objIndex].rate = rate
 
+        // Check if rate exists, it will only update the rate
         // if(mySurvey.value.filter(s => s.id === id && s.type === type).length){
         //     mySurvey.value = mySurvey.value.filter(s => s.id === id && s.type === type)
         //     .map((data) => {
@@ -228,7 +226,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
      </div>
 
     <!-- Content -->
-     <main v-if="!intro" class="p-5 text-md md:text-2xl container-xl animate-slideIn opacity-0">
+     <main v-if="!intro" class="p-5 text-md md:text-2xl container-xl">
         <!-- Legend -->
          <h5 class="font-semibold text-xl md:text-2xl">Legend : </h5>
          <ul class="pl-3" v-for="legend in legends">
