@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const surveySchema = new mongoose.Schema({
     studentId : {
@@ -7,7 +7,8 @@ const surveySchema = new mongoose.Schema({
     },
     form : {
         type : Object,
-        required : [true, 'Survey Form is required']
+        required : [true, 'Survey Form is required'],
+        default : []
     },
     submitted : {
         type : Boolean,

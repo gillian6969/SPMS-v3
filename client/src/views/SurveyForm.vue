@@ -1,9 +1,16 @@
 <script setup>
-import { nextTick, onMounted, ref, watch } from 'vue';
+    import axios from 'axios';
+    import { nextTick, onMounted, ref, watch } from 'vue';
+    import { useRoute } from 'vue-router';
+    const URI = 'http://localhost:8000'
+
+    const route = useRoute();
 
     const mySurvey = ref([]);
     const page = ref(0);
     const intro = ref(true);
+    const isStudent = ref(true)
+    
 
     const legends = ref([
         { qt : 5, ql : 'Most Likely' },
@@ -181,8 +188,26 @@ import { nextTick, onMounted, ref, watch } from 'vue';
         // refreshButtons(rate, desc)
     }
 
-    function submit(){
-        console.log(problems.value)
+    const submit = async () => {
+        const _id = route.query.student;
+        try {
+            const data = await axios.post(`${URI}/api/survey/create`,{
+                studentId : _id,
+                form : problems.value,
+            })
+            
+            if(data.data){
+                alert('Success');
+                window.location.reload();
+            }
+            
+        } catch (error) {
+            console.log(error)
+            alert('Server Error')
+        }
+        
+
+        
     }
 
     function next(){
@@ -206,6 +231,29 @@ import { nextTick, onMounted, ref, watch } from 'vue';
         nextTick();
     }
 
+    onMounted(async () => {
+        try {
+            const _id = route.query.student;
+            const surveyId = route.query.survey;
+            await axios.get(`${URI}/api/survey/`, {
+                params : {
+                    _id : _id 
+                }
+            }).then((res) => {
+                if(res.data?.studentSurvey){
+                    if(res.data?.studentSurvey.filter(s => s._id === surveyId && s.submitted === true).length){
+                        alert('Survey Already Submitted');
+                        isStudent.value = false
+                    }
+                    
+                }
+            })
+        } catch (error) {
+            isStudent.value = false
+            alert('Student not found')
+        }
+    })
+
     
 </script>
 
@@ -216,7 +264,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
     </div>
 
     <!-- Intro -->
-     <div v-if="intro" class="md:w-4/12 w-10/12 mt-9 text-white bg-[#203464] container-xl p-9 text-center rounded-md">
+     <div v-if="intro && isStudent" class="md:w-4/12 w-10/12 mt-9 text-white bg-[#203464] container-xl p-9 text-center rounded-md">
         <h2 class="text-3xl">Student Support & Assessment Form</h2>
         <p class="text-md">
             Welcome! Your academic progress matters to us. This form will help us understand the challenges you faced so we can support you better. Please answer honestly - your responses will help us provide the right assisstance. Let's work together to improve your performance!
@@ -226,7 +274,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
      </div>
 
     <!-- Content -->
-     <main v-if="!intro" class="p-5 text-md md:text-2xl container-xl">
+     <main v-if="!intro && isStudent" class="p-5 text-md md:text-2xl container-xl">
         <!-- Legend -->
          <h5 class="font-semibold text-xl md:text-2xl">Legend : </h5>
          <ul class="pl-3" v-for="legend in legends">
