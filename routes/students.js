@@ -9,6 +9,7 @@ const Assessment = require('../models/Assessment');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const { ISO_8601 } = require('moment');
+const moment = require('moment');
 
 // Configure multer for file upload
 const upload = multer({
@@ -561,6 +562,13 @@ function getLastMonday(dt) {
 var d = new Date()   // -or- any date like ISODate("2019-11-26T00:00:00Z")
 var LAST_MONDAY = getLastMonday(d);
 
+const getBeginningOfTheWeek = (now) => {
+  const days = (now.getDay() + 7 - 1) % 7;
+  now.setDate(now.getDate() - days);
+  now.setHours(0, 0, 0, 0);
+  return now;
+};
+
 router.get('/failing/list', auth, async (req, res) => {
   // Per Assessments
     const assessmentTypes = ['Quiz', 'Activity', 'Performance Task'];
@@ -568,31 +576,38 @@ router.get('/failing/list', auth, async (req, res) => {
     let analytics = []
     // const assessmentData = await Assessment.find({ "$expr": { "$eq": [{ "$month": "$date" }, today.getMonth() + 1] } });
     const assessmentData = await Assessment.aggregate([
+      // { 
+      //   $addFields: { 
+      //       last_monday: { 
+      //           $dateFromParts : {
+      //               year: { $year: new Date(LAST_MONDAY) }, 
+      //               month: { $month: new Date(LAST_MONDAY) }, 
+      //               day: { $dayOfMonth: new Date(LAST_MONDAY) }
+      //            }
+      //       },
+      //       created_at: { 
+      //           $dateFromParts : {
+      //                year: { $year: "$date" }, 
+      //                month: { $month: "$date" }, 
+      //                day: { $dayOfMonth: "$date" }
+      //            }
+      //        }
+      //   } 
+      // },
+      // { 
+      //   $match: { $expr: { $gt: [ "$created_at", "$last_monday" ] } }
+      // },
       { 
-        $addFields: { 
-            last_monday: { 
-                $dateFromParts : {
-                    year: { $year: new Date(LAST_MONDAY) }, 
-                    month: { $month: new Date(LAST_MONDAY) }, 
-                    day: { $dayOfMonth: new Date(LAST_MONDAY) }
-                 }
-            },
-            created_at: { 
-                $dateFromParts : {
-                     year: { $year: "$date" }, 
-                     month: { $month: "$date" }, 
-                     day: { $dayOfMonth: "$date" }
-                 }
-             }
-        } 
+        $match: {
+          date: { $gte: getBeginningOfTheWeek(new Date()), $lt: new Date() }
+        }
       },
       { 
-        $match: { $expr: { $gt: [ "$created_at", "$last_monday" ] } }
-      },
-      { 
-        $project: { created_at: 0, last_monday: 0 } 
+        $project: { created_at: 0 } 
       }
     ]);
+    console.log(getBeginningOfTheWeek(new Date()));
+    console.log(assessmentData.length);
     // assessmentTypes.forEach(async (type) => {
     //   analytics.push(
     //     {
@@ -603,37 +618,47 @@ router.get('/failing/list', auth, async (req, res) => {
     // })
 
     const Students = await Student.find({});
+
     let numberOfAssessment = 0;
     let myTotalScore = 0;
     let totalMaxScore = 0;
     let myAverage = 0;
+
     assessmentData.map((assess) => {
-      
       Object.entries(assess.scores).forEach(([id, score]) => {
-          if(Students.filter(st => st.studentId === id)){
+        numberOfAssessment = 0;
+        myTotalScore = 0;
+        totalMaxScore = 0;
+        myAverage = 0;
+        if(Students.filter(st => st.studentId === id).length){
 
-            numberOfAssessment++;
-            myTotalScore= myTotalScore + score;
-            totalMaxScore = totalMaxScore + assess.maxScore;
-            myAverage = myTotalScore / numberOfAssessment;
+          numberOfAssessment++;
+          myTotalScore= myTotalScore + score;
+          totalMaxScore = totalMaxScore + assess.maxScore;
+          myAverage = myTotalScore / numberOfAssessment;
 
-            if((totalMaxScore/2) > myAverage){
-              if(!analytics.filter(a => a.info.studentId === id).length){
-                analytics.push(
-                  {
-                    info : Students.filter(st => st.studentId === id )[0],
-                    average : myAverage,
-                    totalMaxScore : totalMaxScore
-                  }
-                )
-              }else{
-                analytics.filter(a => a.info.studentId === id)[0].average = myAverage;
-                analytics.filter(a => a.info.studentId === id)[0].totalMaxScore = totalMaxScore;
-                analytics.filter(a => a.info.studentId === id)[0].myTotalScore = myTotalScore;
-              }
+          // Get only failed students
+          if((assess.maxScore/2) > score){
+            if(!analytics.filter(a => a.info.studentId === id).length){
+              analytics.push(
+                {
+                  info : Students.filter(st => st.studentId === id )[0],
+                  average : myAverage,
+                  totalMaxScore : totalMaxScore,
+                  date : assess.date,
+                  totalScore : myTotalScore
+                }
+              )
+            }else{
+              // This will update current student record
+              analytics.filter(a => a.info.studentId === id)[0].average = myAverage;
+              analytics.filter(a => a.info.studentId === id)[0].totalMaxScore+= totalMaxScore;
+              analytics.filter(a => a.info.studentId === id)[0].totalScore+= myTotalScore;
+              analytics.filter(a => a.info.studentId === id)[0].date = assess.date;
             }
-            
           }
+          
+        }
         
       })
     })

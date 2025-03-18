@@ -250,7 +250,7 @@
             })
         } catch (error) {
             isStudent.value = false
-            alert('Student not found')
+            alert('Student not found');
         }
     })
 

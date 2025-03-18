@@ -5,7 +5,7 @@
   "firstName": "CIT",
   "lastName": "Head",
   "email": "y@gmail.com",
-  "password": "$2b$10$3nK4ukKFYZsxhv55fTjxFuHNR8WwjbyW0iKJybRUwjf4HYa.1Va9S",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "citHead",
   "sections": [],
   "createdAt": {
@@ -20,7 +20,7 @@
   "firstName": "Gillian Andreisss",
   "lastName": "Sanchezpogi",
   "email": "g@gmail.com",
-  "password": "$2a$10$hdM7LHeYVuGXusKdRjvh6.8ZnphRxJxYKaxbKqrpf29MdDOgyLORa",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "teacher",
   "teachingYear": "1st",
   "sections": [],
@@ -34,8 +34,8 @@
   ],
   "preferences": {
     "selectedYear": "1st",
-    "selectedSection": "South 1",
-    "selectedSubject": "ITE 103",
+    "selectedSection": "",
+    "selectedSubject": "",
     "currentPage": 1
   }
 },
@@ -46,7 +46,7 @@
   "firstName": "Danica",
   "lastName": "Navarro",
   "email": "danica@gmail.com",
-  "password": "$2a$10$qZycw4aN0HqD/1xLXpUUsOueFTOLrgEt6mPvtWEMlJyyDaJ6u9jey",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "teacher",
   "teachingYear": "2nd",
   "sections": [],
@@ -62,7 +62,7 @@
   "firstName": "Aira",
   "lastName": "Lucero",
   "email": "aira@gmail.com",
-  "password": "$2a$10$wD2cmlPi12z0jN9B0fuoleOu/DLQ2grNukeoiy7Cg4YSgRW.YRtiq",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "teacher",
   "teachingYear": "1st",
   "sections": [],
@@ -88,7 +88,7 @@
   "firstName": "JJ",
   "lastName": "Orong",
   "email": "jj@gmail.com",
-  "password": "$2a$10$c3uMOh3psgrwwsnFxygcju/bb62UAsd2PW6ZolGomc6cOEsD48uIe",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "teacher",
   "teachingYear": "3rd",
   "subjects": [
@@ -99,7 +99,13 @@
   "createdAt": {
     "$date": "2025-02-24T19:07:32.039Z"
   },
-  "__v": 0
+  "__v": 0,
+  "preferences": {
+    "selectedYear": "",
+    "selectedSection": "",
+    "selectedSubject": "",
+    "currentPage": 1
+  }
 },
 {
   "_id": {
@@ -108,7 +114,7 @@
   "firstName": "April Ashley",
   "lastName": "Sanchez",
   "email": "ashley@gmail.com",
-  "password": "$2a$10$FTF057qNnWb0pfgpSCS/3uk62BA38QcogGUfN88gxBbClTc2tugUu",
+  "password": "$2a$12$D2uDqNi..wtIjZKP.h0lheJzJM5JXoUgYf6xXeIuFn1PqV.0UujN.",
   "role": "ssp",
   "teachingYear": "1st",
   "subjects": [],
@@ -116,5 +122,55 @@
   "createdAt": {
     "$date": "2025-03-09T22:30:19.878Z"
   },
-  "__v": 0
+  "__v": 0,
+  "counselingYear": "3rd",
+  "preferences": {}
+},
+{
+  "_id": {
+    "$oid": "67d170a9c257807cbb39ac67"
+  },
+  "firstName": "Joshua Mikel",
+  "lastName": "Jimenez",
+  "email": "j@gmail.com",
+  "password": "$2a$10$1H8mZDE5sWRwxy6XrOO1AOLQAuoSwSnFxZBHx8xDXC3tAULixsBce",
+  "role": "sspHead",
+  "teachingYear": "1st",
+  "subjects": [
+    "ITE 304",
+    "ITE 303",
+    "ITE 302",
+    "ITE 301",
+    "ITE 104"
+  ],
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-03-12T11:31:53.946Z"
+  },
+  "__v": 2,
+  "preferences": {
+    "selectedYear": "1st",
+    "selectedSection": "",
+    "selectedSubject": "",
+    "currentPage": 1
+  }
+},
+{
+  "_id": {
+    "$oid": "67d2dd1fe81e713dfe9f9807"
+  },
+  "firstName": "Sample",
+  "lastName": "test",
+  "email": "test@gmail.com",
+  "password": "$2a$10$Gq7yaNVWOeWyf6ywWmWheONMCDLJIqrpdCO0OhkcULb9EIonThHxO",
+  "role": "ssp",
+  "teachingYear": " ",
+  "counselingYear": "4th",
+  "subjects": [],
+  "sections": [],
+  "createdAt": {
+    "$date": "2025-03-13T13:26:55.596Z"
+  },
+  "__v": 0,
+  "preferences": {}
 }]
