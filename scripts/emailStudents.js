@@ -127,24 +127,23 @@ async function sendEmail(){
             // Check if already submitted the survey form
             if(!submitted?.submitted && insertedSurveyId){
                 console.log('Student without survey found!', stud?.info?.studentId)
-                if(stud?.info?.email === 'joshuajimenez903@gmail.com'){
-                    send(stud?.info?.email, 
-                        `<div>
-                            <p>Hi<b> ${stud?.info?.firstName} ${stud?.info?.middleName} ${stud?.info?.lastName}</b>,</p>
+                send(stud?.info?.email, 
+                    `<div>
+                        <p>Hi<b> ${stud?.info?.firstName} ${stud?.info?.middleName} ${stud?.info?.lastName}</b>,</p>
 
-                            <p>This email contains a survey designed to address the challenges students face while studying at PHINMA Araullo University. By participating in this survey, you can help us better understand and support your academic journey.</p>
+                        <p>This email contains a survey designed to address the challenges students face while studying at PHINMA Araullo University. By participating in this survey, you can help us better understand and support your academic journey.</p>
 
-                            <p>Rest assured that your information will remain confidential. We highly value your honest responses, as they will contribute to improving our services.</p>
+                        <p>Rest assured that your information will remain confidential. We highly value your honest responses, as they will contribute to improving our services.</p>
 
-                            <p>Thank you for your time, and have a wonderful day!</p>
-                            <p>SPMS</p>
+                        <p>Thank you for your time, and have a wonderful day!</p>
+                        <p>SPMS</p>
 
-                            <p>Click the link below to answer the survey:</p>
-                            <span><a href="${process.env.link}?student=${stud?.info?._id}&survey=${insertedSurveyId}">SURVEY FORM</a></span>
-                        </div>`, 
-                        'Survey Form'
-                    );
-                }
+                        <p>Click the link below to answer the survey:</p>
+                        <span><a href="${process.env.link}?student=${stud?.info?._id}&survey=${insertedSurveyId}">SURVEY FORM</a></span>
+                    </div>`, 
+                    'Survey Form'
+                );
+                
                 
             }else{
                 console.log('Student has survey!', stud?.info?.studentId)
