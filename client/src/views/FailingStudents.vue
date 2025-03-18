@@ -241,6 +241,7 @@
                             <div class="student-charts">
                                 <div class="chart-section">
                                     <h6>Performance Trends</h6>
+                                    <FailedStudentsChart :assessments="assessments" :studentId="selectedStudent.studentId"/>
                                     <canvas ref="performanceChart"></canvas>
                                 </div>
                                 <div class="chart-section">
@@ -255,14 +256,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="record in selectedStudent.attendanceHistory"
-                                                    :key="record.date">
-                                                    <td>{{ formatDate(record.date) }}</td>
+                                                <tr v-for="record in selectedStudent.attendanceHistory?.records" :key="record._id">
+                                                    <td>{{ formatDate (record.date) }}</td>
                                                     <td>{{ record.subject }}</td>
                                                     <td>
-                                                        <span class="badge"
-                                                            :class="record.status === 'present' ? 'bg-success' : 'bg-danger'">
-                                                            {{ record.status === 'present' ? 'Present' : 'Absent' }}
+                                                        <span 
+                                                        class="badge capitalize"
+                                                        :class="{
+                                                            'bg-success': record.status === 'present',
+                                                            'bg-danger': record.status === 'absent',
+                                                            'bg-warning': record.status === 'late'
+                                                        }"
+                                                        >
+                                                        {{ record.status}}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -436,6 +442,8 @@ import { useStore } from 'vuex'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
 import { Dropdown } from 'bootstrap'
+import { formatDate } from '../utils'
+import FailedStudentsChart from '../components/FailedStudentsChart.vue'
 
 // Create axios instance with correct base URL
 const api = axios.create({
@@ -447,9 +455,13 @@ const api = axios.create({
 
 export default {
     name: 'StudentManagement',
+    components: {
+        FailedStudentsChart
+    },
     setup() {
         const store = useStore()
-        const students = ref([])
+        const students = ref([]);
+        const assessments = ref([]);
         const searchQuery = ref('')
         const selectedStudent = ref(null)
         const performanceChart = ref(null)
@@ -834,8 +846,25 @@ export default {
         });
 
         // Add viewStudent function
-        const viewStudent = (student) => {
+        const viewStudent = async (student) => {
             selectedStudent.value = student;
+            // Fetch student's attendance
+            const response = await api.get(
+            `/attendance/${student._id}/history`,
+            {
+                params: {
+                all : true,
+                subject: '',
+                startDate: '',
+                endDate: ''
+                },
+                headers: { 'Authorization': `Bearer ${store.state.auth.token}` }
+            }
+            )
+            selectedStudent.value = {
+                ...selectedStudent.value,
+                attendanceHistory : response.data
+            }
             // Initialize charts if needed
             if (performanceChart.value) {
                 const ctx = performanceChart.value.getContext('2d');
@@ -960,7 +989,8 @@ export default {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                students.value = response.data;
+                students.value = response.data?.list;
+                assessments.value = response.data?.assessments
             } catch (error) {
                 console.error('Failed to fetch students:', error);
                 alert('Failed to fetch students. Please try again.');
@@ -1018,7 +1048,9 @@ export default {
             paginatedStudents,
             paginationInfo,
             nextPage,
-            previousPage
+            previousPage,
+            formatDate,
+            assessments
         }
     }
 }

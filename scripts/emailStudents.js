@@ -152,9 +152,12 @@ async function sendEmail(){
         });
     }
 }
-
+// TODO : idelete ang existing survey data if hindi pa nakapag submit, para lang maupdate ulit ang record ng student
+// Current process : Kapag nag submit ng survey ang student, isang beses lang sya makaka receive non. 
+// Kapagg hindi nag delete madodoble lang record nya
+// TODO : mag isip kung pano makakapag survey sa next week if failing student ulit sya
 async function exists(studentId){
-    const exists = await Survey.find({ studentId : studentId })
+    const exists = await Survey.find({ studentId : studentId, submitted : true })
     return exists.length;
 }
 
@@ -169,7 +172,7 @@ async function insertSurveyForm(studentId){
         const data = await survey.save(); 
         return data._id;
     }
-    
+    return false;
 }
 
 async function main(){
