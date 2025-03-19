@@ -282,6 +282,7 @@
               <div class="student-charts">
                 <div class="chart-section">
                   <h6>Performance Trends</h6>
+                  <StudentAssessmentChart :studentId="selectedStudent.studentId" :assessments="assessments"/>
                   <canvas ref="performanceChart"></canvas>
                   </div>
                 <div class="chart-section">
@@ -533,6 +534,7 @@ import axios from 'axios'
 import Chart from 'chart.js/auto'
 import { Dropdown } from 'bootstrap'
 import { formatDate } from '../utils'
+import StudentAssessmentChart from '../components/StudentAssessmentChart.vue'
 
 // Create axios instance with correct base URL
 const api = axios.create({
@@ -544,6 +546,9 @@ const api = axios.create({
 
 export default {
   name: 'StudentManagement',
+  components : {
+    StudentAssessmentChart
+  },
   setup() {
     const store = useStore()
     const students = ref([])
@@ -557,6 +562,7 @@ export default {
     const isEditing = ref(false)
     const editingStudent = ref(null)
     const showSearch = ref(false)
+    const assessments = ref([])
 const selectedYear = ref('')
 const selectedSection = ref('')
 const selectedFile = ref(null)
@@ -1077,11 +1083,17 @@ const fetchStudents = async () => {
       }
     });
     students.value = response.data;
-      } catch (error) {
+    const response1 = await api.get('/students/assessments/all', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    assessments.value = response1.data?.assessments
+  } catch (error) {
     console.error('Failed to fetch students:', error);
     alert('Failed to fetch students. Please try again.');
-      }
-    };
+  }
+};
 
     return {
       students,
@@ -1135,7 +1147,8 @@ paginatedStudents,
 paginationInfo,
 nextPage,
 previousPage,
-formatDate
+formatDate,
+assessments
     }
   }
 }
