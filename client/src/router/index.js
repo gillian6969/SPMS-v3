@@ -19,6 +19,8 @@ import TeacherManagement from '../views/TeacherManagement.vue'
 import SSPManagement from '../views/SSPManagement.vue'
 import FailingStudents from '../views/FailingStudents.vue'
 import SurveyForm from '../views/SurveyForm'
+import Forgot from '../views/Forgot.vue'
+import ResetPassword from '../views/ResetPassword.vue'
 
 const routes = [
   {
@@ -35,6 +37,16 @@ const routes = [
     path : '/survey',
     name : 'Survey',
     component: SurveyForm,
+  },
+  {
+    path : '/forgot',
+    name : 'Forgot Password',
+    component: Forgot,
+  },
+  {
+    path : '/reset',
+    name : 'Reset Password',
+    component: ResetPassword,
   },
   {
     path: '/',

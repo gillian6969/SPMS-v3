@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
+const { send } = require('../scripts/mailer');
 
 // Get user profile
 router.get('/profile', auth, async (req, res) => {
@@ -140,5 +141,46 @@ router.post('/preferences', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
+// Update user password to default
+router.put('/profile/password/reset', async (req, res) => {
+  try {
+    const newPassword = req.body.password;
+
+    const user = await User.find({ _id : req.body._id });
+    if (!user.length) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Hash and save new password
+    const salt = await bcrypt.genSalt(10);
+    user[0].password = await bcrypt.hash(newPassword, salt);
+    // await user.save();
+    await User.updateOne({ _id : user[0]._id }, { password : user[0].password })
+    
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+router.post('/profile/password/send', async (req, res) => {
+  try {
+    
+    const user = await User.find({ email : req.body.email });
+    if (!user.length  ) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    send(
+      req.body.email, 
+      `<span><a href="${process.env.resetLink}?student=${user[0]?._id}">Click here to reset your password</a></span>`,
+      'Password Reset'
+    )
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+})
 
 module.exports = router; 

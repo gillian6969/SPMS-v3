@@ -58,6 +58,9 @@
               required
               :disabled="isLoading"
             >
+            <div class="mt-3 hover:cursor-pointer">
+              <h4>Forgot Password</h4>
+            </div>
           </div>
 
           <!-- reCAPTCHA -->

@@ -606,8 +606,7 @@ router.get('/failing/list', auth, async (req, res) => {
         $project: { created_at: 0 } 
       }
     ]);
-    console.log(getBeginningOfTheWeek(new Date()));
-    console.log(assessmentData.length);
+
     // assessmentTypes.forEach(async (type) => {
     //   analytics.push(
     //     {
@@ -662,8 +661,70 @@ router.get('/failing/list', auth, async (req, res) => {
         
       })
     })
+
   
-    res.status(201).json(analytics)
+    res.status(201).json({list : analytics, assessments : assessmentData})
+})
+
+// Get student assessment by studentId
+router.get('/assessments/all', async (req, res) => {
+  // Per Assessments
+    const assessmentTypes = ['Quiz', 'Activity', 'Performance Task'];
+    const today = new Date();
+    let analytics = []
+    const studentId= req.query.studentId;
+    
+    const assessmentData = await Assessment.aggregate([
+      {
+        $project : {
+          created_at : 0
+        }
+      }
+    ])
+    let numberOfAssessment = 0;
+    let myTotalScore = 0;
+    let totalMaxScore = 0;
+    let myAverage = 0;
+
+    assessmentData.map((assess) => {
+      Object.entries(assess.scores).forEach(([id, score]) => {
+        
+        numberOfAssessment = 0;
+        myTotalScore = 0;
+        totalMaxScore = 0;
+        myAverage = 0;
+        if(studentId === id){
+          
+          numberOfAssessment++;
+          myTotalScore= myTotalScore + score;
+          totalMaxScore = totalMaxScore + assess.maxScore;
+          myAverage = myTotalScore / numberOfAssessment;
+
+          if(!analytics.filter(a => a.id === id).length){
+            analytics.push(
+              {
+                id : studentId,
+                average : myAverage,
+                totalMaxScore : totalMaxScore,
+                date : assess.date,
+                totalScore : myTotalScore
+              }
+            )
+          }else{
+            // This will update current student record
+            analytics.filter(a => a.id === id)[0].average = myAverage;
+            analytics.filter(a => a.id === id)[0].totalMaxScore+= totalMaxScore;
+            analytics.filter(a => a.id === id)[0].totalScore+= myTotalScore;
+            analytics.filter(a => a.id === id)[0].date = assess.date;
+          }
+          
+        }
+        
+      })
+    })
+
+  
+    res.status(201).json({list : analytics, assessments : assessmentData})
 })
 
 module.exports = router;

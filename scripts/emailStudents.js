@@ -153,9 +153,15 @@ async function sendEmail(){
     }
 }
 
+// Current process : Kapag nag submit ng survey ang student, isang beses lang sya makaka receive non. 
+// TODO : mag isip kung pano makakapag survey sa next week if failing student ulit sya
 async function exists(studentId){
-    const exists = await Survey.find({ studentId : studentId })
+    const exists = await Survey.find({ studentId : studentId, submitted : true })
     return exists.length;
+}
+
+async function deleteSurvey(studentId) {
+  await Survey.deleteOne({ studentId : studentId })
 }
 
 async function insertSurveyForm(studentId){
@@ -164,12 +170,14 @@ async function insertSurveyForm(studentId){
         form : {},
     }
     const surveyFormExists = await exists(studentId);
+    // Check if survey exists and submitted
     if(!surveyFormExists){
-        const survey = new Survey(payload);
-        const data = await survey.save(); 
-        return data._id;
+      await deleteSurvey(studentId)
+      const survey = new Survey(payload);
+      const data = await survey.save(); 
+      return data._id;
     }
-    
+    return false;
 }
 
 async function main(){
