@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
-import AssessmentAnalytics from '../components/AssessmentAnalytics.vue'
+import AllSurveyStat from '../components/AllSurveyStat.vue'
 import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
@@ -796,7 +796,13 @@ onMounted(async () => {
             </div>
           </div>
         </div>
-
+        
+        <div class="dashboard-card w-2/3 h-100 mt-2 mb-2">
+          <div class="card-info">
+            <h5 class="card-title">Survey Stats</h5>
+            <AllSurveyStat/>
+          </div>
+        </div>
         <!-- Secondary Stats Row -->
         <div class="row mt-4">
             <div class="col-md-6">

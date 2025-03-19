@@ -188,7 +188,7 @@ async function main(){
         
     // }, 10000);
     // RUN ONCE FOR TESTING PURPOSES
-    // await sendEmail();
+    await sendEmail();
 }
 
 module.exports = { main }

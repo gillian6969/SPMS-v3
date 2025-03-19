@@ -21,7 +21,7 @@ const props = defineProps({
 })
 
 const myAssessments = ref([])
-console.log(props.assessments.length)
+
 props.assessments.map((assess) => {
     Object.entries(assess?.scores).forEach(([id, score]) => {
         if (id === props.studentId) {

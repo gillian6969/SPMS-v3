@@ -17,7 +17,8 @@ import { Bar } from 'vue-chartjs'
 
 const props = defineProps({
     assessments : Array,
-    studentId : String
+    studentId : String, // Student number eg. 02-124451-11
+    _id : String,
 })
 
 const myAssessments = ref([])
@@ -30,7 +31,7 @@ props.assessments.map((assess) => {
             })
             return;
         }else{
-            console.log(id);
+            
         }
     })
 })

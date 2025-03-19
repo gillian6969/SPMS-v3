@@ -240,8 +240,13 @@
                             <!-- Performance and Attendance (Right Side) -->
                             <div class="student-charts">
                                 <div class="chart-section">
-                                    <h6>Performance Trends</h6>
-                                    <FailedStudentsChart :assessments="assessments" :studentId="selectedStudent.studentId"/>
+                                    <h6>Assessments</h6>
+                                    <FailedStudentsChart :assessments="assessments" :studentId="selectedStudent.studentId" :_id="selectedStudent._id"/>
+                                    <hr>
+                                    <div class="mt-5">
+                                        <h6 class="font-bold">Survey Stats</h6>
+                                        <StudentSurveyStat :_id="selectedStudent._id"/>
+                                    </div>
                                     <canvas ref="performanceChart"></canvas>
                                 </div>
                                 <div class="chart-section">
@@ -444,6 +449,7 @@ import Chart from 'chart.js/auto'
 import { Dropdown } from 'bootstrap'
 import { formatDate } from '../utils'
 import FailedStudentsChart from '../components/FailedStudentsChart.vue'
+import StudentSurveyStat from '../components/StudentSurveyStat.vue'
 
 // Create axios instance with correct base URL
 const api = axios.create({
@@ -456,12 +462,14 @@ const api = axios.create({
 export default {
     name: 'StudentManagement',
     components: {
-        FailedStudentsChart
+        FailedStudentsChart,
+        StudentSurveyStat,
     },
     setup() {
         const store = useStore()
         const students = ref([]);
         const assessments = ref([]);
+        const survey = ref([]);
         const searchQuery = ref('')
         const selectedStudent = ref(null)
         const performanceChart = ref(null)
@@ -865,6 +873,19 @@ export default {
                 ...selectedStudent.value,
                 attendanceHistory : response.data
             }
+
+            // Get Student survey
+
+            const surveyResponse = await api.get(`/survey/stats`,{
+                params: {
+                    _id : student._id
+                }
+            })
+            selectedStudent.value = {
+                ...selectedStudent.value,
+                survey : surveyResponse.data
+            }
+            survey.value = surveyResponse.data;
             // Initialize charts if needed
             if (performanceChart.value) {
                 const ctx = performanceChart.value.getContext('2d');
@@ -1050,7 +1071,8 @@ export default {
             nextPage,
             previousPage,
             formatDate,
-            assessments
+            assessments,
+            survey
         }
     }
 }
