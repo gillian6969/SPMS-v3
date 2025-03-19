@@ -18,13 +18,13 @@ const { getFailingStudents, main } = require('./scripts/emailStudents');
 dotenv.config();
 
 // Verify required environment variables
-const requiredEnvVars = ['RECAPTCHA_SECRET_KEY'];
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+// const requiredEnvVars = ['RECAPTCHA_SECRET_KEY'];
+// const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
-if (missingEnvVars.length > 0) {
-  console.error('Missing required environment variables:', missingEnvVars);
-  process.exit(1);
-}
+// if (missingEnvVars.length > 0) {
+//   console.error('Missing required environment variables:', missingEnvVars);
+//   process.exit(1);
+// }
 
 const app = express();
 
