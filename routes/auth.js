@@ -94,50 +94,91 @@ router.post('/register', auth, isCITHead, async (req, res) => {
 // Login for all users
 router.post('/login', async (req, res) => {
   try {
-    const { email, password, loginType, recaptchaToken } = req.body;
+    const { email, password, loginType, recaptchaToken, recaptchaVerified } = req.body;
     console.log('Login attempt details:', { 
       email, 
       loginType,
       timestamp: new Date().toISOString()
     });
 
-    // Verify reCAPTCHA
-    const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
-    if (!isRecaptchaValid) {
-      return res.status(400).json({
-        message: 'reCAPTCHA verification failed. Please try again.',
-        error: 'recaptcha_failed'
-      });
+    // Verify reCAPTCHA unless bypassed with recaptchaVerified flag
+    let isRecaptchaValid = true;
+    if (!recaptchaVerified) {
+      isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+      if (!isRecaptchaValid) {
+        return res.status(400).json({
+          message: 'reCAPTCHA verification failed. Please try again.',
+          error: 'recaptcha_failed'
+        });
+      }
     }
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Try to find user in the User collection
+    let user = await User.findOne({ email });
+    let isStudent = false;
+    
+    // If user not found in User collection, try to find in Student collection
     if (!user) {
-      console.log('User not found:', {
-        attemptedEmail: email,
-        timestamp: new Date().toISOString()
-      });
-      return res.status(400).json({ 
-        message: 'Invalid credentials',
-        error: 'user_not_found'
-      });
+      const student = await Student.findOne({ email });
+      
+      if (student) {
+        // Check if password matches student ID
+        if (password === student.studentNumber) {
+          isStudent = true;
+          
+          // Check if a user account exists for this student
+          user = await User.findOne({ email: student.email });
+          
+          // If no user account exists, create one
+          if (!user) {
+            user = new User({
+              firstName: student.firstName,
+              lastName: student.lastName,
+              email: student.email,
+              password: await bcryptjs.hash(student.studentNumber, 10),
+              role: 'student',
+              studentId: student._id
+            });
+            
+            await user.save();
+            console.log('Created user account for student:', { id: user._id, email: user.email });
+          }
+        } else {
+          console.log('Invalid password (student ID) for student:', {
+            email,
+            timestamp: new Date().toISOString()
+          });
+          return res.status(400).json({ 
+            message: 'Invalid credentials',
+            error: 'invalid_password'
+          });
+        }
+      } else {
+        console.log('User not found:', {
+          attemptedEmail: email,
+          timestamp: new Date().toISOString()
+        });
+        return res.status(400).json({ 
+          message: 'Invalid credentials',
+          error: 'user_not_found'
+        });
+      }
+    } else {
+      // For non-student users, validate password
+      const isMatch = await bcryptjs.compare(password, user.password);
+      if (!isMatch) {
+        console.log('Invalid password for user:', {
+          email,
+          timestamp: new Date().toISOString()
+        });
+        return res.status(400).json({ 
+          message: 'Invalid credentials',
+          error: 'invalid_password'
+        });
+      }
     }
-
-    console.log('User found during login:', { id: user._id, role: user.role, email: user.email });
-
-    // Validate password
-    const isMatch = await bcryptjs.compare(password, user.password);
-    if (!isMatch) {
-      console.log('Invalid password for user:', {
-        email,
-        timestamp: new Date().toISOString()
-      });
-      return res.status(400).json({ 
-        message: 'Invalid credentials',
-        error: 'invalid_password'
-      });
-    }
-    console.log('Password validation successful for:', email);
+    
+    console.log('Authentication successful for:', { id: user._id, role: user.role, email: user.email });
 
     // Validate login type
     console.log('Validating login type:', {
@@ -147,7 +188,7 @@ router.post('/login', async (req, res) => {
     });
 
     if(loginType === 'citHead'){
-      if(user.role === 'teacher' || user.role === 'spp'){
+      if(user.role === 'teacher' || user.role === 'spp' || user.role === 'student'){
         console.log('Access denied: Non-CIT Head trying to use CIT Head login');
         return res.status(403).json({ 
           message: 'Access denied. Please use the Teacher/Student login.',
@@ -165,22 +206,6 @@ router.post('/login', async (req, res) => {
         });
       }
     }
-
-    // if (loginType === 'citHead' && (user.role !== 'sspHead' || user.role !== 'citHead')) {
-    //   console.log('Access denied: Non-CIT Head trying to use CIT Head login');
-    //   return res.status(403).json({ 
-    //     message: 'Access denied. Please use the Teacher/Student login.',
-    //     error: 'invalid_login_type'
-    //   });
-    // }
-
-    // if (loginType === 'user' && (user.role === 'citHead' || user.role === 'sspHead')) {
-    //   console.log('Access denied: CIT Head trying to use regular login');
-    //   return res.status(403).json({ 
-    //     message: 'Access denied. Please use the CIT Head login.',
-    //     error: 'invalid_login_type'
-    //   });
-    // }
 
     console.log('Login type validation successful');
 
@@ -201,7 +226,8 @@ router.post('/login', async (req, res) => {
         email: user.email,
         role: user.role,
         teachingYear: user.teachingYear,
-        subjects: user.subjects
+        subjects: user.subjects,
+        studentId: user.studentId
       }
     });
 

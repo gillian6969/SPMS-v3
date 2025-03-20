@@ -10,7 +10,14 @@
           title="Refresh attendance data from database"
         >
           <i class="fas fa-sync-alt me-2"></i> Refresh Attendance
-          </button>
+        </button>
+        <button 
+          class="btn btn-success" 
+          @click="openExportModal"
+          title="Export attendance records"
+        >
+          <i class="fas fa-file-export me-2"></i> Export Attendance
+        </button>
       </div>
       
       <!-- Date Navigation -->
@@ -35,15 +42,15 @@
     <div class="card">
       <div class="card-body">
         <!-- Table Controls -->
-        <div class="table-controls mb-4" style="z-index: 10000 !important; position: relative;">
+        <div class="table-controls mb-4" >
           <div class="d-flex gap-3 align-items-center">
-            <div class="d-flex gap-3" style="z-index: 10000 !important; position: relative;">
+            <div class="d-flex gap-3" >
               <!-- Sort Dropdown -->
-              <div class="dropdown" style="z-index: 10000 !important; position: relative;">
+              <div class="dropdown" >
                 <button class="btn btn-control" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-sort me-2"></i> Sort by
                 </button>
-                <ul class="dropdown-menu control-menu" style="z-index: 10000 !important; position: absolute !important;">
+                <ul class="dropdown-menu control-menu" >
                   <li>
                     <a class="dropdown-item d-flex align-items-center" href="#" @click="sortBy('studentNumber')">
                       <i class="fas fa-sort-numeric-down me-2"></i> Student Number
@@ -60,12 +67,12 @@
               </div>
 
               <!-- Filter Dropdown -->
-              <div class="dropdown" style="z-index: 10000 !important; position: relative;">
+              <div class="dropdown">
                 <button class="btn btn-control" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-filter me-2"></i> Filter
                   <span v-if="selectedYear || selectedSection || selectedSubject" class="filter-badge">!</span>
                 </button>
-                <div class="dropdown-menu control-menu p-3" style="width: 280px; z-index: 10000 !important; position: absolute !important;">
+                <div class="dropdown-menu control-menu p-3" style="width: 280px;">
                   <h6 class="dropdown-header mb-2">Filter Options</h6>
                   <div class="mb-3">
                     <label class="form-label">Year Level</label>
@@ -101,7 +108,7 @@
             </div>
 
             <!-- Search Control -->
-            <div class="search-control" style="flex: 1; max-width: 400px; z-index: 10000 !important; position: relative;">
+            <div class="search-control" style="flex: 1; max-width: 400px;">
               <div class="input-group">
                 <span class="input-group-text border-end-0">
                   <i class="fas fa-search"></i>
@@ -316,6 +323,97 @@
         </table>
       </template>
     </StudentDetailsModal>
+    
+    <!-- Export Records Modal -->
+    <teleport to="body" v-if="showExportModal">
+      <div class="modal-overlay" style="z-index: 9999999 !important; background-color: rgba(0, 0, 0, 0.5) !important;">
+        <div class="modal-wrapper" style="z-index: 10000000 !important;">
+          <div class="modal-dialog" style="z-index: 10000001 !important;">
+            <div class="modal-content" style="z-index: 10000002 !important;">
+              <div class="modal-header">
+                <h5 class="modal-title">Export Attendance Records</h5>
+                <button type="button" class="btn-close" @click="closeExportModal"></button>
+              </div>
+              <div class="modal-body p-4">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Select a date range to export attendance records. Only attendance within this date range will be included.
+                </div>
+
+                <form @submit.prevent="exportRecords">
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">Date Range</label>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" v-model="exportDateRange.start" required>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" v-model="exportDateRange.end" required>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">Export Options</label>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="includeTeacherInfo" v-model="exportOptions.includeTeacherInfo">
+                      <label class="form-check-label" for="includeTeacherInfo">
+                        Include teacher information
+                      </label>
+                    </div>
+                    <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" id="includeClassInfo" v-model="exportOptions.includeClassInfo">
+                      <label class="form-check-label" for="includeClassInfo">
+                        Include class information
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">Custom Filename (Optional)</label>
+                    <input type="text" class="form-control" v-model="exportOptions.customFilename" placeholder="Leave blank for default filename">
+                    <small class="text-muted">Default: "Subject_Year_Section_Attendance.xlsx"</small>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">File Format</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="exportType" id="exportTypeExcel" value="excel" v-model="exportType">
+                      <label class="form-check-label" for="exportTypeExcel">
+                        Export to Excel (.xlsx)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="exportType" id="exportTypeCsv" value="csv" v-model="exportType">
+                      <label class="form-check-label" for="exportTypeCsv">
+                        Export to CSV (.csv)
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4 text-end">
+                    <button type="button" class="btn btn-secondary me-2" @click="closeExportModal">
+                      Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success" :disabled="isExporting">
+                      <span v-if="isExporting">
+                        <i class="fas fa-spinner fa-spin me-2"></i> Exporting...
+                      </span>
+                      <span v-else>
+                        <i class="fas fa-file-export me-2"></i> Export
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-backdrop" style="z-index: 9999998 !important;" @click="closeExportModal"></div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -327,6 +425,7 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 import Chart from 'chart.js/auto'
 import StudentDetailsModal from '@/components/modals/StudentDetailsModal.vue'
+import * as XLSX from 'xlsx'
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -691,12 +790,6 @@ export default {
           });
         }
 
-        // Assign Attendance data to specific student
-        // students.value = response.data.map((att) => {
-          
-        // })
-        
-
         // Update students with attendance data
         if (students.value && students.value.length > 0) {
           // Merge attendance data into students array
@@ -706,29 +799,6 @@ export default {
               ...student,
               currentStatus: response.data.find(att => att.studentId === student.studentId)?.status
             }));
-          // students.value = students.value.map(student => {
-          //   const studentIdStr = String(student.studentId);
-          //   const status = studentMap.get(studentIdStr);
-            
-          //   // Store the attendance status for this date
-          //   if (!student.attendanceByDate) {
-          //     student.attendanceByDate = {};
-          //   }
-            
-          //   if (status) {
-          //     student.attendanceByDate[date] = status;
-          //   }
-            
-          //   // Use the stored status for this date if available, otherwise use the fetched status
-          //   const currentStatus = status || student.currentStatus || 'none';
-            
-          //   console.log(`Setting status for student ${studentIdStr}: ${currentStatus}`);
-            
-          //   return {
-          //     ...student,
-          //     currentStatus: currentStatus
-          //   };
-          // });
           
           // Force a UI update
           await nextTick();
@@ -1509,6 +1579,273 @@ export default {
       handleSearch()
     }
 
+    // Add export related refs
+    const showExportModal = ref(false)
+    const exportDateRange = ref({
+      start: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+      end: moment().format('YYYY-MM-DD')
+    })
+    const exportType = ref('excel')
+    const isExporting = ref(false)
+    const exportOptions = ref({
+      includeTeacherInfo: true,
+      includeClassInfo: true,
+      customFilename: ''
+    })
+    
+    // Function to export attendance records
+    const exportRecords = async () => {
+      try {
+        isExporting.value = true
+        
+        // Validate date range
+        const startDate = new Date(exportDateRange.value.start)
+        const endDate = new Date(exportDateRange.value.end)
+        
+        if (startDate > endDate) {
+          alert('Start date cannot be after end date')
+          isExporting.value = false
+          return
+        }
+        
+        // Re-validate that year, section, and subject are selected
+        if (!selectedYear.value || !selectedSection.value || !selectedSubject.value) {
+          alert('Please select a year, section, and subject before exporting')
+          isExporting.value = false
+          return
+        }
+        
+        // Collect parameters for API request
+        const teacherId = store.state.auth.user?._id
+        if (!teacherId) {
+          throw new Error('Teacher ID not available')
+        }
+        
+        console.log('Exporting attendance for:', {
+          teacherId,
+          year: selectedYear.value, 
+          section: selectedSection.value,
+          subject: selectedSubject.value,
+          startDate: exportDateRange.value.start,
+          endDate: exportDateRange.value.end
+        })
+        
+        // Make API request to the server endpoint
+        console.log('Making API request to:', `/attendance/export`);
+        const response = await api.get('/attendance/export', {
+          params: {
+            teacherId,
+            year: selectedYear.value,
+            section: selectedSection.value,
+            subject: selectedSubject.value,
+            startDate: exportDateRange.value.start,
+            endDate: exportDateRange.value.end,
+            includeTeacherInfo: exportOptions.value.includeTeacherInfo,
+            includeClassInfo: exportOptions.value.includeClassInfo
+          },
+          headers: {
+            'Authorization': `Bearer ${store.state.auth.token}`
+          }
+        })
+        
+        // Check if we have valid data in response
+        if (!response.data || !response.data.students || response.data.students.length === 0) {
+          throw new Error('No attendance data available for the selected criteria')
+        }
+        
+        // Process the response data
+        const data = response.data
+        console.log('Received export data:', data)
+        
+        // Log sample attendance data for debugging
+        if (data.students && data.students.length > 0) {
+          const sampleStudent = data.students[0]
+          console.log('Sample student attendance data:', sampleStudent)
+          console.log('Attendance status for sample student:', sampleStudent.attendance)
+        }
+        
+        // Prepare worksheet data
+        const worksheetData = []
+        
+        // Add header rows with class information if requested
+        if (exportOptions.value.includeTeacherInfo) {
+          worksheetData.push(['Attendance Records Export'])
+          worksheetData.push(['Teacher:', data.teacherName || store.state.auth.user?.fullName || 'Not specified'])
+          worksheetData.push([]) // Empty row
+        }
+        
+        if (exportOptions.value.includeClassInfo) {
+          worksheetData.push(['Year:', data.year || selectedYear.value])
+          worksheetData.push(['Section:', data.section || selectedSection.value])
+          worksheetData.push(['Subject:', data.subject || selectedSubject.value])
+          worksheetData.push(['Date Range:', `${moment(startDate).format('MMM DD, YYYY')} to ${moment(endDate).format('MMM DD, YYYY')}`])
+          worksheetData.push([]) // Empty row
+        }
+        
+        // Add table headers
+        const headers = ['Student Number', 'Last Name', 'First Name']
+        
+        // Add date headers in the format "MMM DD, YYYY" (e.g., "Mar 19, 2023")
+        if (data.dates && Array.isArray(data.dates)) {
+          data.dates.forEach(date => {
+            headers.push(moment(date).format('MMM DD, YYYY'))
+          })
+        }
+        
+        worksheetData.push(headers)
+        
+        // Add student data rows with their attendance status for each date
+        if (data.students && Array.isArray(data.students)) {
+          data.students.forEach(student => {
+            const row = [
+              student.studentNumber || '',
+              student.lastName || '',
+              student.firstName || ''
+            ]
+            
+            // For each date in the range, add the corresponding attendance status
+            if (data.dates && Array.isArray(data.dates) && student.attendance) {
+              data.dates.forEach(date => {
+                // Get the status from the student's attendance record for this date
+                const status = student.attendance[date]
+                
+                // Convert status code to display format with first letter capitalized
+                let displayStatus
+                switch(status) {
+                  case 'present':
+                    displayStatus = 'Present'
+                    break
+                  case 'absent':
+                    displayStatus = 'Absent'
+                    break
+                  case 'late':
+                    displayStatus = 'Late'
+                    break
+                  default:
+                    displayStatus = 'N/A'
+                }
+                
+                row.push(displayStatus)
+              })
+            }
+            
+            worksheetData.push(row)
+          })
+        }
+        
+        // Create worksheet and workbook using SheetJS
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance Records')
+        
+        // Set column widths for better readability
+        const colWidths = [
+          { wch: 15 }, // Student Number
+          { wch: 15 }, // Last Name
+          { wch: 15 }, // First Name
+        ]
+        
+        // Add widths for date columns
+        if (data.dates && Array.isArray(data.dates)) {
+          data.dates.forEach(() => {
+            colWidths.push({ wch: 12 })
+          })
+        }
+        
+        worksheet['!cols'] = colWidths
+        
+        // Determine filename
+        let filename
+        if (exportOptions.value.customFilename) {
+          filename = exportOptions.value.customFilename
+          if (!filename.endsWith('.xlsx') && !filename.endsWith('.csv')) {
+            filename += exportType.value === 'excel' ? '.xlsx' : '.csv'
+          }
+        } else {
+          // Create a default filename with class and date range info
+          filename = `${data.subject || selectedSubject.value}_${data.year || selectedYear.value}_`
+          filename += `${data.section || selectedSection.value}_Attendance_`
+          filename += `${moment(startDate).format('YYYY-MM-DD')}_to_${moment(endDate).format('YYYY-MM-DD')}`
+          filename += exportType.value === 'excel' ? '.xlsx' : '.csv'
+        }
+        
+        // Generate and download the file based on the selected export type
+        if (exportType.value === 'excel') {
+          XLSX.writeFile(workbook, filename)
+        } else {
+          XLSX.writeFile(workbook, filename, { bookType: 'csv' })
+        }
+        
+        console.log(`Export completed successfully: ${filename}`)
+        closeExportModal()
+      } catch (error) {
+        console.error('Error exporting attendance records:', error)
+        
+        // Provide more specific error messages
+        if (error.response) {
+          // Server responded with an error code
+          if (error.response.status === 404) {
+            alert('No students found for this class. Please check your year and section filters.')
+          } else if (error.response.status === 400) {
+            alert('Invalid export parameters. Please check your selected filters and date range.')
+          } else {
+            alert(`Failed to export attendance records: ${error.response.data?.message || 'Server error'}`)
+          }
+        } else if (error.request) {
+          // Request was made but no response received
+          alert('Server did not respond. Please check your connection and try again.')
+        } else {
+          // Error in setting up the request
+          alert(`Failed to export attendance records: ${error.message}`)
+        }
+      } finally {
+        isExporting.value = false
+      }
+    }
+
+    // Function to open export modal
+    const openExportModal = () => {
+      // Check if filters are set
+      if (!selectedYear.value || !selectedSection.value || !selectedSubject.value) {
+        alert('Please select a year, section, and subject before exporting')
+        return
+      }
+      
+      // Set modal visibility
+      showExportModal.value = true
+      
+      // Add class to body to prevent scrolling when modal is open
+      document.body.classList.add('modal-open')
+      
+      // Reset date range to last 30 days by default
+      exportDateRange.value = {
+        start: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD')
+      }
+      
+      // Log modal opening for debugging
+      console.log('Export modal opened with current filters:', {
+        year: selectedYear.value,
+        section: selectedSection.value,
+        subject: selectedSubject.value
+      })
+    }
+
+    // Function to close export modal
+    const closeExportModal = () => {
+      showExportModal.value = false
+      document.body.classList.remove('modal-open')
+    }
+
+    // Watch for filter changes to close export modal
+    watch([selectedYear, selectedSection, selectedSubject], () => {
+      // If the export modal is open, close it since the filters changed
+      if (showExportModal.value) {
+        console.log('Filters changed while export modal was open, closing modal')
+        closeExportModal()
+      }
+    })
+
     return {
       students,
       searchQuery,
@@ -1558,24 +1895,129 @@ export default {
       nextPage,
       previousPage,
       clearSearch,
+      showExportModal,
+      exportDateRange,
+      exportType,
+      isExporting,
+      exportRecords,
+      openExportModal,
+      closeExportModal,
+      exportOptions
     }
   }
 }
 </script>
 
 <style scoped>
-/* Base z-index hierarchy - significantly increased values */
+/* Base z-index hierarchy - using ClassRecords approach */
 :root {
   --z-base: 1;
   --z-table: 10;
-  --z-controls: 1000;
-  --z-dropdown: 10000;
-  --z-modal-backdrop: 20000;
-  --z-modal-wrapper: 20100;
-  --z-modal-content: 20200;
+  --z-controls: 2000;
+  --z-dropdown: 3000;
+  --z-modal-backdrop: 8000;
+  --z-modal-wrapper: 8500;
+  --z-modal-content: 9000;
   --z-table-header: 20;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-wrapper);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal-wrapper);
+}
+
+.modal-dialog {
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  margin: 1.75rem auto;
+  pointer-events: auto;
+  z-index: var(--z-modal-content);
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  outline: 0;
+  max-height: calc(100vh - 3.5rem);
+  overflow-y: auto;
+  z-index: var(--z-modal-content);
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 8000;
+}
+
+/* Teleported modals need higher z-index */
+:deep(body > .modal-overlay) {
+  z-index: 9999999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+:deep(body > .modal-wrapper) {
+  z-index: 10000000 !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+:deep(body > .modal-dialog) {
+  z-index: 10000001 !important;
+  position: relative !important;
+  max-width: 600px !important;
+  width: 90% !important;
+  margin: 1.75rem auto !important;
+  pointer-events: auto !important;
+}
+
+:deep(body > .modal-content) {
+  z-index: 10000002 !important;
+  position: relative !important;
+}
+
+/* The rest of the existing styles */
 .attendance-view {
   max-width: 100%;
   margin: 0 auto;
@@ -1596,29 +2038,29 @@ export default {
 /* Dropdown styles */
 .dropdown {
   position: relative;
-  z-index: var(--z-dropdown);
+  z-index: 3000;
 }
 
 .dropdown-menu {
-  position: absolute !important;
-  z-index: var(--z-dropdown) !important;
-  transform: none !important;
-  top: 100% !important;
-  left: 0 !important;
-  float: none !important;
-  min-width: 10rem !important;
-  background-color: #fff !important;
-  border: none !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-  padding: 0.5rem 0 !important;
-  margin-top: 0.5rem !important;
+  position: absolute;
+  z-index: 3000;
+  transform: none;
+  top: 100%;
+  left: 0;
+  float: none;
+  min-width: 10rem;
+  background-color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
 }
 
 /* Table container - lower z-index than controls */
 .table-responsive {
   position: relative;
-  z-index: var(--z-table);
+  z-index: 5;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -1639,15 +2081,16 @@ export default {
   position: relative;
 }
 
+/* Table controls container */
 .table-controls {
   position: relative;
-  z-index: 10000 !important; /* Same as dropdown z-index to ensure it stays on top */
+  z-index: 2000;
   background: white;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
-  overflow: visible !important;
+  overflow: visible;
 }
 
 /* Dropdown button */
@@ -1674,22 +2117,22 @@ export default {
 
 /* Dropdown menu */
 .control-menu {
-  border: none !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-  padding: 0.5rem 0 !important;
-  margin-top: 0.5rem !important;
-  z-index: var(--z-dropdown) !important;
-  position: absolute !important;
-  min-width: 10rem !important;
-  background-color: #fff !important;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  z-index: 3000;
+  position: absolute;
+  min-width: 10rem;
+  background-color: #fff;
 }
 
 /* Override Bootstrap's dropdown styles */
 .dropdown-menu.show {
-  display: block !important;
-  z-index: var(--z-dropdown) !important;
-  position: absolute !important;
+  display: block;
+  z-index: 3000;
+  position: absolute;
 }
 
 .dropdown-item {
@@ -1730,7 +2173,7 @@ export default {
 
 .search-control {
   position: relative;
-  z-index: 10000 !important;
+  z-index: var(--z-controls);
 }
 
 /* Table styles from ClassRecords */

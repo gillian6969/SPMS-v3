@@ -12,6 +12,7 @@ const getters = {
   isTeacher: state => state.user?.role === 'teacher',
   isSSPHead: state => state.user?.role === 'sspHead',
   isSSP: state => state.user?.role === 'ssp',
+  isStudent: state => state.user?.role === 'student',
 }
 
 const actions = {

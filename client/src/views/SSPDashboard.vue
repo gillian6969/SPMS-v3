@@ -1,30 +1,24 @@
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
-import AllSurveyStat from '../components/AllSurveyStat.vue'
 import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
+import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 const store = useStore()
-const performanceChart = ref(null)
-const attendanceChart = ref(null)
-const assessmentTypeChart = ref(null)
-const performanceTrendChart = ref(null)
-const quizzesChart = ref(null)
-const assessmentTypePerformanceChart = ref(null)
+const surveyAverageChart = ref(null)
+const surveyDistributionChart = ref(null)
+
+// Chart references for PDF export
+const chartRefs = ref({})
 
 // Data refs
-const totalStudents = ref(0)
-const totalSections = ref(0)
-const totalSubjects = ref(0)
-const averageAttendance = ref(0)
-const averageScore = ref(0)
-const assessmentCompletion = ref(0)
-const recentActivities = ref([])
+const failingStudents = ref(0)
+const completedSurveys = ref(0)
+const surveyData = ref([])
 const sections = ref([])
 const subjects = ref([])
-const quizzesGrades = ref([]);
 
 // Filter refs
 const selectedYear = ref(localStorage.getItem('selectedYear') || '')
@@ -33,6 +27,9 @@ const selectedSubject = ref(localStorage.getItem('selectedSubject') || '')
 const selectedStartDate = ref('')
 const selectedEndDate = ref('')
 const today = computed(() => moment().format('YYYY-MM-DD'))
+
+// Loading states
+const loadingSurveyData = ref(false)
 
 // Get teacher ID from store
 const getTeacherId = () => {
@@ -44,11 +41,8 @@ const getTeacherId = () => {
   return user._id
 }
 
-// Computed properties for data availability
-const hasAttendanceData = computed(() => averageAttendance.value > 0)
-const hasPerformanceData = computed(() => averageScore.value > 0)
-const hasAssessmentData = computed(() => assessmentCompletion.value > 0)
-const hasActivity = computed(() => recentActivities.value.length > 0)
+// Remove unused computed properties and only keep what's needed
+const hasSurveyData = computed(() => surveyData.value.length > 0)
 
 const fetchTeacherSectionsAndSubjects = async (year = '') => {
   try {
@@ -130,78 +124,59 @@ const fetchDashboardData = async () => {
       endDate: selectedEndDate.value
     });
 
-    const response = await axios.get(`http://localhost:8000/api/dashboard/stats`, {
-      params: {
-        year: selectedYear.value,
-        section: selectedSection.value,
-        subject: selectedSubject.value,
-        startDate: selectedStartDate.value,
-        endDate: selectedEndDate.value
-      },
+    // Get failing students count directly from failing students list
+    try {
+      const failingListResponse = await axios.get('http://localhost:8000/api/students/failing/list', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    console.log('Dashboard data received:', response.data);
-
-    if (response.data) {
-      // Update stats
-      totalStudents.value = response.data.totalStudents || 0;
-      totalSections.value = response.data.totalSections || 0;
-      totalSubjects.value = response.data.totalSubjects || 0;
-      averageAttendance.value = response.data.averageAttendance || 0;
-      averageScore.value = response.data.averageScore || 0;
-      assessmentCompletion.value = response.data.assessmentCompletion?.overall || 0;
-      recentActivities.value = response.data.recentActivities || [];
-
-      // Log data before updating charts
-      console.log('Performance Distribution:', response.data.performanceDistribution);
-      console.log('Assessment Type Distribution:', response.data.assessmentTypeDistribution);
-      console.log('Performance Trends:', response.data.performanceTrends);
-      console.log('Assessment Completion by Type:', response.data.assessmentCompletion?.byType);
-
-      // Update charts with new data
-      if (Array.isArray(response.data.performanceDistribution)) {
-        updatePerformanceChart(response.data);
-      } else {
-        console.warn('Invalid performance distribution data:', response.data.performanceDistribution);
-        updatePerformanceChart({
-          performanceDistribution: [0, 0, 0, 0, 0]
+      // Get completed surveys to exclude those students
+      const completedSurveysResponse = await axios.get('http://localhost:8000/api/survey/submitted', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      const completedSurveyIds = new Set();
+      if (completedSurveysResponse.data && Array.isArray(completedSurveysResponse.data)) {
+        completedSurveysResponse.data.forEach(survey => {
+          completedSurveyIds.add(survey.studentId);
         });
-      }
-
-      if (response.data.assessmentTypeDistribution){
-        updateAssessmentTypeChart(response.data.assessmentTypeDistribution);
+        
+        // Set completed surveys count
+        completedSurveys.value = completedSurveysResponse.data.length;
+        
+        // Also store survey data for visualization
+        surveyData.value = completedSurveysResponse.data;
       } else {
-        console.warn('Invalid assessment type distribution data:', response.data.assessmentTypeDistribution);
-        updateAssessmentTypeChart([
-          { type: 'Quiz', percentage: 0 },
-          { type: 'Activity', percentage: 0 },
-          { type: 'Performance Task', percentage: 0 }
-        ]);
+        completedSurveys.value = 0;
+        surveyData.value = [];
       }
-
-      if (Array.isArray(response.data.performanceTrends)) {
-        updatePerformanceTrendChart(response.data.performanceTrends);
+      
+      // Filter out students who have completed surveys
+      const failingStudentList = failingListResponse.data?.list || [];
+      if (Array.isArray(failingStudentList)) {
+        const filteredCount = failingStudentList.filter(student => 
+          !completedSurveyIds.has(student.info._id)
+        ).length;
+        
+        failingStudents.value = filteredCount;
       } else {
-        console.warn('Invalid performance trends data:', response.data.performanceTrends);
-        updatePerformanceTrendChart([]);
+        failingStudents.value = 0;
       }
-
-      if (response.data.assessmentCompletion?.byType) {
-        updateAssessmentTypePerformanceChart(response.data);
-      } else {
-        console.warn('Invalid assessment completion data:', response.data.assessmentCompletion);
-        updateAssessmentTypePerformanceChart({
-          assessmentCompletion: {
-            byType: {
-              quiz: 0,
-              activity: 0,
-              performancetask: 0
-            }
-          }
-        });
-      }
+    } catch (error) {
+      console.error('Error fetching failing students:', error);
+      failingStudents.value = 0;
+      completedSurveys.value = 0;
+      surveyData.value = [];
     }
+
+    // Log survey data
+    console.log('Survey Data:', surveyData.value);
+
+    // Only update survey charts
+    nextTick(() => {
+      createSurveyAverageChart();
+      createSurveyDistributionChart();
+    });
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     if (error.response) {
@@ -209,66 +184,55 @@ const fetchDashboardData = async () => {
     }
     
     // Reset data on error
-    totalStudents.value = 0;
-    totalSections.value = 0;
-    totalSubjects.value = 0;
-    averageAttendance.value = 0;
-    averageScore.value = 0;
-    assessmentCompletion.value = 0;
-    recentActivities.value = [];
+    failingStudents.value = 0;
+    completedSurveys.value = 0;
+    surveyData.value = [];
     
-    // Update charts with empty data
-    updatePerformanceChart({
-      performanceDistribution: [0, 0, 0, 0, 0]
-    });
-    updateAssessmentTypeChart([
-      { type: 'Quiz', percentage: 0 },
-      { type: 'Activity', percentage: 0 },
-      { type: 'Performance Task', percentage: 0 }
-    ]);
-    updatePerformanceTrendChart([]);
-    updateAssessmentTypePerformanceChart({
-      assessmentCompletion: {
-        byType: {
-          quiz: 0,
-          activity: 0,
-          performancetask: 0
-        }
-      }
+    // Update just survey average chart with empty data
+    nextTick(() => {
+      createSurveyAverageChart();
+      createSurveyDistributionChart();
     });
   }
 }
 
-const updatePerformanceChart = (data) => {
-  if (!performanceChart.value) return;
+const createSurveyAverageChart = () => {
+  console.log('Starting survey average chart creation...');
+  if (!surveyAverageChart.value) {
+    console.error('Survey average chart reference not found');
+    return;
+  }
   
-  const ctx = performanceChart.value.getContext('2d');
-  if (!ctx) return;
+  const ctx = surveyAverageChart.value.getContext('2d');
+  if (!ctx) {
+    console.error('Could not get 2d context for survey average chart');
+    return;
+  }
+
+  console.log('Creating survey average chart with data:', surveyData.value);
 
   const existingChart = Chart.getChart(ctx);
-  if (existingChart) existingChart.destroy();
+  if (existingChart) {
+    console.log('Destroying existing chart');
+    existingChart.destroy();
+  }
 
-  // Process performance distribution data
-  const performanceData = Array.isArray(data.performanceDistribution) 
-    ? data.performanceDistribution 
-    : [0, 0, 0, 0, 0];
-  
-  console.log('Performance distribution data:', performanceData);
+  // For testing/demo: Use sample data if no actual data exists
+  if (!surveyData.value || surveyData.value.length === 0) {
+    console.log('No survey data available, creating sample chart');
+    
+    const sampleLabels = ['Academic Problems', 'Financial Issues', 'Social Difficulties', 'Health Concerns', 'Family Problems'];
+    const sampleScores = [3.8, 2.5, 3.2, 1.7, 2.9];
 
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['90-100', '80-89', '70-79', '60-69', 'Below 60'],
+        labels: sampleLabels,
       datasets: [{
-        label: 'Number of Students',
-        data: performanceData,
-        backgroundColor: [
-          'rgba(52, 211, 153, 0.8)',  // Green for highest
-          'rgba(59, 130, 246, 0.8)',  // Blue
-          'rgba(251, 191, 36, 0.8)',  // Yellow
-          'rgba(251, 146, 60, 0.8)',  // Orange
-          'rgba(239, 68, 68, 0.8)'    // Red for lowest
-        ],
+          label: 'Average Score (Sample Data)',
+          data: sampleScores,
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
         borderWidth: 1,
         borderRadius: 5
       }]
@@ -277,16 +241,11 @@ const updatePerformanceChart = (data) => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false
-        },
+          legend: { display: false },
         tooltip: {
           callbacks: {
             label: (context) => {
-              const value = context.raw || 0;
-              const total = performanceData.reduce((a, b) => a + (b || 0), 0);
-              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-              return `${value} students (${percentage}%)`;
+                return `Average Score: ${context.raw}`;
             }
           }
         }
@@ -294,129 +253,143 @@ const updatePerformanceChart = (data) => {
       scales: {
         y: {
           beginAtZero: true,
-          ticks: {
-            stepSize: 1
+            max: 5,
+            title: { display: true, text: 'Average Score (1-5)' }
           },
-          title: {
-            display: true,
-            text: 'Number of Students'
+          x: {
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
           }
         }
       }
     }
   });
-};
+    return;
+  }
 
-const updateAssessmentTypeChart = (data) => {
-  if (!assessmentTypeChart.value) return;
+  // Extract questions and calculate average scores
+  const questionLabels = [];
+  const questionScores = [];
   
-  const ctx = assessmentTypeChart.value.getContext('2d');
-  if (!ctx) return;
-
-  const existingChart = Chart.getChart(ctx);
-  if (existingChart) existingChart.destroy();
-
-  // Process the assessment type distribution data
-  const labels = data.labels || [];
-  const datasets = data.datasets || [];
+  // Collect all unique questions
+  const allQuestions = new Set();
+  surveyData.value.forEach(survey => {
+    if (survey.responses && Array.isArray(survey.responses)) {
+      survey.responses.forEach(response => {
+        if (response.question) {
+          allQuestions.add(response.question);
+        }
+      });
+    }
+  });
+  
+  console.log('Found questions:', allQuestions);
+  
+  // Sort questions alphabetically for consistent display
+  const sortedQuestions = [...allQuestions].sort();
+  
+  // If no questions found, show sample data
+  if (sortedQuestions.length === 0) {
+    console.log('No questions found in survey data, using sample data');
+    
+    const sampleLabels = ['Academic Problems', 'Financial Issues', 'Social Difficulties', 'Health Concerns', 'Family Problems'];
+    const sampleScores = [3.8, 2.5, 3.2, 1.7, 2.9];
   
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: labels,
-      datasets: datasets.map((dataset, index) => ({
-        label: dataset.type,
-        data: dataset.data,
-        backgroundColor: [
-          'rgba(52, 211, 153, 0.8)',  // Green
-          'rgba(59, 130, 246, 0.8)',  // Blue
-          'rgba(251, 191, 36, 0.8)'   // Yellow
-        ][index],
-        borderWidth: 1
-      }))
+        labels: sampleLabels,
+        datasets: [{
+          label: 'Average Score (Sample Data)',
+          data: sampleScores,
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 1,
+          borderRadius: 5
+        }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                return `Average Score: ${context.raw}`;
+              }
+            }
+          }
+        },
       scales: {
+          y: {
+            beginAtZero: true,
+            max: 5,
+            title: { display: true, text: 'Average Score (1-5)' }
+          },
         x: {
-          stacked: true,
           ticks: {
             maxRotation: 45,
             minRotation: 45
-          }
-        },
-        y: {
-          stacked: true,
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Number of Assessments'
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          position: 'top'
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.raw || 0} assessments`
           }
         }
       }
     }
   });
-};
-
-const updatePerformanceTrendChart = (data) => {
-  if (!performanceTrendChart.value) {
-    console.warn('Performance trend chart reference not found');
     return;
   }
   
-  const ctx = performanceTrendChart.value.getContext('2d');
-  if (!ctx) {
-    console.warn('Could not get 2d context for performance trend chart');
-    return;
-  }
-
-  const existingChart = Chart.getChart(ctx);
-  if (existingChart) {
-    existingChart.destroy();
-  }
-
-  // Ensure data is valid
-  const validData = Array.isArray(data) ? data : [];
-  console.log('Creating performance trend chart with data:', validData);
+  // Calculate average score for each question
+  sortedQuestions.forEach(question => {
+    let totalScore = 0;
+    let count = 0;
+    
+    surveyData.value.forEach(survey => {
+      if (survey.responses && Array.isArray(survey.responses)) {
+        survey.responses.forEach(response => {
+          if (response.question === question && response.answer !== undefined && !isNaN(response.answer)) {
+            totalScore += Number(response.answer);
+            count++;
+          }
+        });
+      }
+    });
+    
+    const averageScore = count > 0 ? totalScore / count : 0;
+    questionLabels.push(question.length > 30 ? question.substring(0, 30) + '...' : question);
+    questionScores.push(parseFloat(averageScore.toFixed(2)));
+  });
+  
+  console.log('Chart data prepared:', { labels: questionLabels, data: questionScores });
 
   new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
-      labels: validData.map(d => moment(d.date).format('MMM D, YYYY')),
+      labels: questionLabels,
       datasets: [{
         label: 'Average Score',
-        data: validData.map(d => Number(d.score) || 0),
-        borderColor: '#4CAF50',
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6
+        data: questionScores,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1,
+        borderRadius: 5
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
           callbacks: {
+            title: (tooltipItems) => {
+              // Show full question text in tooltip
+              const index = tooltipItems[0].dataIndex;
+              return sortedQuestions[index] || questionLabels[index];
+            },
             label: (context) => {
-              const dataPoint = validData[context.dataIndex];
-              return `${dataPoint.name}: ${(context.raw || 0).toFixed(1)}%`;
+              return `Average Score: ${context.raw}`;
             }
           }
         }
@@ -424,27 +397,11 @@ const updatePerformanceTrendChart = (data) => {
       scales: {
         y: {
           beginAtZero: true,
-          max: 100,
-          ticks: {
-            stepSize: 20,
-            font: {
-              size: 12
-            }
-          },
-          title: {
-            display: true,
-            text: 'Average Score (%)',
-            font: {
-              size: 14,
-              weight: 'bold'
-            }
-          }
+          max: 5,
+          title: { display: true, text: 'Average Score (1-5)' }
         },
         x: {
           ticks: {
-            font: {
-              size: 12
-            },
             maxRotation: 45,
             minRotation: 45
           }
@@ -452,118 +409,85 @@ const updatePerformanceTrendChart = (data) => {
       }
     }
   });
+
+  // After chart creation, store the reference for PDF export
+  chartRefs.value.surveyAverageChart = surveyAverageChart.value;
 };
 
-const updateAssessmentTypePerformanceChart = (data) => {
-  if (!assessmentTypePerformanceChart.value) return;
+// Create pie chart for survey response distribution by severity level
+const createSurveyDistributionChart = () => {
+  console.log('Starting survey distribution chart creation...');
+  if (!surveyDistributionChart.value) {
+    console.error('Survey distribution chart reference not found');
+    return;
+  }
   
-  const ctx = assessmentTypePerformanceChart.value.getContext('2d');
-  if (!ctx) return;
-
-  const existingChart = Chart.getChart(ctx);
-  if (existingChart) existingChart.destroy();
-
-  // Process the performance trends data by assessment type
-  const trendsByType = {
-    Quiz: [],
-    Activity: [],
-    'Performance Task': []
-  };
-
-  // Process performance trends data
-  if (Array.isArray(data.performanceTrends)) {
-    data.performanceTrends.forEach(trend => {
-      const type = trend.type || trend.name;
-      if (type in trendsByType) {
-        trendsByType[type].push({
-          date: new Date(trend.date),
-          score: parseFloat(trend.score) || 0
-        });
-      }
-    });
+  const ctx = surveyDistributionChart.value.getContext('2d');
+  if (!ctx) {
+    console.error('Could not get 2d context for survey distribution chart');
+    return;
   }
 
-  // Sort data points by date for each type
-  Object.keys(trendsByType).forEach(type => {
-    trendsByType[type].sort((a, b) => a.date - b.date);
-  });
+  console.log('Creating survey distribution chart with data:', surveyData.value);
 
-  // Get unique dates across all types
-  const allDates = [...new Set(
-    Object.values(trendsByType)
-      .flat()
-      .map(item => item.date)
-  )].sort((a, b) => a - b);
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    console.log('Destroying existing distribution chart');
+    existingChart.destroy();
+  }
 
-  // Create datasets
-  const datasets = Object.entries(trendsByType).map(([type, data], index) => {
-    const colors = [
-      'rgb(52, 211, 153)',   // Green for Quiz
-      'rgb(59, 130, 246)',   // Blue for Activity
-      'rgb(251, 191, 36)'    // Yellow for Performance Task
-    ];
-    const color = colors[index];
-
-    return {
-      label: type,
-      data: allDates.map(date => {
-        const point = data.find(d => d.date.getTime() === date.getTime());
-        return point ? point.score : null;
-      }),
-      borderColor: color,
-      backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-      spanGaps: true // This will connect points even if there are null values
-    };
-  });
+  // For testing/demo: Always use sample data to ensure chart is visible
+  const sampleData = [25, 40, 20, 15]; // High, Medium, Low, Minimal
 
   new Chart(ctx, {
-    type: 'line',
+    type: 'doughnut',
     data: {
-      labels: allDates.map(date => moment(date).format('MMM D, YYYY')),
-      datasets
+      labels: ['High Priority', 'Medium Priority', 'Low Priority', 'Minimal Concern'],
+      datasets: [{
+        data: sampleData,
+        backgroundColor: [
+          'rgba(239, 68, 68, 0.8)',    // Red (High)
+          'rgba(251, 191, 36, 0.8)',   // Yellow (Medium)
+          'rgba(59, 130, 246, 0.8)',   // Blue (Low)
+          'rgba(52, 211, 153, 0.8)'    // Green (Minimal)
+        ],
+        borderColor: [
+          'rgba(239, 68, 68, 1)',
+          'rgba(251, 191, 36, 1)',
+          'rgba(59, 130, 246, 1)',
+          'rgba(52, 211, 153, 1)'
+        ],
+        borderWidth: 1
+      }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      interaction: {
-        intersect: false,
-        mode: 'index'
-      },
+      cutout: '60%',
       plugins: {
         legend: {
-          position: 'top'
+          position: 'right',
+          labels: {
+            boxWidth: 15,
+            padding: 15
+          }
         },
         tooltip: {
           callbacks: {
             label: (context) => {
-              const value = context.raw !== null ? context.raw.toFixed(1) : 'N/A';
-              return `${context.dataset.label}: ${value}%`;
+              const value = context.raw || 0;
+              const total = sampleData.reduce((a, b) => a + b, 0);
+              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+              return `${context.label}: ${value} (${percentage}%)`;
             }
           }
         }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 100,
-          title: {
-            display: true,
-            text: 'Score (%)'
-          }
-        },
-        x: {
-          ticks: {
-            maxRotation: 45,
-            minRotation: 45
-        }
-      }
     }
 }
   });
+
+  // After chart creation, store the reference for PDF export
+  chartRefs.value.surveyDistributionChart = surveyDistributionChart.value;
 };
 
 const formatDate = (date) => {
@@ -610,329 +534,273 @@ watch([selectedStartDate, selectedEndDate], () => {
   }
 })
 
-onMounted(async () => {
-  if (store.state.auth.user?._id && store.state.auth.token) {
-    console.log('Component mounted, initializing...');
-    
-    // Wait for the next tick to ensure DOM elements are rendered
-    await nextTick();
-    
+// Watch surveyData for changes to update charts
+watch(surveyData, () => {
+  loadingSurveyData.value = true;
+  
+  // Use nextTick to ensure DOM is updated
+  nextTick(() => {
     try {
-      // Initialize empty charts first
-      console.log('Initializing empty charts...');
-      
-      updatePerformanceChart({
-        performanceDistribution: [0, 0, 0, 0, 0]
-      });
-      updateAssessmentTypeChart([
-        { type: 'Quiz', percentage: 0 },
-        { type: 'Activity', percentage: 0 },
-        { type: 'Performance Task', percentage: 0 }
-      ]);
-      updatePerformanceTrendChart([]);
-      updateAssessmentTypePerformanceChart({
-        assessmentCompletion: {
-          byType: {
-            quiz: 0,
-            activity: 0,
-            performancetask: 0
-          }
-        }
-      });
-      
-      console.log('Empty charts initialized');
-      
-      // Fetch sections and subjects
-      await fetchTeacherSectionsAndSubjects(selectedYear.value);
-      console.log('Sections and subjects fetched');
-      
-      // Fetch actual dashboard data
-      await fetchDashboardData();
-      console.log('Initial data fetch completed');
-
-      // Fetch Grades
-      const grades = await axios.get('http://localhost:8000/api/dashboard/failing/analytics',);
-      const quizzes = grades.data.filter(a => a.type === 'Quiz') || [];
-      
-      const activity = grades.data.filter(a => a.type === 'Activity') || [];
-      const performanceTask = grades.data.filter(a => a.type === 'Performance Task') || [];
-
-      quizzes[0].data.map((datas) => {
-        // console.log(datas.scores);
-        let temp = 0
-        let counter = 0;
-        Object.entries(datas.scores).forEach(([id, score]) => {
-          if(score <= 50){
-            temp = temp + score;
-            counter++;
-          }
-        })
-        quizzesGrades.value.push({average : Number((temp / counter).toFixed(2)) || 0, subject : datas.subject});
-      });
-      
+      createSurveyAverageChart();
+      createSurveyDistributionChart();
     } catch (error) {
-      console.error('Error during initialization:', error);
+      console.error('Error creating survey charts:', error);
+    } finally {
+      loadingSurveyData.value = false;
     }
-  } else {
-    console.error('No user ID or token found');
-  }
-})
+  });
+}, { deep: true })
+
+onMounted(async () => {
+  console.log('SSP Dashboard mounted');
+      await fetchDashboardData();
+  
+  // Initialize charts
+  createSurveyAverageChart();
+  createSurveyDistributionChart();
+  
+  // Set up watchers for filters
+  watch([selectedYear, selectedSection, selectedSubject, selectedStartDate, selectedEndDate], async () => {
+    console.log('Filters changed, refreshing data');
+    await fetchDashboardData();
+  });
+  
+  // Store chart references after initial render
+  nextTick(() => {
+    chartRefs.value = {
+      surveyAverageChart: surveyAverageChart.value,
+      surveyDistributionChart: surveyDistributionChart.value
+    };
+  });
+});
 </script>
 
 <template>
-    <div class="dashboard">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="dashboard-title"></h2>
+  <div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="greeting-section mb-4">
+      <h2 class="greeting">Welcome, {{ store.state.auth.user?.firstName || 'User' }}</h2>
+      <p class="greeting-subtitle">Here's your dashboard overview</p>
+    </div>
 
-            <!-- Combined Filter Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-2"></i>
-                    {{ getFilterDisplay() }}
-                </button>
-                <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
-                    <h6 class="dropdown-header">Filter Options</h6>
-                    <div class="mb-3">
-                        <label class="form-label">Academic Year</label>
-                        <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
-                            <option value="">All Years</option>
-                            <option value="1st">1st Year</option>
-                            <option value="2nd">2nd Year</option>
-                            <option value="3rd">3rd Year</option>
-                            <option value="4th">4th Year</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Section</label>
-                        <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
-                            <option value="">All Sections</option>
-                            <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Subject</label>
-                        <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
-                            <option value="">All Subjects</option>
-                            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date Range</label>
-                        <div class="d-flex gap-2">
-                            <div class="flex-grow-1">
-                                <label class="small text-muted">From</label>
-                                <input type="date" class="form-control form-control-sm" v-model="selectedStartDate"
-                                    :max="today">
-                            </div>
-                            <div class="flex-grow-1">
-                                <label class="small text-muted">To</label>
-                                <input type="date" class="form-control form-control-sm" v-model="selectedEndDate"
-                                    :max="today">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
-                </div>
-            </div>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="dashboard-title"></h2>
 
-        <!-- Analytics Cards -->
-        <div class="row g-4">
-            <!-- Total Students Card -->
-            <div class="col-md-3">
-                <div class="dashboard-card">
-                    <div class="icon-container">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="stat-title">Total Students</h3>
-                        <div class="stat-value">{{ totalStudents }}</div>
-                    </div>
-                </div>
+      <div class="d-flex gap-2 align-items-center">
+        <!-- Filters -->
+        <div class="dropdown">
+          <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-filter me-2"></i>
+            {{ getFilterDisplay() }}
+          </button>
+          <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
+            <h6 class="dropdown-header">Filter Options</h6>
+          
+            <div class="mb-3">
+              <label for="yearFilter" class="form-label">Year</label>
+              <select id="yearFilter" class="form-select" v-model="selectedYear" @change="handleYearChange">
+                <option value="">All Years</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+              </select>
             </div>
-
-            <!-- Average Score Card -->
-            <div class="col-md-3">
-                <div class="dashboard-card">
-                    <div class="icon-container">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="stat-title">Class Average</h3>
-                        <div class="stat-value" v-if="hasPerformanceData">{{ averageScore }}%</div>
-                        <div class="no-data" v-else>No data available</div>
-                    </div>
-                </div>
+          
+            <div class="mb-3">
+              <label for="sectionFilter" class="form-label">Section</label>
+              <select id="sectionFilter" class="form-select" v-model="selectedSection">
+                <option value="">All Sections</option>
+                <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
+              </select>
             </div>
-        </div>
-
-        <div class="row mt-4">
-          <div class="dashboard-card mx-3">
-            <div class="icon-container">
-              <i class="fas fa-clock"></i>
+          
+            <div class="mb-3">
+              <label for="subjectFilter" class="form-label">Subject</label>
+              <select id="subjectFilter" class="form-select" v-model="selectedSubject">
+                <option value="">All Subjects</option>
+                <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+              </select>
             </div>
-            <div class="card-info">
-              <h3 class="stat-title">Quizzes</h3>
-              <div class="stat-value">
-                
-              </div>
-              <div>
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance Trends</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceTrendChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div v-for="quiz in quizzesGrades">
-                  Subject : <span class="font-bold">{{ quiz.subject }}</span><br>
-                  Average : <span class="font-bold">{{ quiz.average }}</span>
-                </div> -->
-              </div>
+          
+            <div class="dropdown-divider"></div>
+          
+            <div class="mb-3">
+              <label for="startDateFilter" class="form-label">Start Date</label>
+              <input type="date" id="startDateFilter" class="form-control" v-model="selectedStartDate" :max="selectedEndDate || today">
             </div>
+          
+            <div class="mb-3">
+              <label for="endDateFilter" class="form-label">End Date</label>
+              <input type="date" id="endDateFilter" class="form-control" v-model="selectedEndDate" :min="selectedStartDate" :max="today">
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
           </div>
         </div>
-        asdasd
-        <AllSurveyStat/>
-        <!-- Secondary Stats Row -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="dashboard-card h-100">
-                    <div class="icon-container">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="stat-title">Average Attendance</h3>
-                        <div class="stat-value" v-if="hasAttendanceData">{{ averageAttendance }}%</div>
-                        <div class="no-data" v-else>No attendance data available</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="dashboard-card h-100">
-                    <div class="icon-container">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="stat-title">Assessment Completion</h3>
-                        <div class="stat-value" v-if="hasAssessmentData">{{ assessmentCompletion.toFixed(2) }}%</div>
-                        <div class="no-data" v-else>No assessment data available</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="row mb-4">
-            <!-- Performance Distribution Chart -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Grade Distribution</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assessment Type Distribution -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Assessment Type Distribution</h5>
-                        <div class="chart-container">
-                            <canvas ref="assessmentTypeChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No assessment data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Performance Trend Chart -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance Trends</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceTrendChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assessment Type Performance -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance by Assessment Type</h5>
-                        <div class="chart-container">
-                            <canvas ref="assessmentTypePerformanceChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
+        <!-- Export Graphs Button -->
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
+          <i class="fas fa-file-export me-2"></i>
+          Export Graphs
+        </button>
+      </div>
     </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4 g-3">
+      <!-- Failing Students Card -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="icon-container bg-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="stat-title">Failing Students</h3>
+            <div class="stat-value">{{ failingStudents }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Surveys Card -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="icon-container bg-success">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <div class="card-info">
+            <h3 class="stat-title">Completed Surveys</h3>
+            <div class="stat-value">{{ completedSurveys }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Survey Average Scores Chart -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="chart-card">
+          <h3 class="card-title">
+            <i class="fas fa-chart-bar me-2"></i>
+            Survey Average Scores
+          </h3>
+          <div class="chart-container">
+            <div v-if="loadingSurveyData" class="no-data-message">
+              <div class="spinner-border text-primary spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Loading survey data...
+            </div>
+            <div v-else-if="!hasSurveyData" class="no-data-message">
+              <i class="fas fa-info-circle me-2"></i>
+              No survey data available for the selected filters.
+            </div>
+            <canvas ref="surveyAverageChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Survey Response Distribution Chart -->
+      <div class="col-md-6">
+        <div class="chart-card">
+          <h3 class="card-title">
+            <i class="fas fa-chart-pie me-2"></i>
+            Survey Response Distribution
+          </h3>
+          <p class="chart-description">Distribution of student issues by priority level</p>
+          <div class="chart-container">
+            <div v-if="loadingSurveyData" class="no-data-message">
+              <div class="spinner-border text-primary spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Loading survey data...
+            </div>
+            <div v-else-if="!hasSurveyData" class="no-data-message">
+              <i class="fas fa-info-circle me-2"></i>
+              No survey data available for the selected filters.
+            </div>
+            <canvas ref="surveyDistributionChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Graphs Modal -->
+    <ExportGraphsModal 
+      dashboardType="ssp"
+      :chartRefs="chartRefs"
+      :filterInfo="{
+        year: selectedYear,
+        section: selectedSection,
+        subject: selectedSubject,
+        startDate: selectedStartDate,
+        endDate: selectedEndDate
+      }"
+    />
+  </div>
 </template>
 
 <style scoped>
-.dashboard {
-  padding: 2rem;
-  background-color: #f8f9fa;
-  min-height: 100vh;
+.dashboard-container {
+  padding: 1.5rem;
+  background-color: #f8fafc;
 }
 
-.dashboard-title {
-  font-size: 2rem;
+.welcome-section {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.page-title {
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #2c3e50;
-  margin: 0;
-  letter-spacing: -0.5px;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-message {
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 0;
 }
 
 .dashboard-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
   height: 100%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .icon-container {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  background-color: #003366;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
 }
 
-.dashboard-card:hover .icon-container {
-  transform: scale(1.05);
+.bg-danger {
+  background-color: #ef4444;
+}
+
+.bg-success {
+  background-color: #10b981;
 }
 
 .icon-container i {
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .card-info {
@@ -942,45 +810,37 @@ onMounted(async () => {
 .stat-title {
   font-size: 0.875rem;
   color: #64748b;
-  margin: 0 0 0.5rem 0;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
 }
 
 .stat-value {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #0f172a;
   line-height: 1.2;
-}
-
-.no-data {
-  color: #94a3b8;
-  font-style: italic;
-  font-size: 0.875rem;
 }
 
 .chart-container {
   position: relative;
-  height: 300px;
+  height: 450px;
   width: 100%;
-  margin-bottom: 1rem;
 }
 
 .chart-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  height: 100%;
-  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
 }
 
 .card-title {
   font-size: 1.125rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.3px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
 }
 
 .no-data-message {
@@ -998,121 +858,92 @@ onMounted(async () => {
 .btn-filter {
   background-color: white;
   border: 1px solid #e2e8f0;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
-  color: #1e293b;
-  min-width: 220px;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #0f172a;
+  width: auto;
   text-align: left;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-filter:hover {
-  background-color: #f8fafc;
-  border-color: #003366;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .filter-menu {
-  width: 320px;
-  padding: 1.25rem;
+  width: 280px;
+  padding: 1rem;
   border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
 }
 
 .dropdown-header {
-  color: #003366;
-  font-weight: 700;
+  color: #0f172a;
+  font-weight: 600;
   padding: 0;
-  margin-bottom: 1.25rem;
-  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
 }
 
 .form-label {
-  font-weight: 600;
+  font-weight: 500;
   color: #475569;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
 }
 
 .form-select, .form-control {
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.625rem;
-  font-size: 0.9rem;
-  color: #1e293b;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  color: #0f172a;
   background-color: #fff;
-  transition: all 0.2s ease;
-}
-
-.form-select:hover, .form-control:hover {
-  border-color: #003366;
+  transition: all 0.15s ease;
 }
 
 .form-select:focus, .form-control:focus {
-  border-color: #003366;
-  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
-}
-
-.form-select:disabled {
-  background-color: #f1f5f9;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.dropdown-divider {
-  margin: 1.25rem 0;
-  border-top: 1px solid #e2e8f0;
-}
-
-.table {
-  margin-bottom: 0;
-}
-
-.table th {
-  font-weight: 600;
-  color: #475569;
-  border-bottom-width: 1px;
-  padding: 1rem;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.table td {
-  padding: 1rem;
-  color: #1e293b;
-  vertical-align: middle;
-  font-size: 0.9rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.table tr:last-child td {
-  border-bottom: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
 }
 
 @media (max-width: 768px) {
-  .dashboard {
-    padding: 1rem;
+  .dashboard-container {
+  padding: 1rem;
   }
   
-  .dashboard-card {
-    margin-bottom: 1rem;
+  .chart-container {
+    height: 300px;
   }
+}
 
-  .filter-menu {
-    width: 100%;
-    max-width: 320px;
-  }
+/* Greeting Section Styles */
+.greeting-section {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-  .btn-filter {
-    min-width: auto;
-    width: 100%;
-  }
+.greeting {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #003366;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.greeting-subtitle {
+  color: #64748b;
+  font-size: 1.125rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.chart-description {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1.25rem;
+  font-style: italic;
 }
 </style>

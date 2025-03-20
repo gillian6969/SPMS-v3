@@ -28,76 +28,43 @@
 
                 <!-- Performance and Data (Right Side) -->
                 <div class="student-charts">
-                  <!-- Multiple Chart Sections for Class Records -->
-                  <div v-if="isClassRecord" class="charts-container">
-                    <!-- Assessment Type Selection and Date Filter -->
-                    <div class="chart-controls mb-3">
-                      <div class="assessment-type-selector">
-                        <button 
-                          v-for="type in ['All', 'Quiz', 'Activity', 'Performance Task']" 
-                          :key="type"
-                          class="btn btn-sm" 
-                          :class="selectedAssessmentType === type ? 'btn-primary' : 'btn-outline-secondary'"
-                          @click="changeAssessmentType(type)"
+                  <!-- Date Filter (Common for both class records and attendance) -->
+                  <div class="chart-controls mb-3">
+                    <div class="date-filter">
+                      <div class="input-group input-group-sm">
+                        <span class="input-group-text">From</span>
+                        <input 
+                          type="date" 
+                          class="form-control" 
+                          v-model="dateFilter.start"
+                          @change="handleDateFilterChange"
                         >
-                          {{ type }}
+                        <span class="input-group-text">To</span>
+                        <input 
+                          type="date" 
+                          class="form-control" 
+                          v-model="dateFilter.end"
+                          @change="handleDateFilterChange"
+                        >
+                        <button class="btn btn-primary" @click="applyFilter">
+                          <i class="fas fa-filter me-1"></i> Apply
                         </button>
-                      </div>
-                      <div class="date-filter">
-                        <div class="input-group input-group-sm">
-                          <span class="input-group-text">From</span>
-                          <input 
-                            type="date" 
-                            class="form-control" 
-                            v-model="dateFilter.start"
-                            @change="$emit('date-filter-change', dateFilter)"
-                          >
-                          <span class="input-group-text">To</span>
-                          <input 
-                            type="date" 
-                            class="form-control" 
-                            v-model="dateFilter.end"
-                            @change="$emit('date-filter-change', dateFilter)"
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Single Chart when "All" is selected -->
-                    <div v-if="selectedAssessmentType === 'All'" class="chart-section">
-                      <h6>All Assessments</h6>
-                      <div class="chart-container" style="height: 300px;">
-                        <canvas :id="`all-${chartId}`"></canvas>
-                      </div>
-                    </div>
-                    
-                    <!-- Individual Charts when specific types are selected -->
-                    <div v-else-if="selectedAssessmentType === 'Quiz'" class="chart-section">
-                      <h6>Quiz Performance</h6>
-                      <div class="chart-container" style="height: 300px;">
-                        <canvas :id="`quiz-${chartId}`"></canvas>
-                      </div>
-                    </div>
-                    
-                    <div v-else-if="selectedAssessmentType === 'Activity'" class="chart-section">
-                      <h6>Activity Performance</h6>
-                      <div class="chart-container" style="height: 300px;">
-                        <canvas :id="`activity-${chartId}`"></canvas>
-                      </div>
-                    </div>
-                    
-                    <div v-else-if="selectedAssessmentType === 'Performance Task'" class="chart-section">
-                      <h6>Performance Task</h6>
-                      <div class="chart-container" style="height: 300px;">
-                        <canvas :id="`performance-${chartId}`"></canvas>
                       </div>
                     </div>
                   </div>
+
+                  <!-- Class Records Chart -->
+                  <div v-if="isClassRecord" class="chart-section">
+                    <h6>Assessment Performance</h6>
+                    <div class="chart-container" style="height: 400px;">
+                      <canvas :id="`all-${chartId}`"></canvas>
+                    </div>
+                  </div>
                   
-                  <!-- Single Chart Section for Attendance -->
+                  <!-- Attendance Chart -->
                   <div v-else class="chart-section">
                     <h6>{{ chartTitle }}</h6>
-                    <div class="chart-container" style="height: 300px;">
+                    <div class="chart-container" style="height: 400px;">
                       <canvas :id="chartId"></canvas>
                     </div>
                   </div>
@@ -145,6 +112,9 @@
 
 <script>
 import { defineComponent } from 'vue'
+import axios from 'axios'
+import Chart from 'chart.js/auto'
+import moment from 'moment'
 
 export default defineComponent({
   name: 'StudentDetailsModal',
@@ -196,7 +166,7 @@ export default defineComponent({
     }
   },
 
-  emits: ['close', 'update:show', 'date-filter-change', 'assessment-type-change'],
+  emits: ['close', 'update:show', 'date-filter-change', 'filter-change', 'assessment-type-change'],
 
   data() {
     const today = new Date().toISOString().split('T')[0];
@@ -205,21 +175,221 @@ export default defineComponent({
     const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
     
     return {
-      selectedAssessmentType: 'All',
       dateFilter: {
         start: thirtyDaysAgoStr,
         end: today
+      },
+      selectedAssessmentType: 'All',
+      attendanceData: {
+        labels: ['Present', 'Late', 'Absent'],
+        values: [0, 0, 0]
+      },
+      attendanceChart: null,
+      assessmentChart: null,
+      isLoading: false
+    }
+  },
+
+  mounted() {
+    // Apply initial filter when component is mounted
+    this.applyFilter();
+  },
+
+  watch: {
+    show(newVal) {
+      if (newVal) {
+        // Initialize charts when modal is shown
+        this.$nextTick(() => {
+          this.fetchAttendanceData();
+          if (this.isClassRecord) {
+            this.initializeClassRecordChart();
+          } else {
+            this.initializeAttendanceChart();
+          }
+        });
       }
     }
   },
 
   methods: {
     closeModal() {
+      // Destroy charts before closing
+      if (this.attendanceChart) {
+        this.attendanceChart.destroy();
+        this.attendanceChart = null;
+      }
+      if (this.assessmentChart) {
+        this.assessmentChart.destroy();
+        this.assessmentChart = null;
+      }
+      
       this.$emit('update:show', false)
       this.$emit('close')
     },
-    
+
+    handleDateFilterChange() {
+      // Date inputs change handler - we don't auto-apply
+      console.log('Date filter changed:', this.dateFilter);
+    },
+
+    applyFilter() {
+      console.log('Applying filter:', this.dateFilter);
+      this.$emit('filter-change', this.dateFilter);
+      
+      // Refresh charts with new date filter
+      this.fetchAttendanceData();
+      if (this.isClassRecord) {
+        this.initializeClassRecordChart();
+      } else {
+        this.initializeAttendanceChart();
+      }
+    },
+
+    fetchAttendanceData() {
+      if (!this.show || !this.student || !this.student.studentId) return;
+      
+      this.isLoading = true;
+      
+      // Get token from localStorage
+      const token = localStorage.getItem('token') || '';
+      
+      const api = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      api.get(`/attendance/${this.student.studentId}/history`, {
+        params: {
+          startDate: this.dateFilter.start,
+          endDate: this.dateFilter.end,
+          section: this.section,
+          year: this.yearLevel
+        }
+      })
+      .then(response => {
+        // Process attendance data
+        if (response.data && response.data.records) {
+          const records = response.data.records || [];
+          
+          // Count occurrences of each status
+          const counts = {
+            present: 0,
+            late: 0,
+            absent: 0
+          };
+          
+          records.forEach(record => {
+            if (record.status in counts) {
+              counts[record.status]++;
+            }
+          });
+          
+          // Update the attendance data
+          this.attendanceData = {
+            labels: ['Present', 'Late', 'Absent'],
+            values: [counts.present, counts.late, counts.absent]
+          };
+          
+          // Update the chart if it exists
+          if (!this.isClassRecord) {
+            this.updateAttendanceChart();
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching attendance data:', error);
+        // Set default attendance data on error
+        this.attendanceData = {
+          labels: ['Present', 'Late', 'Absent'],
+          values: [0, 0, 0]
+        };
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+    },
+
+    initializeAttendanceChart() {
+      const ctx = document.getElementById(this.chartId);
+      if (!ctx) return;
+      
+      // Destroy previous chart if it exists
+      if (this.attendanceChart) {
+        this.attendanceChart.destroy();
+      }
+      
+      // Create attendance chart
+      this.attendanceChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: this.attendanceData.labels,
+          datasets: [{
+            data: this.attendanceData.values,
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                padding: 15,
+                font: {
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return `${label}: ${value} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    },
+
+    updateAttendanceChart() {
+      if (!this.attendanceChart) {
+        this.initializeAttendanceChart();
+        return;
+      }
+      
+      // Update chart data
+      this.attendanceChart.data.labels = this.attendanceData.labels;
+      this.attendanceChart.data.datasets[0].data = this.attendanceData.values;
+      
+      // Update chart
+      this.attendanceChart.update();
+    },
+
+    initializeClassRecordChart() {
+      // Implementation for class record chart
+      // This would be similar to attendance chart but with assessment data
+      const ctx = document.getElementById(`all-${this.chartId}`);
+      if (!ctx) return;
+
+      // This would be implemented based on assessment data
+      // For now just a placeholder
+    },
+
     changeAssessmentType(type) {
+      console.log('Changing assessment type to:', type);
       this.selectedAssessmentType = type;
       this.$emit('assessment-type-change', type);
     }
@@ -402,7 +572,7 @@ export default defineComponent({
 .chart-container {
   position: relative;
   width: 100%;
-  height: 300px !important;
+  height: 400px !important;
   background: linear-gradient(to bottom, rgba(249, 250, 251, 0.5), rgba(249, 250, 251, 0));
   border-radius: 8px;
   padding: 1rem;
@@ -468,30 +638,21 @@ export default defineComponent({
 
 .chart-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
   background: #f8fafc;
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.assessment-type-selector {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.assessment-type-selector .btn {
-  font-weight: 500;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
 .date-filter {
-  min-width: 300px;
+  width: 100%;
+}
+
+.date-filter .input-group {
+  display: flex;
+  align-items: center;
 }
 
 .date-filter .input-group-text {
@@ -505,5 +666,9 @@ export default defineComponent({
   border-color: #e2e8f0;
   color: #4a5568;
   font-weight: 500;
+}
+
+.date-filter .btn {
+  margin-left: 8px;
 }
 </style> 

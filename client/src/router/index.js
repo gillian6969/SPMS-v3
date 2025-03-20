@@ -8,6 +8,7 @@ import RegisterSSP from '../views/RegisterSSP.vue'
 import Dashboard from '../views/Dashboard.vue'
 import TeacherDashboard from '../views/TeacherDashboard.vue'
 import SSPHeadDashboard from '@/views/SSPHeadDashboard.vue'
+import SSPDashboard from '@/views/SSPDashboard.vue'
 import StudentManagement from '../views/StudentManagement.vue'
 import ClassRecords from '../views/ClassRecords.vue'
 import Attendance from '../views/Attendance.vue'
@@ -18,6 +19,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TeacherManagement from '../views/TeacherManagement.vue'
 import SSPManagement from '../views/SSPManagement.vue'
 import FailingStudents from '../views/FailingStudents.vue'
+import CompletedSurveys from '../views/CompletedSurveys.vue'
 import SurveyForm from '../views/SurveyForm'
 import Forgot from '../views/Forgot.vue'
 import ResetPassword from '../views/ResetPassword.vue'
@@ -78,9 +80,9 @@ const routes = [
       },
       {
         path: 'ssp-dashboard',
-        name: 'SSPHead Dashboard',
-        component: SSPHeadDashboard,
-        meta: { requiresAuth: true, sspOnly : true }
+        name: 'SSPDashboard',
+        component: SSPDashboard,
+        meta: { requiresAuth: true, sspOnly: true }
       },
       {
         path: 'student-management',
@@ -110,13 +112,13 @@ const routes = [
         path: 'profile/edit',
         name: 'EditProfile',
         component: EditProfile,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, roles: ['citHead', 'teacher', 'ssp', 'sspHead'] }
       },
       {
         path: 'profile/password',
         name: 'ChangePassword',
         component: ChangePassword,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, roles: ['citHead', 'teacher', 'ssp', 'sspHead'] }
       },
       {
         path: 'teacher-management',
@@ -128,13 +130,19 @@ const routes = [
         path: 'ssp-management',
         name: 'SSPManagement',
         component: SSPManagement,
-        meta: { requiresAuth: true, roles: ['citHead'] }
+        meta: { requiresAuth: true, roles: ['sspHead'] }
       },
       {
         path: 'ssp-student-management',
         name: 'SSPStudentManagement',
         component: FailingStudents,
-        meta: { requiresAuth: true, roles: ['citHead'] }
+        meta: { requiresAuth: true, roles: ['ssp'] }
+      },
+      {
+        path: 'completed-surveys',
+        name: 'CompletedSurveys',
+        component: CompletedSurveys,
+        meta: { requiresAuth: true, roles: ['ssp', 'sspHead'] }
       }
     ]
   }
@@ -152,6 +160,7 @@ router.beforeEach((to, from, next) => {
   const isTeacher = store.getters.isTeacher
   const isSSP = store.getters.isSSP
   const isSSPHead = store.getters.isSSPHead
+  const userRole = store.state.auth.user?.role
 
   // Routes that require authentication 
   if (to.matched.some(record => record.meta.requiresAuth)) {
@@ -160,23 +169,28 @@ router.beforeEach((to, from, next) => {
       return
     }
     
-    // // CIT Head only routes
-    // if (to.matched.some(record => record.meta.citHeadOnly) && !isCITHead && !isSSP) {
-    //   next('/teacher-dashboard')
-    //   return
-    // }
-
-    // // Teacher only routes
-    // if (to.matched.some(record => record.meta.teacherOnly) && !isTeacher) {
-    //   next('/dashboard')
-    //   return
-    // }
-
-    // // SSP only routes
-    // if (to.matched.some(record => record.meta.sspOnly) && !isTeacher && !isCITHead) {
-    //   next('/ssp-dashboard')
-    //   return
-    // }
+    // Special handling for profile routes - all authenticated users can access
+    if (to.path.startsWith('/profile/')) {
+      next()
+      return
+    }
+    
+    // Check role-specific routes
+    if (to.meta.roles && to.meta.roles.length > 0) {
+      if (!to.meta.roles.includes(userRole)) {
+        // Redirect to appropriate dashboard based on role
+        if (isCITHead) {
+          next('/dashboard')
+        } else if (isTeacher) {
+          next('/teacher-dashboard')
+        } else if (isSSPHead || isSSP) {
+          next('/ssp-dashboard')
+        } else {
+          next('/login')
+        }
+        return
+      }
+    }
   }
 
   // Routes for guests only (login, register)
@@ -198,10 +212,38 @@ router.beforeEach((to, from, next) => {
     if (isTeacher) {
       next('/teacher-dashboard')
       return
-    } else if (isSSPHead) {
+    } else if (isSSPHead || isSSP) {
       next('/ssp-dashboard')
       return
     }
+  }
+
+  // Special case for SSP Student Management route
+  if (to.path === '/ssp-student-management' && !isSSP) {
+    if (isSSPHead) {
+      next('/ssp-dashboard')
+    } else if (isCITHead) {
+      next('/dashboard')
+    } else if (isTeacher) {
+      next('/teacher-dashboard')
+    } else {
+      next('/login')
+    }
+    return
+  }
+
+  // Special case for SSP Management route
+  if (to.path === '/ssp-management' && !isSSPHead) {
+    if (isSSP) {
+      next('/ssp-dashboard')
+    } else if (isCITHead) {
+      next('/dashboard')
+    } else if (isTeacher) {
+      next('/teacher-dashboard')
+    } else {
+      next('/login')
+    }
+    return
   }
 
   next()

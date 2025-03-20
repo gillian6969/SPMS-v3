@@ -346,7 +346,7 @@
         lastName: '',
         email: '',
         counselingYear: '',
-        role : 'ssp',
+        role: 'ssp',
         subjects: [],
       })
   
@@ -462,7 +462,7 @@
           lastName: teacher.lastName,
           email: teacher.email,
           counselingYear: teacher.counselingYear,
-          role : 'ssp',
+          role: 'ssp',
           subjects: [...teacher.subjects]
         }
         showEditModal.value = true
@@ -472,6 +472,8 @@
       const updateTeacher = async () => {
         isLoading.value = true
         try {
+          editForm.value.role = 'ssp'
+          
           await axios.put(`/api/teachers/${selectedTeacher.value._id}`, editForm.value, {
             headers: {
               Authorization: `Bearer ${store.state.auth.token}`
@@ -533,6 +535,7 @@
           lastName: '',
           email: '',
           counselingYear: '',
+          role: 'ssp',
           subjects: []
         }
       }

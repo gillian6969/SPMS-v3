@@ -9,6 +9,9 @@
         <button class="btn btn-primary" @click="showAddAssessmentModal = true">
           <i class="fas fa-plus"></i> Add Assessment
         </button>
+        <button class="btn btn-success" @click="openExportModal">
+          <i class="fas fa-file-export"></i> Export Records
+        </button>
       </div>
       <!-- Add date navigation controls -->
       <div class="d-flex align-items-center gap-3">
@@ -348,6 +351,7 @@
       @close="selectedStudent = null"
       @date-filter-change="handleDateFilterChange"
       @assessment-type-change="handleAssessmentTypeChange"
+      @filter-change="handleDateFilterChange"
     >
       <template #history-table>
         <table class="table">
@@ -449,6 +453,69 @@
         </div>
       </div>
     </teleport>
+
+    <!-- Export Records Modal -->
+    <teleport to="body" v-if="showExportModal">
+      <div class="modal-overlay">
+        <div class="modal-wrapper">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Export Class Records</h5>
+                <button type="button" class="btn-close" @click="showExportModal = false"></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Select a date range to export class records. Only assessments within this date range will be included.
+                </div>
+
+                <form @submit.prevent="exportRecords">
+                  <div class="mb-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" class="form-control" v-model="exportDateRange.start" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" class="form-control" v-model="exportDateRange.end" required>
+                  </div>
+                  
+                  <div class="mt-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="exportType" id="exportTypeExcel" value="excel" v-model="exportType">
+                      <label class="form-check-label" for="exportTypeExcel">
+                        Export to Excel (.xlsx)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="exportType" id="exportTypeCsv" value="csv" v-model="exportType">
+                      <label class="form-check-label" for="exportTypeCsv">
+                        Export to CSV (.csv)
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4 text-end">
+                    <button type="button" class="btn btn-secondary me-2" @click="showExportModal = false">
+                      Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success" :disabled="isExporting">
+                      <span v-if="isExporting">
+                        <i class="fas fa-spinner fa-spin me-2"></i> Exporting...
+                      </span>
+                      <span v-else>
+                        <i class="fas fa-file-export me-2"></i> Export
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-backdrop" @click="showExportModal = false"></div>
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -461,6 +528,7 @@ import moment from 'moment-timezone'
 import Chart from 'chart.js/auto'
 import 'chartjs-adapter-moment'
 import StudentDetailsModal from '@/components/modals/StudentDetailsModal.vue'
+import * as XLSX from 'xlsx'
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -1470,6 +1538,35 @@ export default {
           alert('Teacher information is not available. Please try logging in again.');
           store.dispatch('logout');
           router.push('/login');
+          return;
+        }
+
+        // Check if a record with the same year, section, and subject already exists
+        const checkExistingResponse = await api.get('/teacher-class-records', {
+          params: {
+            teacherId,
+            year: newStudentRecord.value.year,
+            section: newStudentRecord.value.section,
+            subject: newStudentRecord.value.subject
+          },
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (checkExistingResponse.data && checkExistingResponse.data.length > 0) {
+          // Record already exists - show error toast and don't close modal
+          showToast('A class record with this year, section, and subject already exists.', 'error', 3000);
+          
+          // Update selected filters to show the existing record
+          selectedYear.value = newStudentRecord.value.year;
+          selectedSection.value = newStudentRecord.value.section;
+          selectedSubject.value = newStudentRecord.value.subject;
+          
+          // Close modal and refresh data to show the existing record
+          showAddStudentRecordModal.value = false;
+          await fetchClassData();
+          
           return;
         }
 
@@ -2670,15 +2767,19 @@ export default {
     const handleDateFilterChange = (dateFilter) => {
       console.log('Date filter changed:', dateFilter);
       
+      // Handle both filter formats
+      const start = dateFilter.start || dateFilter.startDate;
+      const end = dateFilter.end || dateFilter.endDate;
+      
       // Update chart date range
-      if (dateFilter.start) {
-        chartDateRange.value.start = dateFilter.start;
-        historyDateRange.value.start = dateFilter.start;
+      if (start) {
+        chartDateRange.value.start = start;
+        historyDateRange.value.start = start;
       }
       
-      if (dateFilter.end) {
-        chartDateRange.value.end = dateFilter.end;
-        historyDateRange.value.end = dateFilter.end;
+      if (end) {
+        chartDateRange.value.end = end;
+        historyDateRange.value.end = end;
       }
       
       // Recreate charts with the new date range
@@ -4059,6 +4160,140 @@ export default {
       return '';
     };
 
+    // Add new refs for export functionality
+    const showExportModal = ref(false)
+    const exportDateRange = ref({
+      start: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+      end: moment().format('YYYY-MM-DD')
+    })
+    const exportType = ref('excel')
+    const isExporting = ref(false)
+
+    // Function to open export modal
+    const openExportModal = () => {
+      showExportModal.value = true
+    }
+
+    // Function to export records
+    const exportRecords = async () => {
+      try {
+        isExporting.value = true
+        
+        // Validate date range
+        const startDate = new Date(exportDateRange.value.start)
+        const endDate = new Date(exportDateRange.value.end)
+        
+        if (startDate > endDate) {
+          alert('Start date cannot be after end date')
+          isExporting.value = false
+          return
+        }
+        
+        const teacherId = store.state.auth.user?._id
+        if (!teacherId) {
+          throw new Error('Teacher ID not available')
+        }
+        
+        // Fetch export data from API
+        const response = await api.get('/users/export/class-records', {
+          params: {
+            teacherId,
+            year: selectedYear.value,
+            section: selectedSection.value,
+            subject: selectedSubject.value,
+            startDate: exportDateRange.value.start,
+            endDate: exportDateRange.value.end
+          },
+          headers: {
+            'Authorization': `Bearer ${store.state.auth.token}`
+          }
+        })
+        
+        const data = response.data
+        
+        // For debugging - log the data to ensure scores are being received
+        console.log('Export data received:', data)
+        if (data.students && data.students.length > 0) {
+          console.log('Sample student scores:', data.students[0].scores)
+        }
+        
+        // Prepare worksheet data
+        const worksheetData = []
+        
+        // Add header rows with class information
+        worksheetData.push(['Class Records Export'])
+        worksheetData.push(['Teacher:', data.teacherName])
+        worksheetData.push(['Year:', data.year])
+        worksheetData.push(['Section:', data.section])
+        worksheetData.push(['Subject:', data.subject])
+        worksheetData.push(['Date Range:', data.dateRange])
+        worksheetData.push([]) // Empty row
+        
+        // Add table headers
+        const headers = ['Student Number', 'Last Name', 'First Name']
+        
+        // Add assessment headers
+        data.assessments.forEach(assessment => {
+          headers.push(`${assessment.type} ${assessment.number} (${assessment.maxScore} pts) - ${moment(assessment.date).format('MM/DD/YYYY')}`)
+        })
+        
+        worksheetData.push(headers)
+        
+        // Add student data rows
+        data.students.forEach(student => {
+          const row = [
+            student.studentNumber,
+            student.lastName,
+            student.firstName
+          ]
+          
+          // Add scores for each assessment
+          student.scores.forEach(scoreObj => {
+            // Check if score exists and is not empty
+            const scoreValue = scoreObj.score !== undefined && scoreObj.score !== null && scoreObj.score !== '' 
+              ? scoreObj.score 
+              : 'N/A';
+            row.push(scoreValue);
+          })
+          
+          worksheetData.push(row)
+        })
+        
+        // Create worksheet and workbook
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Class Records')
+        
+        // Set column widths
+        const colWidths = [
+          { wch: 15 }, // Student Number
+          { wch: 15 }, // Last Name
+          { wch: 15 }, // First Name
+        ]
+        
+        // Add widths for each assessment column
+        data.assessments.forEach(() => {
+          colWidths.push({ wch: 20 })
+        })
+        
+        worksheet['!cols'] = colWidths
+        
+        // Export based on selected type
+        if (exportType.value === 'excel') {
+          XLSX.writeFile(workbook, `${data.subject}_${data.year}_${data.section}_ClassRecord.xlsx`)
+        } else {
+          XLSX.writeFile(workbook, `${data.subject}_${data.year}_${data.section}_ClassRecord.csv`, { bookType: 'csv' })
+        }
+        
+        showExportModal.value = false
+      } catch (error) {
+        console.error('Error exporting records:', error)
+        alert('Failed to export records. Please try again.')
+      } finally {
+        isExporting.value = false
+      }
+    }
+
     return {
       selectedYear,
       selectedSection,
@@ -4140,6 +4375,12 @@ export default {
       loadLastUsedFilters, // Add the new function
       saveToRecentFilters, // Add the new function
       getStudentScore,
+      showExportModal,
+      exportDateRange,
+      exportType,
+      isExporting,
+      openExportModal,
+      exportRecords
     }
   }
 }

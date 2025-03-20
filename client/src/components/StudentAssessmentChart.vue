@@ -48,12 +48,12 @@ const data = ref({
     datasets: [
         {
             label: 'Max Score',
-            backgroundColor: '#f87979',
+            backgroundColor: '#ef4444',
             data: myAssessments.value.map(a => a.maxScore)
         },
         {
             label: "Student's Score",
-            backgroundColor: '#f87979',
+            backgroundColor: '#10b981',
             data: myAssessments.value.map(a => a.scores)
         }
     ]

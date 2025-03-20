@@ -34,9 +34,10 @@ router.get('/profile', auth, async (req, res) => {
 // Update user profile
 router.put('/profile', auth, async (req, res) => {
   try {
-    const { firstName, lastName, email, teachingYear, currentPassword, newPassword } = req.body;
+    const { firstName, lastName, email, teachingYear } = req.body;
     
-    const user = await User.findById(req.user.id);
+    // Use req.user._id from auth middleware
+    const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -47,31 +48,24 @@ router.put('/profile', auth, async (req, res) => {
     if (email) user.email = email;
     if (teachingYear) user.teachingYear = teachingYear;
     
-    // Update password if provided
-    if (newPassword && currentPassword) {
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: 'Current password is incorrect' });
-      }
-      user.password = newPassword;
-    }
-    
     await user.save();
     
     // Return user without password
-    const updatedUser = await User.findById(user.id).select('-password');
+    const updatedUser = await User.findById(user._id).select('-password');
     res.json(updatedUser);
   } catch (error) {
+    console.error('Error updating profile:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Update user password
-router.put('/profile/password', auth, async (req, res) => {
+router.put('/password', auth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     
-    const user = await User.findById(req.user.id);
+    // Use req.user._id from auth middleware
+    const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -89,6 +83,7 @@ router.put('/profile/password', auth, async (req, res) => {
     
     res.json({ success: true });
   } catch (error) {
+    console.error('Error updating password:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
@@ -182,5 +177,446 @@ router.post('/profile/password/send', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 })
+
+// Request verification code for password reset
+router.post('/profile/password/request-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Generate a random 6-digit code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Set expiration time (15 minutes from now)
+    const codeExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    
+    // Save code to user document
+    user.resetPasswordCode = verificationCode;
+    user.resetPasswordExpires = codeExpiry;
+    await user.save();
+    
+    // Send email with verification code
+    send(
+      email,
+      `<div>
+        <h2>Password Reset Verification</h2>
+        <p>Your verification code is: <strong>${verificationCode}</strong></p>
+        <p>This code will expire in 15 minutes.</p>
+      </div>`,
+      'Password Reset Verification Code'
+    );
+    
+    res.json({ success: true, message: 'Verification code sent to your email' });
+  } catch (error) {
+    console.error('Error sending verification code:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Verify code without changing password yet
+router.post('/profile/password/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if code exists and is valid
+    if (!user.resetPasswordCode || user.resetPasswordCode !== code) {
+      return res.status(400).json({ message: 'Invalid verification code' });
+    }
+    
+    // Check if code is expired
+    if (user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({ message: 'Verification code has expired' });
+    }
+    
+    res.json({ success: true, message: 'Code verified successfully' });
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Reset password with verification code
+router.post('/profile/password/reset-with-code', async (req, res) => {
+  try {
+    const { email, code, password } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if code exists and is valid
+    if (!user.resetPasswordCode || user.resetPasswordCode !== code) {
+      return res.status(400).json({ message: 'Invalid verification code' });
+    }
+    
+    // Check if code is expired
+    if (user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({ message: 'Verification code has expired' });
+    }
+    
+    // Hash and save new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    
+    // Clear reset code fields
+    user.resetPasswordCode = undefined;
+    user.resetPasswordExpires = undefined;
+    
+    await user.save();
+    
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Export class records with date range
+router.get('/export/class-records', async (req, res) => {
+  try {
+    const { teacherId, year, section, subject, startDate, endDate } = req.query;
+    
+    if (!teacherId || !year || !section || !subject) {
+      return res.status(400).json({ message: 'Missing required parameters' });
+    }
+    
+    // Find the teacher
+    const teacher = await User.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    
+    // Find the class record
+    const classRecord = await require('mongoose').model('TeacherClassRecord').findOne({
+      teacherId,
+      year,
+      section,
+      subject
+    }).populate('students.studentId', 'firstName lastName').populate('assessments');
+    
+    if (!classRecord) {
+      return res.status(404).json({ message: 'Class record not found' });
+    }
+    
+    // Find assessments for the class with optional date filter
+    const assessmentQuery = {
+      teacherId,
+      section,
+      subject
+    };
+    
+    if (startDate && endDate) {
+      assessmentQuery.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+    
+    const assessments = await require('mongoose').model('Assessment').find(assessmentQuery).sort('date');
+    
+    // Prepare export data
+    const exportData = {
+      teacherName: `${teacher.firstName} ${teacher.lastName}`,
+      year,
+      section,
+      subject,
+      dateRange: startDate && endDate ? `${startDate} to ${endDate}` : 'All dates',
+      assessments,
+      students: classRecord.students.map(student => ({
+        studentNumber: student.studentNumber,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        scores: assessments.map(assessment => {
+          let score = null;
+          
+          // Handle different types of score storage
+          if (assessment.scores) {
+            if (assessment.scores instanceof Map) {
+              score = assessment.scores.get(student.studentNumber);
+            } else if (typeof assessment.scores === 'object') {
+              score = assessment.scores[student.studentNumber];
+            }
+          }
+          
+          // Convert score to number if it exists, otherwise keep null
+          if (score !== undefined && score !== null) {
+            score = Number(score);
+            if (isNaN(score)) score = null;
+          }
+          
+          return {
+            assessmentId: assessment._id,
+            score
+          };
+        })
+      }))
+    };
+    
+    res.json(exportData);
+  } catch (error) {
+    console.error('Error exporting class records:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Export attendance records with date range
+router.get('/export/attendance', async (req, res) => {
+  try {
+    const { teacherId, year, section, subject, startDate, endDate } = req.query;
+    
+    if (!teacherId || !year || !section || !subject) {
+      return res.status(400).json({ message: 'Missing required parameters' });
+    }
+    
+    // Find the teacher
+    const teacher = await User.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    
+    // Find attendance records with date filter
+    const attendanceQuery = {
+      teacherId,
+      section,
+      subject
+    };
+    
+    if (startDate && endDate) {
+      attendanceQuery.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+    
+    // Find the class record to get student information
+    const classRecord = await require('mongoose').model('TeacherClassRecord').findOne({
+      teacherId,
+      year,
+      section,
+      subject
+    }).populate('students.studentId', 'firstName lastName');
+    
+    if (!classRecord) {
+      return res.status(404).json({ message: 'Class record not found' });
+    }
+    
+    // Find attendance records
+    const Attendance = require('mongoose').model('Attendance');
+    const attendanceRecords = await Attendance.find(attendanceQuery).sort('date');
+    
+    // Group attendance by date
+    const attendanceByDate = attendanceRecords.reduce((acc, record) => {
+      const dateStr = record.date.toISOString().split('T')[0];
+      if (!acc[dateStr]) {
+        acc[dateStr] = [];
+      }
+      acc[dateStr].push(record);
+      return acc;
+    }, {});
+    
+    // Prepare export data
+    const exportData = {
+      teacherName: `${teacher.firstName} ${teacher.lastName}`,
+      year,
+      section,
+      subject,
+      dateRange: startDate && endDate ? `${startDate} to ${endDate}` : 'All dates',
+      dates: Object.keys(attendanceByDate).sort(),
+      students: classRecord.students.map(student => {
+        const studentRecord = {
+          studentNumber: student.studentNumber,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          attendance: {}
+        };
+        
+        // Add attendance status for each date
+        Object.keys(attendanceByDate).sort().forEach(date => {
+          const studentAttendance = attendanceByDate[date].find(
+            record => String(record.studentId) === String(student.studentId)
+          );
+          
+          studentRecord.attendance[date] = studentAttendance ? studentAttendance.status : 'none';
+        });
+        
+        return studentRecord;
+      })
+    };
+    
+    res.json(exportData);
+  } catch (error) {
+    console.error('Error exporting attendance records:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Student routes
+
+// Get student profile
+router.get('/student/profile', auth, async (req, res) => {
+  try {
+    // Verify user is a student
+    if (req.user.role !== 'student') {
+      return res.status(403).json({ message: 'Unauthorized access' });
+    }
+
+    const student = await User.findById(req.user._id)
+      .select('-password')
+      .lean();
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.json(student);
+  } catch (error) {
+    console.error('Error fetching student profile:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get student assessments
+router.get('/student/assessments', auth, async (req, res) => {
+  try {
+    // Verify user is a student
+    if (req.user.role !== 'student') {
+      return res.status(403).json({ message: 'Unauthorized access' });
+    }
+
+    const studentId = req.user._id;
+    const student = await User.findById(studentId);
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find class records that include this student
+    const mongoose = require('mongoose');
+    const ClassRecord = mongoose.model('TeacherClassRecord');
+    const Assessment = mongoose.model('Assessment');
+    
+    const classRecords = await ClassRecord.find({
+      'students.studentId': studentId
+    }).populate('teacherId', 'firstName lastName');
+    
+    const result = [];
+    
+    // For each class, find related assessments
+    for (const classRecord of classRecords) {
+      const assessments = await Assessment.find({
+        teacherId: classRecord.teacherId._id,
+        section: classRecord.section,
+        subject: classRecord.subject
+      }).sort({ date: -1 });
+      
+      // Filter assessments to only include ones with scores for this student
+      const studentAssessments = assessments.map(assessment => {
+        const studentNumber = classRecord.students.find(
+          s => s.studentId.toString() === studentId.toString()
+        )?.studentNumber;
+        
+        let score = null;
+        if (assessment.scores && studentNumber) {
+          if (assessment.scores instanceof Map) {
+            score = assessment.scores.get(studentNumber);
+          } else if (typeof assessment.scores === 'object') {
+            score = assessment.scores[studentNumber];
+          }
+        }
+        
+        return {
+          _id: assessment._id,
+          title: assessment.title,
+          type: assessment.type,
+          maxScore: assessment.maxScore,
+          score: score,
+          date: assessment.date,
+          subject: assessment.subject,
+          section: assessment.section,
+          teacherName: `${classRecord.teacherId.firstName} ${classRecord.teacherId.lastName}`
+        };
+      }).filter(a => a.score !== null && a.score !== undefined);
+      
+      result.push({
+        subject: classRecord.subject,
+        section: classRecord.section,
+        teacher: `${classRecord.teacherId.firstName} ${classRecord.teacherId.lastName}`,
+        assessments: studentAssessments
+      });
+    }
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching student assessments:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get student attendance
+router.get('/student/attendance', auth, async (req, res) => {
+  try {
+    // Verify user is a student
+    if (req.user.role !== 'student') {
+      return res.status(403).json({ message: 'Unauthorized access' });
+    }
+
+    const studentId = req.user._id;
+    const student = await User.findById(studentId);
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Find class records that include this student
+    const mongoose = require('mongoose');
+    const ClassRecord = mongoose.model('TeacherClassRecord');
+    const Attendance = mongoose.model('Attendance');
+    
+    const classRecords = await ClassRecord.find({
+      'students.studentId': studentId
+    }).populate('teacherId', 'firstName lastName');
+    
+    const result = [];
+    
+    // For each class, find related attendance records
+    for (const classRecord of classRecords) {
+      const attendanceRecords = await Attendance.find({
+        teacherId: classRecord.teacherId._id,
+        section: classRecord.section,
+        subject: classRecord.subject,
+        studentId: studentId
+      }).sort({ date: -1 });
+      
+      if (attendanceRecords.length > 0) {
+        result.push({
+          subject: classRecord.subject,
+          section: classRecord.section,
+          teacher: `${classRecord.teacherId.firstName} ${classRecord.teacherId.lastName}`,
+          records: attendanceRecords.map(record => ({
+            _id: record._id,
+            date: record.date,
+            status: record.status,
+            remarks: record.remarks
+          }))
+        });
+      }
+    }
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching student attendance:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 module.exports = router; 

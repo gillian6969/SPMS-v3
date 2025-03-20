@@ -4,7 +4,7 @@
       <div class="left-section">
         <div class="content-wrapper">
           <div class="logo-container">
-            <img src="@/assets/logo1.png" alt="School Logo" class="logo logo1" :class="{ active: loginType === 'citHead' }">
+            <img src="@/assets/logo2.png" alt="School Logo" class="logo logo1" :class="{ active: loginType === 'citHead' }">
             <img src="@/assets/logo2.png" alt="School Logo" class="logo logo2" :class="{ active: loginType === 'user' }">
           </div>
           <h1 class="school-name">PHINMA ARAULLO UNIVERSITY</h1>
@@ -13,25 +13,25 @@
       </div>
       
       <div class="right-section" :data-login-type="loginType">
-        <h2 class="form-title">{{ loginType === 'citHead' ? 'CIT HEAD LOGIN' : 'TEACHER & SSP LOGIN' }}</h2>
+        <h2 class="form-title">{{ loginType === 'citHead' ? 'CIT HEAD & SSP HEAD LOGIN' : 'TEACHER & SSP ADVISERS LOGIN' }}</h2>
         
         <!-- Login Type Selector -->
         <div class="login-type-selector">
-          <button 
-            class="type-btn" 
-            :class="{'active': loginType === 'citHead'}"
-            :data-login-type="loginType"
-            @click="loginType = 'citHead'"
-          >
-            CIT Head
-          </button>
           <button 
             class="type-btn" 
             :class="{'active': loginType === 'user'}"
             :data-login-type="loginType"
             @click="loginType = 'user'"
           >
-            TEACHER & SSP ADVISERS LOGIN
+          TEACHER & SSP ADVISERS LOGIN
+          </button>
+          <button 
+            class="type-btn" 
+            :class="{'active': loginType === 'citHead'}"
+            :data-login-type="loginType"
+            @click="loginType = 'citHead'"
+          >
+           CIT Head & SSP Head LOGIN
           </button>
         </div>
 
@@ -50,25 +50,43 @@
           
           <div class="form-group">
             <label class="form-label">Password</label>
-            <input 
-              type="password" 
-              class="form-control" 
-              v-model="password" 
-              placeholder="Enter your password here"
-              required
-              :disabled="isLoading"
-            >
-            <div class="mt-3 hover:cursor-pointer">
+            <div class="password-input">
+              <input 
+                :type="showPassword ? 'text' : 'password'" 
+                class="form-control" 
+                v-model="password" 
+                placeholder="Enter your password here"
+                required
+                :disabled="isLoading"
+              >
+              <button 
+                type="button" 
+                class="toggle-password"
+                @click="showPassword = !showPassword"
+              >
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+            <div class="mt-3 hover:cursor-pointer" @click="goToForgotPassword">
               <h4>Forgot Password</h4>
             </div>
           </div>
 
-          <!-- reCAPTCHA -->
+          <!-- Replace reCAPTCHA section with a mock version -->
           <div class="form-group recaptcha-container">
-            <div id="g-recaptcha"></div>
+            <div class="mock-recaptcha">
+              <div class="mock-recaptcha-checkbox">
+                <input type="checkbox" id="mock-captcha-checkbox" v-model="mockCaptchaChecked">
+                <label for="mock-captcha-checkbox">I'm not a robot</label>
+              </div>
+              <div class="mock-recaptcha-logo">
+                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
+                <span>reCAPTCHA</span>
+              </div>
+            </div>
           </div>
 
-          <button type="submit" class="btn-login" :data-login-type="loginType" :disabled="isLoading || !recaptchaToken">
+          <button type="submit" class="btn-login" :data-login-type="loginType" :disabled="isLoading">
             <span v-if="isLoading" class="spinner">
               <i class="fas fa-spinner fa-spin"></i>
             </span>
@@ -80,12 +98,106 @@
       </div>
     </div>
   </div>
+
+  <!-- Forgot Password Modal -->
+  <div v-if="showForgotPasswordModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="text-xl font-semibold">Reset Password</h3>
+        <button @click="showForgotPasswordModal = false" class="close-btn">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div v-if="forgotPasswordStep === 1">
+          <p class="mb-4">Enter your email address to receive a verification code</p>
+          <div class="form-group">
+            <input 
+              type="email" 
+              v-model="forgotEmail" 
+              placeholder="Email Address" 
+              class="form-control bg-white text-gray-800"
+              required
+            >
+          </div>
+          <button 
+            @click="sendVerificationCode" 
+            class="btn-primary w-full"
+            :disabled="isLoadingReset"
+          >
+            <span v-if="isLoadingReset" class="spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </span>
+            <span v-else>Send Verification Code</span>
+          </button>
+        </div>
+
+        <div v-if="forgotPasswordStep === 2">
+          <p class="mb-4">Enter the verification code sent to your email</p>
+          <div class="form-group">
+            <input 
+              type="text" 
+              v-model="verificationCode" 
+              placeholder="Verification Code" 
+              class="form-control bg-white text-gray-800"
+              required
+            >
+          </div>
+          <button 
+            @click="verifyCode" 
+            class="btn-primary w-full"
+            :disabled="isLoadingReset"
+          >
+            <span v-if="isLoadingReset" class="spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </span>
+            <span v-else>Verify Code</span>
+          </button>
+        </div>
+
+        <div v-if="forgotPasswordStep === 3">
+          <p class="mb-4">Set your new password</p>
+          <div class="form-group">
+            <input 
+              type="password" 
+              v-model="newPassword" 
+              placeholder="New Password" 
+              class="form-control bg-white text-gray-800"
+              required
+            >
+          </div>
+          <div class="form-group">
+            <input 
+              type="password" 
+              v-model="confirmPassword" 
+              placeholder="Confirm New Password" 
+              class="form-control bg-white text-gray-800"
+              required
+            >
+          </div>
+          <button 
+            @click="resetPassword" 
+            class="btn-primary w-full"
+            :disabled="isLoadingReset"
+          >
+            <span v-if="isLoadingReset" class="spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </span>
+            <span v-else>Reset Password</span>
+          </button>
+        </div>
+
+        <p v-if="resetError" class="error-message mt-4">{{ resetError }}</p>
+        <p v-if="resetSuccess" class="success-message mt-4">{{ resetSuccess }}</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 export default {
   name: 'Login',
@@ -98,48 +210,20 @@ export default {
     const password = ref('')
     const error = ref('')
     const isLoading = ref(false)
-    const recaptchaToken = ref('')
-    const recaptchaSiteKey = '6LcsLNkqAAAAAH5OO5HjmocsPxA_y80LzVold7rW'
-
-    onMounted(() => {
-      // Load reCAPTCHA script
-      const script = document.createElement('script')
-      script.src = 'https://www.google.com/recaptcha/api.js'
-      script.async = true
-      script.defer = true
-      document.head.appendChild(script)
-
-      // Initialize reCAPTCHA
-      script.onload = () => {
-        window.grecaptcha.ready(() => {
-          window.grecaptcha.render('g-recaptcha', {
-            sitekey: recaptchaSiteKey,
-            callback: (token) => {
-              recaptchaToken.value = token
-            },
-            'expired-callback': () => {
-              recaptchaToken.value = ''
-            }
-          })
-        })
-      }
-    })
+    const mockCaptchaChecked = ref(false)
+    const showPassword = ref(false)
 
     const handleLogin = async () => {
       try {
-        if (!recaptchaToken.value) {
-          error.value = 'Please complete the reCAPTCHA verification'
-          return
-        }
-
-        error.value = ''
-        isLoading.value = true
+        error.value = '';
+        isLoading.value = true;
 
         const credentials = {
           email: email.value,
           password: password.value,
           loginType: loginType.value,
-          recaptchaToken: recaptchaToken.value
+          // Skip recaptcha verification entirely by using a special bypass token
+          recaptchaVerified: true
         }
 
         console.log('Attempting login with:', { 
@@ -176,20 +260,6 @@ export default {
           }
         }
 
-        // if (loginType.value === 'citHead' && user.role !== 'citHead') {
-        //   console.log('Access denied: Non-CIT Head using CIT Head login')
-        //   error.value = 'Access denied. Please use the Teacher/Student login.'
-        //   await store.dispatch('logout')
-        //   return
-        // }
-        
-        // if (loginType.value === 'user' && user.role === 'citHead') {
-        //   console.log('Access denied: CIT Head using regular login')
-        //   error.value = 'Access denied. Please use the CIT Head login.'
-        //   await store.dispatch('logout')
-        //   return
-        // }
-
         router.push('/dashboard')
       } catch (err) {
         console.error('Login error:', {
@@ -206,14 +276,120 @@ export default {
         } else {
           error.value = 'Login failed. Please try again.'
         }
-
-        // Reset reCAPTCHA on error
-        if (window.grecaptcha) {
-          window.grecaptcha.reset()
-        }
-        recaptchaToken.value = ''
       } finally {
         isLoading.value = false
+      }
+    }
+
+    const goToForgotPassword = () => {
+      showForgotPasswordModal.value = true
+    }
+
+    // Forgot password state
+    const showForgotPasswordModal = ref(false)
+    const forgotPasswordStep = ref(1)
+    const forgotEmail = ref('')
+    const verificationCode = ref('')
+    const newPassword = ref('')
+    const confirmPassword = ref('')
+    const resetError = ref('')
+    const resetSuccess = ref('')
+    const isLoadingReset = ref(false)
+    
+    // Send verification code
+    const sendVerificationCode = async () => {
+      if (!forgotEmail.value) {
+        resetError.value = 'Please enter your email address'
+        return
+      }
+      
+      try {
+        resetError.value = ''
+        resetSuccess.value = ''
+        isLoadingReset.value = true
+        
+        const response = await axios.post('http://localhost:8000/api/users/profile/password/request-code', {
+          email: forgotEmail.value
+        })
+        
+        resetSuccess.value = 'Verification code sent to your email'
+        forgotPasswordStep.value = 2
+      } catch (err) {
+        resetError.value = err.response?.data?.message || 'Failed to send verification code. Please try again.'
+      } finally {
+        isLoadingReset.value = false
+      }
+    }
+    
+    // Verify code
+    const verifyCode = async () => {
+      if (!verificationCode.value) {
+        resetError.value = 'Please enter verification code'
+        return
+      }
+      
+      try {
+        resetError.value = ''
+        resetSuccess.value = ''
+        isLoadingReset.value = true
+        
+        const response = await axios.post('http://localhost:8000/api/users/profile/password/verify-code', {
+          email: forgotEmail.value,
+          code: verificationCode.value
+        })
+        
+        resetSuccess.value = 'Code verified successfully'
+        forgotPasswordStep.value = 3
+      } catch (err) {
+        resetError.value = err.response?.data?.message || 'Invalid verification code. Please try again.'
+      } finally {
+        isLoadingReset.value = false
+      }
+    }
+    
+    // Reset password
+    const resetPassword = async () => {
+      if (!newPassword.value) {
+        resetError.value = 'Please enter new password'
+        return
+      }
+      
+      if (newPassword.value !== confirmPassword.value) {
+        resetError.value = 'Passwords do not match'
+        return
+      }
+      
+      if (newPassword.value.length < 8) {
+        resetError.value = 'Password must be at least 8 characters long'
+        return
+      }
+      
+      try {
+        resetError.value = ''
+        resetSuccess.value = ''
+        isLoadingReset.value = true
+        
+        const response = await axios.post('http://localhost:8000/api/users/profile/password/reset-with-code', {
+          email: forgotEmail.value,
+          code: verificationCode.value,
+          password: newPassword.value
+        })
+        
+        resetSuccess.value = 'Password reset successfully'
+        setTimeout(() => {
+          showForgotPasswordModal.value = false
+          forgotPasswordStep.value = 1
+          forgotEmail.value = ''
+          verificationCode.value = ''
+          newPassword.value = ''
+          confirmPassword.value = ''
+          resetError.value = ''
+          resetSuccess.value = ''
+        }, 2000)
+      } catch (err) {
+        resetError.value = err.response?.data?.message || 'Failed to reset password. Please try again.'
+      } finally {
+        isLoadingReset.value = false
       }
     }
 
@@ -224,8 +400,22 @@ export default {
       error,
       isLoading,
       handleLogin,
-      recaptchaSiteKey,
-      recaptchaToken
+      goToForgotPassword,
+      showPassword,
+      mockCaptchaChecked,
+      // Forgot password
+      showForgotPasswordModal,
+      forgotPasswordStep,
+      forgotEmail,
+      verificationCode,
+      newPassword,
+      confirmPassword,
+      resetError,
+      resetSuccess,
+      isLoadingReset,
+      sendVerificationCode,
+      verifyCode,
+      resetPassword
     }
   }
 }
@@ -424,5 +614,111 @@ export default {
   .btn-login {
     @apply w-full mt-6;
   }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-container {
+  @apply bg-navy w-full max-w-md mx-auto rounded-lg shadow-xl overflow-hidden;
+}
+
+.modal-header {
+  @apply flex justify-between items-center p-4 bg-navy border-b border-white/20 text-white;
+}
+
+.close-btn {
+  @apply text-white text-2xl font-bold hover:text-gray-300 focus:outline-none;
+}
+
+.modal-body {
+  @apply p-6 text-white;
+}
+
+.btn-primary {
+  @apply bg-white text-navy py-3 px-4 rounded-lg font-bold border-none cursor-pointer transition-colors duration-200 text-center;
+}
+
+.btn-primary:hover {
+  @apply bg-gray-100;
+}
+
+.btn-primary:disabled {
+  @apply opacity-70 cursor-not-allowed;
+}
+
+.success-message {
+  @apply text-green-400 text-center;
+}
+
+/* Password input styles */
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.toggle-password:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mock reCAPTCHA styles */
+.mock-recaptcha {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.mock-recaptcha-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.mock-recaptcha-checkbox input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.mock-recaptcha-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.mock-recaptcha-logo img {
+  width: 28px;
+  height: 28px;
 }
 </style>

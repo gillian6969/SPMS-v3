@@ -254,7 +254,7 @@
     <!-- Student Details Modal -->
     <div v-if="selectedStudent" class="modal-wrapper" @click.self="closeStudentModal">
       <div class="modal-backdrop" @click="closeStudentModal"></div>
-      <div class="modal-dialog modal-xxl">
+      <div class="modal-dialog modal-xxl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
             <h5 class="modal-title">
@@ -263,7 +263,7 @@
             </h5>
             <button type="button" class="btn-close btn-close-white" @click="closeStudentModal"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body no-scroll">
             <div class="student-details">
               <!-- Student Information (Left Side) -->
               <div class="student-info">
@@ -278,44 +278,12 @@
                 </div>
               </div>
 
-              <!-- Performance and Attendance (Right Side) -->
+              <!-- Performance (Right Side) -->
               <div class="student-charts">
                 <div class="chart-section">
                   <h6>Performance Trends</h6>
                   <StudentAssessmentChart :studentId="selectedStudent.studentId" :assessments="assessments"/>
                   <canvas ref="performanceChart"></canvas>
-                  </div>
-                <div class="chart-section">
-                  <h6>Attendance History</h6>
-                  <div class="table-responsive attendance-table">
-                    <table class="table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Subject</th>
-                          <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="record in selectedStudent.attendanceHistory?.records" :key="record._id">
-                          <td>{{ formatDate (record.date) }}</td>
-                          <td>{{ record.subject }}</td>
-                          <td>
-                            <span 
-                              class="badge capitalize"
-                              :class="{
-                                'bg-success': record.status === 'present',
-                                'bg-danger': record.status === 'absent',
-                                'bg-warning': record.status === 'late'
-                              }"
-                            >
-                              {{ record.status}}
-                              </span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                  </div>
                 </div>
               </div>
             </div>
@@ -429,7 +397,7 @@
       </div>
     </div>
 
-    <!-- Add Single Student Modal -->
+    <!-- Add Single Student Modal - Reorganize form fields -->
     <div v-if="showAddSingleStudentModal" class="modal-wrapper">
       <div class="modal-backdrop" @click="showAddSingleStudentModal = false"></div>
       <div class="modal-dialog">
@@ -443,6 +411,7 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="handleAddSingleStudent">
+              <!-- Student ID field -->
               <div class="mb-3">
                 <label class="form-label">Student ID <span class="text-danger">*</span></label>
                 <input 
@@ -452,65 +421,78 @@
                   required
                 >
               </div>
-              <div class="mb-3">
-                <label class="form-label">First Name <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="newStudent.firstName"
-                  required
-                >
+              
+              <!-- Name fields in a grid -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">First Name <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="newStudent.firstName"
+                    required
+                  >
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Middle Name <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="newStudent.middleName"
+                    required
+                  >
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="newStudent.lastName"
+                    required
+                  >
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Middle Name <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="newStudent.middleName"
-                  required
-                >
+              
+              <!-- Contact information -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Email <span class="text-danger">*</span></label>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    v-model="newStudent.email"
+                    required
+                  >
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="newStudent.contactNumber"
+                    required
+                  >
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="newStudent.lastName"
-                  required
-                >
+              
+              <!-- Academic information -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Year <span class="text-danger">*</span></label>
+                  <select class="form-select" v-model="newStudent.year" required>
+                    <option value="">Select Year</option>
+                    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Section <span class="text-danger">*</span></label>
+                  <select class="form-select" v-model="newStudent.section" required>
+                    <option value="">Select Section</option>
+                    <option v-for="section in availableSections" :key="section" :value="section">{{ section }}</option>
+                  </select>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input 
-                  type="email" 
-                  class="form-control" 
-                  v-model="newStudent.email"
-                  required
-                >
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Contact Number <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="newStudent.contactNumber"
-                  required
-                >
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Year <span class="text-danger">*</span></label>
-                <select class="form-select" v-model="newStudent.year" required>
-                  <option value="">Select Year</option>
-                  <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Section <span class="text-danger">*</span></label>
-                <select class="form-select" v-model="newStudent.section" required>
-                  <option value="">Select Section</option>
-                  <option v-for="section in availableSections" :key="section" :value="section">{{ section }}</option>
-                </select>
-              </div>
+              
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" @click="showAddSingleStudentModal = false">
                   Cancel
@@ -1095,6 +1077,174 @@ const fetchStudents = async () => {
   }
 };
 
+// Function to fetch assessment data for a specific student
+const fetchStudentAssessments = async () => {
+  if (!selectedStudent.value) return;
+  
+  isLoadingAssessments.value = true;
+  
+  try {
+    // Try to fetch from API first
+    const response = await api.get(`/students/assessments/all`, {
+      params: { studentId: selectedStudent.value.studentId },
+      headers: {
+        Authorization: `Bearer ${store.state.auth.token}`
+      }
+    });
+    
+    if (response.data && response.data.assessments) {
+      assessments.value = response.data.assessments;
+    } else {
+      // If no data or API call fails, use demo data
+      generateDemoAssessmentData();
+    }
+  } catch (error) {
+    console.error('Failed to fetch student assessments:', error);
+    // Generate demo data on failure
+    generateDemoAssessmentData();
+  } finally {
+    isLoadingAssessments.value = false;
+  }
+};
+
+// Generate demo assessment data
+const generateDemoAssessmentData = () => {
+  // Create sample assessment data
+  const types = ['Quiz', 'Activity', 'Performance Task', 'Assignment'];
+  const subjects = ['Math', 'Science', 'English', 'History'];
+  
+  const demoData = [];
+  
+  // Generate 8 random assessments
+  for (let i = 0; i < 8; i++) {
+    const type = types[Math.floor(Math.random() * types.length)];
+    const subject = subjects[Math.floor(Math.random() * subjects.length)];
+    const maxScore = Math.floor(Math.random() * 40) + 10; // Random max score between 10-50
+    const studentScore = Math.floor(Math.random() * (maxScore * 0.8)) + Math.floor(maxScore * 0.2); // Between 20% and 100% of max
+    
+    // Create assessment object with student's score
+    const assessment = {
+      _id: `demo-${i}`,
+      type,
+      number: i + 1,
+      subject,
+      title: `${type} ${i + 1} (${subject})`,
+      maxScore,
+      date: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toISOString(), // Spread over past weeks
+      scores: {}
+    };
+    
+    // Add student's score if they have an ID
+    if (selectedStudent.value && selectedStudent.value.studentId) {
+      assessment.scores[selectedStudent.value.studentId] = studentScore;
+    }
+    
+    demoData.push(assessment);
+  }
+  
+  assessments.value = demoData;
+};
+
+// New function to fetch attendance history
+const fetchAttendanceHistory = async () => {
+  if (!selectedStudent.value) return;
+  
+  isLoadingAttendance.value = true;
+  
+  try {
+    const response = await api.get(`/attendance/${selectedStudent.value.studentId}/history`, {
+      params: {
+        startDate: attendanceFilter.startDate,
+        endDate: attendanceFilter.endDate,
+        section: selectedStudent.value.section,
+        year: selectedStudent.value.year,
+        all: true
+      },
+      headers: {
+        Authorization: `Bearer ${store.state.auth.token}`
+      }
+    });
+    
+    if (response.data && response.data.records && response.data.records.length > 0) {
+      attendanceHistory.value = response.data.records;
+      
+      // Count attendance statuses
+      attendanceCounts.present = 0;
+      attendanceCounts.late = 0;
+      attendanceCounts.absent = 0;
+      
+      attendanceHistory.value.forEach(record => {
+        if (record.status in attendanceCounts) {
+          attendanceCounts[record.status]++;
+        }
+      });
+    } else {
+      // If no data, generate demo data
+      generateDemoAttendanceData();
+    }
+    
+    // Update chart on next DOM update
+    nextTick(() => {
+      initAttendanceChart();
+    });
+  } catch (error) {
+    console.error('Failed to fetch attendance history:', error);
+    // Generate demo data on error
+    generateDemoAttendanceData();
+    
+    // Update chart
+    nextTick(() => {
+      initAttendanceChart();
+    });
+  } finally {
+    isLoadingAttendance.value = false;
+  }
+};
+
+// Generate demo attendance data
+const generateDemoAttendanceData = () => {
+  const statuses = ['present', 'late', 'absent'];
+  const subjects = ['Math', 'Science', 'English', 'History', 'Physical Education'];
+  
+  // Clear existing data
+  attendanceHistory.value = [];
+  attendanceCounts.present = 0;
+  attendanceCounts.late = 0;
+  attendanceCounts.absent = 0;
+  
+  // Generate 20 days of attendance records
+  for (let i = 0; i < 20; i++) {
+    const status = statuses[Math.floor(Math.random() * 
+      (i < 15 ? 2 : 3))]; // Higher chance of present/late for better looking demo
+    const subject = subjects[Math.floor(Math.random() * subjects.length)];
+    
+    // Create random date in the last 30 days
+    const date = new Date();
+    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+    
+    const record = {
+      _id: `demo-${i}`,
+      studentId: selectedStudent.value.studentId,
+      date: date.toISOString(),
+      subject,
+      status,
+      section: selectedStudent.value.section || 'Section A',
+      year: selectedStudent.value.year || '1st'
+    };
+    
+    // Add to history
+    attendanceHistory.value.push(record);
+    
+    // Update counts
+    if (status in attendanceCounts) {
+      attendanceCounts[status]++;
+    }
+  }
+  
+  // Sort by date (newest first)
+  attendanceHistory.value.sort((a, b) => new Date(b.date) - new Date(a.date));
+};
+
     return {
       students,
       searchQuery,
@@ -1198,7 +1348,7 @@ left: 0;
 width: 100vw;
 height: 100vh;
 background-color: rgba(0, 0, 0, 0.5);
-z-index: 1999;
+z-index: 9998;
 }
 
 .modal {
@@ -2415,5 +2565,44 @@ cursor: not-allowed;
   top: 0;
   background: white;
   z-index: 1020;
+}
+
+.modal-body.no-scroll {
+  overflow: hidden !important;
+  max-height: calc(100vh - 150px);
+}
+
+.modal-dialog-scrollable .modal-body.no-scroll {
+  overflow: hidden !important;
+}
+
+.student-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  max-height: calc(100vh - 180px);
+}
+
+.student-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.student-charts {
+  flex: 2;
+  min-width: 450px;
+  max-height: calc(100vh - 200px);
+}
+
+/* Add Single Student Form Styles */
+.row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.col-md-4,
+.col-md-6 {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>

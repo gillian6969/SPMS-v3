@@ -96,7 +96,10 @@
           </div>
 
           <div class="d-flex justify-content-end gap-2">
-            <router-link to="/profile/view" class="btn btn-secondary">
+            <router-link 
+              :to="isTeacher ? '/teacher-dashboard' : isSSP || isSSPHead ? '/ssp-dashboard' : '/dashboard'" 
+              class="btn btn-secondary"
+            >
               <i class="fas fa-times"></i>
               Cancel
             </router-link>
@@ -128,6 +131,9 @@ export default {
     const store = useStore()
     const router = useRouter()
     const isLoading = ref(false)
+    const isTeacher = computed(() => store.getters.isTeacher)
+    const isSSP = computed(() => store.getters.isSSP)
+    const isSSPHead = computed(() => store.getters.isSSPHead)
     
     const form = ref({
       currentPassword: '',
@@ -164,7 +170,14 @@ export default {
 
       isLoading.value = true
       try {
+        // Get the user ID from the store
+        const userId = store.state.auth.user?._id
+        if (!userId) {
+          throw new Error('User ID not found')
+        }
+
         await axios.put('/api/users/password', {
+          userId: userId,
           currentPassword: form.value.currentPassword,
           newPassword: form.value.newPassword
         }, {
@@ -181,11 +194,22 @@ export default {
         }
         // Wait for 2 seconds to show the success message before redirecting
         setTimeout(() => {
-          router.push('/profile/view')
+          if (isTeacher.value) {
+            router.push('/teacher-dashboard')
+          } else if (isSSP.value || isSSPHead.value) {
+            router.push('/ssp-dashboard')
+          } else {
+            router.push('/dashboard')
+          }
         }, 2000)
       } catch (error) {
         console.error('Failed to update password:', error)
-        alert(error.response?.data?.message || 'Failed to update password')
+        if (error.message === 'User ID not found') {
+          alert('Session expired. Please login again.')
+          router.push('/login')
+        } else {
+          alert(error.response?.data?.message || 'Failed to update password')
+        }
       } finally {
         isLoading.value = false
       }
@@ -204,7 +228,10 @@ export default {
       isFormValid,
       isLoading,
       updatePassword,
-      successMessage
+      successMessage,
+      isTeacher,
+      isSSP,
+      isSSPHead
     }
   }
 }

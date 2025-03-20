@@ -5,6 +5,7 @@ import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
+import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 const store = useStore()
 const performanceChart = ref(null)
@@ -14,11 +15,16 @@ const performanceTrendChart = ref(null)
 const quizzesChart = ref(null)
 const assessmentTypePerformanceChart = ref(null)
 
+// Chart references for PDF export
+const chartRefs = ref({})
+
 // Data refs
 const totalStudents = ref(0)
 const totalSections = ref(0)
 const totalSubjects = ref(0)
-const averageAttendance = ref(0)
+const totalSSPAdvisers = ref(0)
+const failingStudents = ref(0)
+const completedSurveys = ref(0)
 const averageScore = ref(0)
 const assessmentCompletion = ref(0)
 const recentActivities = ref([])
@@ -45,7 +51,6 @@ const getTeacherId = () => {
 }
 
 // Computed properties for data availability
-const hasAttendanceData = computed(() => averageAttendance.value > 0)
 const hasPerformanceData = computed(() => averageScore.value > 0)
 const hasAssessmentData = computed(() => assessmentCompletion.value > 0)
 const hasActivity = computed(() => recentActivities.value.length > 0)
@@ -130,6 +135,7 @@ const fetchDashboardData = async () => {
       endDate: selectedEndDate.value
     });
 
+    // Get dashboard stats
     const response = await axios.get(`http://localhost:8000/api/dashboard/stats`, {
       params: {
         year: selectedYear.value,
@@ -148,59 +154,97 @@ const fetchDashboardData = async () => {
       totalStudents.value = response.data.totalStudents || 0;
       totalSections.value = response.data.totalSections || 0;
       totalSubjects.value = response.data.totalSubjects || 0;
-      averageAttendance.value = response.data.averageAttendance || 0;
+      totalSSPAdvisers.value = response.data.totalSSPAdvisers || 0;
       averageScore.value = response.data.averageScore || 0;
       assessmentCompletion.value = response.data.assessmentCompletion?.overall || 0;
       recentActivities.value = response.data.recentActivities || [];
-
-      // Log data before updating charts
-      console.log('Performance Distribution:', response.data.performanceDistribution);
-      console.log('Assessment Type Distribution:', response.data.assessmentTypeDistribution);
-      console.log('Performance Trends:', response.data.performanceTrends);
-      console.log('Assessment Completion by Type:', response.data.assessmentCompletion?.byType);
-
-      // Update charts with new data
-      if (Array.isArray(response.data.performanceDistribution)) {
-        updatePerformanceChart(response.data);
-      } else {
-        console.warn('Invalid performance distribution data:', response.data.performanceDistribution);
-        updatePerformanceChart({
-          performanceDistribution: [0, 0, 0, 0, 0]
+    }
+    
+    // Get failing students count directly from failing students list
+    try {
+      const failingListResponse = await axios.get('http://localhost:8000/api/students/failing/list', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      // Get completed surveys to exclude those students
+      const completedSurveysResponse = await axios.get('http://localhost:8000/api/survey/submitted', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      const completedSurveyIds = new Set();
+      if (completedSurveysResponse.data && Array.isArray(completedSurveysResponse.data)) {
+        completedSurveysResponse.data.forEach(survey => {
+          completedSurveyIds.add(survey.studentId);
         });
       }
-
-      if (response.data.assessmentTypeDistribution){
-        updateAssessmentTypeChart(response.data.assessmentTypeDistribution);
+      
+      // Count completed surveys
+      completedSurveys.value = completedSurveysResponse.data?.length || 0;
+      
+      // Filter out students who have completed surveys
+      const failingStudentList = failingListResponse.data?.list || [];
+      if (Array.isArray(failingStudentList)) {
+        const filteredCount = failingStudentList.filter(student => 
+          !completedSurveyIds.has(student.info._id)
+        ).length;
+        
+        failingStudents.value = filteredCount;
       } else {
-        console.warn('Invalid assessment type distribution data:', response.data.assessmentTypeDistribution);
-        updateAssessmentTypeChart([
-          { type: 'Quiz', percentage: 0 },
-          { type: 'Activity', percentage: 0 },
-          { type: 'Performance Task', percentage: 0 }
-        ]);
+        failingStudents.value = 0;
       }
+    } catch (error) {
+      console.error('Error fetching failing students:', error);
+      failingStudents.value = 0;
+      completedSurveys.value = 0;
+    }
 
-      if (Array.isArray(response.data.performanceTrends)) {
-        updatePerformanceTrendChart(response.data.performanceTrends);
-      } else {
-        console.warn('Invalid performance trends data:', response.data.performanceTrends);
-        updatePerformanceTrendChart([]);
-      }
+    // Log data before updating charts
+    console.log('Performance Distribution:', response.data.performanceDistribution);
+    console.log('Assessment Type Distribution:', response.data.assessmentTypeDistribution);
+    console.log('Performance Trends:', response.data.performanceTrends);
+    console.log('Assessment Completion by Type:', response.data.assessmentCompletion?.byType);
 
-      if (response.data.assessmentCompletion?.byType) {
-        updateAssessmentTypePerformanceChart(response.data);
-      } else {
-        console.warn('Invalid assessment completion data:', response.data.assessmentCompletion);
-        updateAssessmentTypePerformanceChart({
-          assessmentCompletion: {
-            byType: {
-              quiz: 0,
-              activity: 0,
-              performancetask: 0
-            }
+    // Update charts with new data
+    if (Array.isArray(response.data.performanceDistribution)) {
+      updatePerformanceChart(response.data);
+    } else {
+      console.warn('Invalid performance distribution data:', response.data.performanceDistribution);
+      updatePerformanceChart({
+        performanceDistribution: [0, 0, 0, 0, 0]
+      });
+    }
+
+    if (response.data.assessmentTypeDistribution){
+      updateAssessmentTypeChart(response.data.assessmentTypeDistribution);
+    } else {
+      console.warn('Invalid assessment type distribution data:', response.data.assessmentTypeDistribution);
+      updateAssessmentTypeChart([
+        { type: 'Quiz', percentage: 0 },
+        { type: 'Activity', percentage: 0 },
+        { type: 'Performance Task', percentage: 0 }
+      ]);
+    }
+
+    if (Array.isArray(response.data.performanceTrends)) {
+      updatePerformanceTrendChart(response.data.performanceTrends);
+    } else {
+      console.warn('Invalid performance trends data:', response.data.performanceTrends);
+      updatePerformanceTrendChart([]);
+    }
+
+    if (response.data.assessmentCompletion?.byType) {
+      updateAssessmentTypePerformanceChart(response.data);
+    } else {
+      console.warn('Invalid assessment completion data:', response.data.assessmentCompletion);
+      updateAssessmentTypePerformanceChart({
+        assessmentCompletion: {
+          byType: {
+            quiz: 0,
+            activity: 0,
+            performancetask: 0
           }
-        });
-      }
+        }
+      });
     }
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
@@ -212,7 +256,9 @@ const fetchDashboardData = async () => {
     totalStudents.value = 0;
     totalSections.value = 0;
     totalSubjects.value = 0;
-    averageAttendance.value = 0;
+    totalSSPAdvisers.value = 0;
+    failingStudents.value = 0;
+    completedSurveys.value = 0;
     averageScore.value = 0;
     assessmentCompletion.value = 0;
     recentActivities.value = [];
@@ -305,6 +351,9 @@ const updatePerformanceChart = (data) => {
       }
     }
   });
+  
+  // After chart creation, store the reference
+  chartRefs.value.performanceChart = performanceChart.value;
 };
 
 const updateAssessmentTypeChart = (data) => {
@@ -367,6 +416,9 @@ const updateAssessmentTypeChart = (data) => {
       }
     }
   });
+  
+  // After chart creation, store the reference
+  chartRefs.value.assessmentTypeChart = assessmentTypeChart.value;
 };
 
 const updatePerformanceTrendChart = (data) => {
@@ -452,6 +504,9 @@ const updatePerformanceTrendChart = (data) => {
       }
     }
   });
+  
+  // After chart creation, store the reference
+  chartRefs.value.performanceTrendChart = performanceTrendChart.value;
 };
 
 const updateAssessmentTypePerformanceChart = (data) => {
@@ -564,6 +619,9 @@ const updateAssessmentTypePerformanceChart = (data) => {
     }
 }
   });
+  
+  // After chart creation, store the reference
+  chartRefs.value.assessmentTypePerformanceChart = assessmentTypePerformanceChart.value;
 };
 
 const formatDate = (date) => {
@@ -650,6 +708,16 @@ onMounted(async () => {
       await fetchDashboardData();
       console.log('Initial data fetch completed');
 
+      // After charts are initialized, store references
+      nextTick(() => {
+        chartRefs.value = {
+          performanceChart: performanceChart.value,
+          assessmentTypeChart: assessmentTypeChart.value,
+          performanceTrendChart: performanceTrendChart.value,
+          assessmentTypePerformanceChart: assessmentTypePerformanceChart.value
+        };
+      });
+
       // Fetch Grades
       const grades = await axios.get('http://localhost:8000/api/dashboard/failing/analytics',);
       const quizzes = grades.data.filter(a => a.type === 'Quiz') || [];
@@ -684,207 +752,134 @@ onMounted(async () => {
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="dashboard-title"></h2>
 
-            <!-- Combined Filter Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-2"></i>
-                    {{ getFilterDisplay() }}
-                </button>
-                <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
-                    <h6 class="dropdown-header">Filter Options</h6>
-                    <div class="mb-3">
-                        <label class="form-label">Academic Year</label>
-                        <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
-                            <option value="">All Years</option>
-                            <option value="1st">1st Year</option>
-                            <option value="2nd">2nd Year</option>
-                            <option value="3rd">3rd Year</option>
-                            <option value="4th">4th Year</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Section</label>
-                        <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
-                            <option value="">All Sections</option>
-                            <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Subject</label>
-                        <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
-                            <option value="">All Subjects</option>
-                            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date Range</label>
-                        <div class="d-flex gap-2">
-                            <div class="flex-grow-1">
-                                <label class="small text-muted">From</label>
-                                <input type="date" class="form-control form-control-sm" v-model="selectedStartDate"
-                                    :max="today">
-                            </div>
-                            <div class="flex-grow-1">
-                                <label class="small text-muted">To</label>
-                                <input type="date" class="form-control form-control-sm" v-model="selectedEndDate"
-                                    :max="today">
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Combined Filter Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-2"></i>
+                        {{ getFilterDisplay() }}
+                    </button>
+                    <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
+                        <h6 class="dropdown-header">Filter Options</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Academic Year</label>
+                            <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
+                                <option value="">All Years</option>
+                                <option value="1st">1st Year</option>
+                                <option value="2nd">2nd Year</option>
+                                <option value="3rd">3rd Year</option>
+                                <option value="4th">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Section</label>
+                            <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
+                                <option value="">All Sections</option>
+                                <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
+                                <option value="">All Subjects</option>
+                                <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date Range</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <input type="date" class="form-control form-control-sm" v-model="selectedStartDate"
+                                        :max="today">
+                                </div>
+                                <div class="col">
+                                    <input type="date" class="form-control form-control-sm" v-model="selectedEndDate"
+                                        :min="selectedStartDate" :max="today">
+                                </div>
                             </div>
                         </div>
+                        <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
                     </div>
-                    <div class="dropdown-divider"></div>
-                    <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
                 </div>
+                
+                <!-- Export Graphs Button -->
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
+                    <i class="fas fa-file-export me-2"></i>
+                    Export Graphs
+                </button>
             </div>
         </div>
 
         <!-- Analytics Cards -->
         <div class="row g-4">
-            <!-- Total Students Card -->
-            <div class="col-md-3">
+            <!-- Total SSP Advisers Card -->
+            <div class="col-md-4">
                 <div class="dashboard-card">
                     <div class="icon-container">
-                        <i class="fas fa-user-graduate"></i>
+                        <i class="fas fa-chalkboard-teacher"></i>
                     </div>
                     <div class="card-info">
-                        <h3 class="stat-title">Total Students</h3>
-                        <div class="stat-value">{{ totalStudents }}</div>
+                        <h3 class="stat-title">SSP Advisers</h3>
+                        <div class="stat-value">{{ totalSSPAdvisers }}</div>
                     </div>
                 </div>
             </div>
-
-            <!-- Average Score Card -->
-            <div class="col-md-3">
+            
+            <!-- Failing Students Card -->
+            <div class="col-md-4">
                 <div class="dashboard-card">
                     <div class="icon-container">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <div class="card-info">
-                        <h3 class="stat-title">Class Average</h3>
-                        <div class="stat-value" v-if="hasPerformanceData">{{ averageScore }}%</div>
-                        <div class="no-data" v-else>No data available</div>
+                        <h3 class="stat-title">Failing Students</h3>
+                        <div class="stat-value">{{ failingStudents }}</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row mt-4">
-          <div class="dashboard-card mx-3">
-            <div class="icon-container">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="card-info">
-              <h3 class="stat-title">Quizzes</h3>
-              <div class="stat-value">
-                
-              </div>
-              <div>
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance Trends</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceTrendChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div v-for="quiz in quizzesGrades">
-                  Subject : <span class="font-bold">{{ quiz.subject }}</span><br>
-                  Average : <span class="font-bold">{{ quiz.average }}</span>
-                </div> -->
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="dashboard-card w-2/3 h-100 mt-2 mb-2">
-          <div class="card-info">
-            <h5 class="card-title">Survey Stats</h5>
-            <AllSurveyStat/>
-          </div>
-        </div>
-        <!-- Secondary Stats Row -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="dashboard-card h-100">
+            <!-- Completed Surveys Card -->
+            <div class="col-md-4">
+                <div class="dashboard-card">
                     <div class="icon-container">
-                        <i class="fas fa-clock"></i>
+                        <i class="fas fa-clipboard-check"></i>
                     </div>
                     <div class="card-info">
-                        <h3 class="stat-title">Average Attendance</h3>
-                        <div class="stat-value" v-if="hasAttendanceData">{{ averageAttendance }}%</div>
-                        <div class="no-data" v-else>No attendance data available</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="dashboard-card h-100">
-                    <div class="icon-container">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="stat-title">Assessment Completion</h3>
-                        <div class="stat-value" v-if="hasAssessmentData">{{ assessmentCompletion.toFixed(2) }}%</div>
-                        <div class="no-data" v-else>No assessment data available</div>
+                        <h3 class="stat-title">Completed Surveys</h3>
+                        <div class="stat-value">{{ completedSurveys }}</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Charts Row -->
-        <div class="row mb-4">
-            <!-- Performance Distribution Chart -->
-            <div class="col-md-6 mb-4">
+        <!-- Survey Stats -->
+        <div class="row mt-4">
+            <div class="col-12">
                 <div class="chart-card">
                     <div class="card-body">
-                        <h5 class="card-title">Grade Distribution</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assessment Type Distribution -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Assessment Type Distribution</h5>
-                        <div class="chart-container">
-                            <canvas ref="assessmentTypeChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No assessment data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Performance Trend Chart -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance Trends</h5>
-                        <div class="chart-container">
-                            <canvas ref="performanceTrendChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assessment Type Performance -->
-            <div class="col-md-6 mb-4">
-                <div class="chart-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Performance by Assessment Type</h5>
-                        <div class="chart-container">
-                            <canvas ref="assessmentTypePerformanceChart"></canvas>
-                            <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
-                        </div>
+                        <h5 class="card-title">
+                            <i class="fas fa-poll me-2"></i>
+                            Survey Statistics
+                        </h5>
+                        <AllSurveyStat />
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Export Graphs Modal -->
+        <ExportGraphsModal 
+            dashboardType="ssphead"
+            :chartRefs="chartRefs"
+            :filterInfo="{
+                year: selectedYear,
+                section: selectedSection,
+                subject: selectedSubject,
+                startDate: selectedStartDate,
+                endDate: selectedEndDate
+            }"
+        />
     </div>
 </template>
 

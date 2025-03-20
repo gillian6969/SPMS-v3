@@ -346,7 +346,8 @@ export default {
       lastName: '',
       email: '',
       teachingYear: '',
-      subjects: []
+      subjects: [],
+      role: 'teacher'
     })
 
     const subjectsByYear = {
@@ -458,7 +459,8 @@ export default {
         lastName: teacher.lastName,
         email: teacher.email,
         teachingYear: teacher.teachingYear,
-        subjects: [...teacher.subjects]
+        subjects: [...teacher.subjects],
+        role: teacher.role
       }
       showEditModal.value = true
       isEditing.value = false
@@ -467,6 +469,8 @@ export default {
     const updateTeacher = async () => {
       isLoading.value = true
       try {
+        editForm.value.role = 'teacher'
+        
         await axios.put(`/api/teachers/${selectedTeacher.value._id}`, editForm.value, {
           headers: {
             Authorization: `Bearer ${store.state.auth.token}`
@@ -528,7 +532,8 @@ export default {
         lastName: '',
         email: '',
         teachingYear: '',
-        subjects: []
+        subjects: [],
+        role: 'teacher'
       }
     }
 
@@ -544,7 +549,8 @@ export default {
           lastName: selectedTeacher.value.lastName,
           email: selectedTeacher.value.email,
           teachingYear: selectedTeacher.value.teachingYear,
-          subjects: [...selectedTeacher.value.subjects]
+          subjects: [...selectedTeacher.value.subjects],
+          role: selectedTeacher.value.role
         }
       }
       isEditing.value = !isEditing.value

@@ -43,8 +43,8 @@ const submit = () => {
         <h2 class="text-3xl">Update your password</h2>
         <div class="grid mt-10">
             <!-- <label class="text-left" for="">Enter your Email Address</label> -->
-            <input type="password" name="" v-model="password" placeholder="New Password" class="rounded-md text-black">
-            <input type="password" name="" v-model="newPassword" placeholder="Confirm New Password" class="rounded-md text-black mt-3">
+            <input type="password" name="" v-model="password" placeholder="New Password" class="rounded-md text-black" style="color: black;">
+            <input type="password" name="" v-model="newPassword" placeholder="Confirm New Password" class="rounded-md text-black mt-3"style="color: black;">
         </div>
 
         <button @click="submit" type="button" class="bg-yellow-500 text-black md:w-3/12 w-5/12 mt-6 rounded-md p-2">Submit</button>

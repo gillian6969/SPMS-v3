@@ -48,7 +48,12 @@
           </div>
 
           <div class="d-flex justify-content-end gap-2">
-            <router-link to="/dashboard" class="btn btn-secondary">Cancel</router-link>
+            <router-link 
+              :to="isTeacher ? '/teacher-dashboard' : isSSP || isSSPHead ? '/ssp-dashboard' : '/dashboard'" 
+              class="btn btn-secondary"
+            >
+              Cancel
+            </router-link>
             <button type="submit" class="btn btn-primary">Save Changes</button>
           </div>
         </form>
@@ -76,6 +81,8 @@ export default {
     })
 
     const isTeacher = computed(() => store.getters.isTeacher)
+    const isSSP = computed(() => store.getters.isSSP)
+    const isSSPHead = computed(() => store.getters.isSSPHead)
     const user = computed(() => store.state.auth.user)
 
     onMounted(() => {
@@ -92,7 +99,16 @@ export default {
 
     const updateProfile = async () => {
       try {
-        const response = await axios.put('/api/users/profile', form.value, {
+        // Get the user ID from the store
+        const userId = store.state.auth.user?._id
+        if (!userId) {
+          throw new Error('User ID not found')
+        }
+
+        const response = await axios.put('/api/users/profile', {
+          ...form.value,
+          userId: userId
+        }, {
           headers: {
             Authorization: `Bearer ${store.state.auth.token}`
           }
@@ -103,18 +119,37 @@ export default {
           store.commit('SET_USER', response.data)
           // Save to localStorage
           localStorage.setItem('user', JSON.stringify(response.data))
-          // Redirect to profile
-          router.push('/profile')
+          
+          // Show success message
+          alert('Profile updated successfully!')
+          
+          // Redirect based on user role
+          if (isTeacher.value) {
+            router.push('/teacher-dashboard')
+          } else if (isSSP.value) {
+            router.push('/ssp-dashboard')
+          } else if (isSSPHead.value) {
+            router.push('/ssp-dashboard')
+          } else {
+            router.push('/dashboard')
+          }
         }
       } catch (error) {
         console.error('Failed to update profile:', error)
-        alert(error.response?.data?.message || 'Failed to update profile')
+        if (error.message === 'User ID not found') {
+          alert('Session expired. Please login again.')
+          router.push('/login')
+        } else {
+          alert(error.response?.data?.message || 'Failed to update profile')
+        }
       }
     }
 
     return {
       form,
       isTeacher,
+      isSSP,
+      isSSPHead,
       updateProfile
     }
   }

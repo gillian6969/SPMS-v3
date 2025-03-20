@@ -42,7 +42,7 @@
             <router-link to="/register" class="nav-item" active-class="active"
               v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
               <i class="fas fa-user-plus"></i>
-              <span v-show="!isSidebarCollapsed">Add Teacher/SSP</span>
+              <span v-show="!isSidebarCollapsed">Add Teacher Account</span>
             </router-link>
           </template>
 
@@ -61,12 +61,17 @@
             <router-link to="/register-ssp" class="nav-item" active-class="active"
               v-tooltip="isSidebarCollapsed ? 'Add Teacher/SSP' : ''">
               <i class="fas fa-user-plus"></i>
-              <span v-show="!isSidebarCollapsed">Add SSP Adviser</span>
+              <span v-show="!isSidebarCollapsed">Add SSP Adviser Account</span>
             </router-link>
             <router-link to="/ssp-management" class="nav-item" active-class="active"
               v-tooltip="isSidebarCollapsed ? 'Teacher Management' : ''">
               <i class="fas fa-chalkboard-teacher"></i>
               <span v-show="!isSidebarCollapsed">SSP Adviser Management</span>
+            </router-link>
+            <router-link to="/completed-surveys" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Completed Surveys' : ''">
+              <i class="fas fa-clipboard-check"></i>
+              <span v-show="!isSidebarCollapsed">Completed Surveys</span>
             </router-link>
           </template>
 
@@ -85,7 +90,12 @@
             <router-link to="/ssp-student-management" class="nav-item" active-class="active"
               v-tooltip="isSidebarCollapsed ? 'Student Management' : ''">
               <i class="fas fa-users"></i>
-              <span v-show="!isSidebarCollapsed">Student Management</span>
+              <span v-show="!isSidebarCollapsed">Failing Student List</span>
+            </router-link>
+            <router-link to="/completed-surveys" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Completed Surveys' : ''">
+              <i class="fas fa-clipboard-check"></i>
+              <span v-show="!isSidebarCollapsed">Completed Surveys</span>
             </router-link>
           </template>
 
@@ -110,6 +120,30 @@
               v-tooltip="isSidebarCollapsed ? 'Attendance' : ''">
               <i class="fas fa-clipboard-list"></i>
               <span v-show="!isSidebarCollapsed">Attendance</span>
+            </router-link>
+          </template>
+
+          <!-- Student Navigation -->
+          <template v-if="isStudent">
+            <!-- Analytics Category -->
+            <div class="nav-category">Analytics</div>
+            <router-link to="/student/dashboard" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Dashboard' : ''">
+              <i class="fas fa-chart-line"></i>
+              <span v-show="!isSidebarCollapsed">Dashboard</span>
+            </router-link>
+
+            <!-- Records Category -->
+            <div class="nav-category">Records</div>
+            <router-link to="/student/assessments" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Assessments' : ''">
+              <i class="fas fa-book"></i>
+              <span v-show="!isSidebarCollapsed">Assessment Records</span>
+            </router-link>
+            <router-link to="/student/attendance" class="nav-item" active-class="active"
+              v-tooltip="isSidebarCollapsed ? 'Attendance' : ''">
+              <i class="fas fa-clipboard-list"></i>
+              <span v-show="!isSidebarCollapsed">Attendance Records</span>
             </router-link>
           </template>
         </nav>
@@ -228,6 +262,7 @@ export default {
     const isTeacher = computed(() => store.getters.isTeacher)
     const isSSP = computed(() => store.getters.isSSP)
     const isSSPHead = computed(() => store.getters.isSSPHead)
+    const isStudent = computed(() => store.getters.isStudent)
 
     const userInitials = computed(() => {
       if (!user.value) return ''
@@ -287,6 +322,7 @@ export default {
       isTeacher,
       isSSP,
       isSSPHead,
+      isStudent,
       userInitials,
       isSidebarCollapsed,
       toggleSidebar,

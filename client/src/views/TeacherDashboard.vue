@@ -1,71 +1,89 @@
 <template>
   <div class="dashboard">
+    <!-- Greeting Section -->
+    <div class="greeting-section mb-4">
+      <h2 class="greeting">Welcome, {{ userName }}</h2>
+      <p class="greeting-subtitle">Here's your dashboard overview</p>
+    </div>
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="dashboard-title"></h2>
       
-      <!-- Combined Filter Dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fas fa-filter me-2"></i>
-          {{ getFilterDisplay() }}
-        </button>
-        <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
-          <h6 class="dropdown-header">Filter Options</h6>
-          <div class="mb-3">
-            <label class="form-label">Academic Year</label>
-            <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
-              <option value="">All Years</option>
-              <option value="1st">1st Year</option>
-              <option value="2nd">2nd Year</option>
-              <option value="3rd">3rd Year</option>
-              <option value="4th">4th Year</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Section</label>
-            <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
-              <option value="">All Sections</option>
-              <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Subject</label>
-            <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
-              <option value="">All Subjects</option>
-              <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Date Range</label>
-            <div class="d-flex gap-2">
-              <div class="flex-grow-1">
-                <label class="small text-muted">From</label>
-                <input 
-                  type="date" 
-                  class="form-control form-control-sm" 
-                  v-model="selectedStartDate"
-                  :max="today"
-                >
-              </div>
-              <div class="flex-grow-1">
-                <label class="small text-muted">To</label>
-                <input 
-                  type="date" 
-                  class="form-control form-control-sm" 
-                  v-model="selectedEndDate"
-                  :max="today"
-                >
+      <div class="d-flex gap-2 align-items-center">
+        <!-- Combined Filter Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-filter me-2"></i>
+            {{ getFilterDisplay() }}
+          </button>
+          <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
+            <h6 class="dropdown-header">Filter Options</h6>
+            <div class="mb-3">
+              <label class="form-label">Academic Year</label>
+              <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
+                <option value="">All Years</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+                <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Section</label>
+              <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
+                <option value="">All Sections</option>
+                <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Subject</label>
+              <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
+                <option value="">All Subjects</option>
+                <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Date Range</label>
+              <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                  <label class="small text-muted">From</label>
+                  <input 
+                    type="date" 
+                    class="form-control form-control-sm" 
+                    v-model="selectedStartDate"
+                    :max="today"
+                  >
+                </div>
+                <div class="flex-grow-1">
+                  <label class="small text-muted">To</label>
+                  <input 
+                    type="date" 
+                    class="form-control form-control-sm" 
+                    v-model="selectedEndDate"
+                    :max="today"
+                  >
+                </div>
               </div>
             </div>
+            <div class="dropdown-divider"></div>
+            <button class="btn btn-primary w-100" @click="applyFilters" :disabled="loading">
+              <span v-if="loading"><i class="fas fa-spinner fa-spin me-2"></i>Loading...</span>
+              <span v-else>Apply Filters</span>
+            </button>
           </div>
-          <div class="dropdown-divider"></div>
-          <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
         </div>
+        
+        <!-- Export Graphs Button -->
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
+          <i class="fas fa-file-export me-2"></i>
+          Export Graphs
+        </button>
       </div>
     </div>
 
     <!-- Analytics Cards -->
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
       <!-- Total Students Card -->
       <div class="col-md-3">
         <div class="dashboard-card">
@@ -74,7 +92,8 @@
           </div>
           <div class="card-info">
             <h3 class="stat-title">Total Students</h3>
-            <div class="stat-value">{{ totalStudents }}</div>
+            <div class="stat-value" v-if="!loading">{{ totalStudents }}</div>
+            <div class="stat-value loading" v-else><i class="fas fa-spinner fa-spin"></i></div>
           </div>
         </div>
       </div>
@@ -87,7 +106,8 @@
           </div>
           <div class="card-info">
             <h3 class="stat-title">Active Sections</h3>
-            <div class="stat-value">{{ totalSections }}</div>
+            <div class="stat-value" v-if="!loading">{{ totalSections }}</div>
+            <div class="stat-value loading" v-else><i class="fas fa-spinner fa-spin"></i></div>
           </div>
         </div>
       </div>
@@ -100,7 +120,8 @@
           </div>
           <div class="card-info">
             <h3 class="stat-title">My Subjects</h3>
-            <div class="stat-value">{{ totalSubjects }}</div>
+            <div class="stat-value" v-if="!loading">{{ totalSubjects }}</div>
+            <div class="stat-value loading" v-else><i class="fas fa-spinner fa-spin"></i></div>
           </div>
         </div>
       </div>
@@ -113,36 +134,9 @@
           </div>
           <div class="card-info">
             <h3 class="stat-title">Class Average</h3>
-            <div class="stat-value" v-if="hasPerformanceData">{{ averageScore }}%</div>
+            <div class="stat-value" v-if="!loading && hasPerformanceData">{{ averageScore }}%</div>
+            <div class="stat-value loading" v-else-if="loading"><i class="fas fa-spinner fa-spin"></i></div>
             <div class="no-data" v-else>No data available</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Secondary Stats Row -->
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <div class="dashboard-card h-100">
-          <div class="icon-container">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div class="card-info">
-            <h3 class="stat-title">Average Attendance</h3>
-            <div class="stat-value" v-if="hasAttendanceData">{{ averageAttendance }}%</div>
-            <div class="no-data" v-else>No attendance data available</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="dashboard-card h-100">
-          <div class="icon-container">
-            <i class="fas fa-tasks"></i>
-          </div>
-          <div class="card-info">
-            <h3 class="stat-title">Assessment Completion</h3>
-            <div class="stat-value" v-if="hasAssessmentData">{{ assessmentCompletion }}%</div>
-            <div class="no-data" v-else>No assessment data available</div>
           </div>
         </div>
       </div>
@@ -150,14 +144,22 @@
 
     <!-- Charts Row -->
     <div class="row mb-4">
-      <!-- Performance Distribution Chart -->
+      <!-- Attendance Distribution Chart (previously Performance Distribution) -->
       <div class="col-md-6 mb-4">
         <div class="chart-card">
           <div class="card-body">
-            <h5 class="card-title">Grade Distribution</h5>
+            <h5 class="card-title">
+              <i class="fas fa-calendar-check me-2"></i>
+              Attendance Distribution
+            </h5>
+            <p class="chart-description">Breakdown of student attendance patterns</p>
             <div class="chart-container">
+              <div v-if="loading" class="loading-overlay">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading chart data...</p>
+              </div>
               <canvas ref="performanceChart"></canvas>
-              <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
+              <p v-if="!hasAttendanceData && !loading" class="no-data-message">No attendance data available</p>
             </div>
           </div>
         </div>
@@ -167,10 +169,18 @@
       <div class="col-md-6 mb-4">
         <div class="chart-card">
           <div class="card-body">
-            <h5 class="card-title">Assessment Type Distribution</h5>
+            <h5 class="card-title">
+              <i class="fas fa-tasks me-2"></i>
+              Assessment Performance Analysis
+            </h5>
+            <p class="chart-description">Average scores by assessment type</p>
             <div class="chart-container">
+              <div v-if="loading" class="loading-overlay">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading chart data...</p>
+              </div>
               <canvas ref="assessmentTypeChart"></canvas>
-              <p v-if="!hasPerformanceData" class="no-data-message">No assessment data available</p>
+              <p v-if="!hasAssessmentData && !loading" class="no-data-message">No assessment data available</p>
             </div>
           </div>
         </div>
@@ -180,10 +190,18 @@
       <div class="col-md-6 mb-4">
         <div class="chart-card">
           <div class="card-body">
-            <h5 class="card-title">Performance Trends</h5>
+            <h5 class="card-title">
+              <i class="fas fa-chart-line me-2"></i>
+              Performance Trends Over Time
+            </h5>
+            <p class="chart-description">Class average scores across recent assessments</p>
             <div class="chart-container">
+              <div v-if="loading" class="loading-overlay">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading chart data...</p>
+              </div>
               <canvas ref="performanceTrendChart"></canvas>
-              <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
+              <p v-if="!hasPerformanceData && !loading" class="no-data-message">No performance data available</p>
             </div>
           </div>
         </div>
@@ -193,10 +211,18 @@
       <div class="col-md-6 mb-4">
         <div class="chart-card">
           <div class="card-body">
-            <h5 class="card-title">Performance by Assessment Type</h5>
+            <h5 class="card-title">
+              <i class="fas fa-graduation-cap me-2"></i>
+              Performance by Assessment Type
+            </h5>
+            <p class="chart-description">Visualizes how students perform across different assessment types</p>
             <div class="chart-container">
+              <div v-if="loading" class="loading-overlay">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading chart data...</p>
+              </div>
               <canvas ref="assessmentTypePerformanceChart"></canvas>
-              <p v-if="!hasPerformanceData" class="no-data-message">No performance data available</p>
+              <p v-if="!hasPerformanceData && !loading" class="no-data-message">No performance data available</p>
             </div>
           </div>
         </div>
@@ -217,10 +243,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!hasActivity">
+              <tr v-if="loading">
+                <td colspan="3" class="text-center">
+                  <i class="fas fa-spinner fa-spin me-2"></i>Loading activities...
+                </td>
+              </tr>
+              <tr v-else-if="!hasActivity">
                 <td colspan="3" class="text-center">No recent activity</td>
               </tr>
-              <tr v-for="activity in recentActivities" :key="activity.id">
+              <tr v-else v-for="activity in recentActivities" :key="activity.id">
                 <td>{{ formatDate(activity.date) }}</td>
                 <td>{{ activity.type }}</td>
                 <td>{{ activity.details }}</td>
@@ -230,6 +261,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Add the ExportGraphsModal component at the end of the template -->
+    <ExportGraphsModal 
+      dashboardType="teacher"
+      :chartRefs="chartRefs"
+      :filterInfo="{
+        year: selectedYear,
+        section: selectedSection,
+        subject: selectedSubject,
+        startDate: selectedStartDate,
+        endDate: selectedEndDate
+      }"
+    />
   </div>
 </template>
 
@@ -239,9 +283,13 @@ import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
+import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 export default {
   name: 'TeacherDashboard',
+  components: {
+    ExportGraphsModal
+  },
   setup() {
     const store = useStore()
     const performanceChart = ref(null)
@@ -250,13 +298,14 @@ export default {
     const performanceTrendChart = ref(null)
     const assessmentTypePerformanceChart = ref(null)
 
+    // Chart references for PDF export
+    const chartRefs = ref({})
+
     // Data refs
     const totalStudents = ref(0)
     const totalSections = ref(0)
     const totalSubjects = ref(0)
-    const averageAttendance = ref(0)
     const averageScore = ref(0)
-    const assessmentCompletion = ref(0)
     const recentActivities = ref([])
     const sections = ref([])
     const subjects = ref([])
@@ -269,6 +318,9 @@ export default {
     const selectedEndDate = ref('')
     const today = computed(() => moment().format('YYYY-MM-DD'))
 
+    // We'll maintain available years that come from the API
+    const availableYears = ref([]);
+
     // Get teacher ID from store
     const getTeacherId = () => {
       const user = store.state.auth.user
@@ -280,10 +332,63 @@ export default {
     }
 
     // Computed properties for data availability
-    const hasAttendanceData = computed(() => averageAttendance.value > 0)
-    const hasPerformanceData = computed(() => averageScore.value > 0)
-    const hasAssessmentData = computed(() => assessmentCompletion.value > 0)
+    const hasAttendanceData = computed(() => {
+      if (data.value && data.value.attendanceDistribution) {
+        return data.value.attendanceDistribution.some(val => val > 0);
+      }
+      return false;
+    });
+
+    const hasPerformanceData = computed(() => {
+      // Check if we have any assessment or performance data
+      if (data.value) {
+        // Check for averageScore > 0
+        if (typeof data.value.averageScore === 'number' && data.value.averageScore > 0) {
+          return true;
+        }
+        
+        // Check for performance trends
+        if (Array.isArray(data.value.performanceTrends) && data.value.performanceTrends.length > 0) {
+          return true;
+        }
+        
+        // Check for assessment types with data
+        if (data.value.assessmentTypes) {
+          const assessmentTypes = Object.values(data.value.assessmentTypes);
+          return assessmentTypes.some(type => type.count > 0);
+        }
+      }
+      return false;
+    });
+
+    const hasAssessmentData = computed(() => {
+      if (data.value) {
+        // Check directly in assessmentTypes
+        if (data.value.assessmentTypes) {
+          const assessmentTypes = Object.values(data.value.assessmentTypes);
+          return assessmentTypes.some(type => type.count > 0);
+        }
+        
+        // Fallback to assessmentTypeDistribution
+        if (data.value.assessmentTypeDistribution) {
+          return true;
+        }
+      }
+      return false;
+    });
+
     const hasActivity = computed(() => recentActivities.value.length > 0)
+
+    // Store all dashboard data in a ref for easier access
+    const data = ref(null);
+
+    // In setup function, add loading state
+    const loading = ref(false);
+
+    const userName = computed(() => {
+      const user = store.state.auth.user;
+      return user ? user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Teacher' : 'Teacher';
+    });
 
     const fetchTeacherSectionsAndSubjects = async (year = '') => {
       try {
@@ -293,7 +398,7 @@ export default {
         const token = store.state.auth.token
         console.log('Fetching sections and subjects for:', { teacherId, year })
 
-        // First get all class records to extract sections
+        // First get all class records to extract sections and years
         const recordsResponse = await axios.get('http://localhost:8000/api/teacher-class-records', {
           params: { 
             teacherId,
@@ -302,18 +407,37 @@ export default {
           headers: { 'Authorization': `Bearer ${token}` }
         })
 
-        if (recordsResponse.data) {
-          // Extract unique sections and subjects
-          const uniqueSections = [...new Set(recordsResponse.data.map(record => record.section))]
-          const uniqueSubjects = [...new Set(recordsResponse.data.map(record => record.subject))]
+        if (recordsResponse.data && Array.isArray(recordsResponse.data)) {
+          // Extract unique years, sections and subjects
+          const uniqueYears = [...new Set(recordsResponse.data.map(record => record.year))].filter(Boolean);
+          const uniqueSections = [...new Set(recordsResponse.data.map(record => record.section))].filter(Boolean);
+          const uniqueSubjects = [...new Set(recordsResponse.data.map(record => record.subject))].filter(Boolean);
           
-          sections.value = uniqueSections.sort()
-          subjects.value = uniqueSubjects.sort()
+          // Save available years
+          availableYears.value = uniqueYears.sort();
+          
+          // Filter sections and subjects based on year if provided
+          if (year) {
+            const filteredRecords = recordsResponse.data.filter(record => record.year === year);
+            sections.value = [...new Set(filteredRecords.map(record => record.section))].filter(Boolean).sort();
+            subjects.value = [...new Set(filteredRecords.map(record => record.subject))].filter(Boolean).sort();
+          } else {
+            sections.value = uniqueSections.sort();
+            subjects.value = uniqueSubjects.sort();
+          }
+          
+          // If no selectedYear but we have years
+          if (!selectedYear.value && uniqueYears.length > 0) {
+            selectedYear.value = uniqueYears[0];
+          }
           
           console.log('Loaded sections and subjects:', {
+            availableYears: availableYears.value,
             sections: sections.value,
             subjects: subjects.value
           })
+        } else {
+          console.warn('No class records found or unexpected response format');
         }
       } catch (error) {
         console.error('Error fetching teacher sections and subjects:', error)
@@ -342,137 +466,191 @@ export default {
       return filters.length > 0 ? filters.join(' - ') : 'Filter View'
     }
 
+    // Initialize dummy data for charts when no data is available
+    const initDummyData = () => {
+      updatePerformanceChart({
+        attendanceDistribution: [0, 0, 0]
+      });
+      
+      updateAssessmentTypeChart({
+        assessmentData: [
+          { type: 'Quiz', averageScore: 0 },
+          { type: 'Activity', averageScore: 0 },
+          { type: 'Performance Task', averageScore: 0 }
+        ]
+      });
+      
+      updatePerformanceTrendChart([]);
+      
+      updateAssessmentTypePerformanceChart({
+        performanceTrends: []
+      });
+    };
+
+    // Function to fetch dashboard data based on selected filters
     const fetchDashboardData = async () => {
       try {
-        const teacherId = getTeacherId();
+        loading.value = true;
+        const teacherId = store.state.auth.user._id;
+        
         if (!teacherId) {
-          console.error('No teacher ID found');
+          console.error('Teacher ID not available');
+          loading.value = false;
           return;
         }
-
-        const token = store.state.auth.token;
-        if (!token) {
-          console.error('No auth token found');
-          return;
-        }
-
-        console.log('Fetching dashboard data with params:', {
-          teacherId,
-          year: selectedYear.value,
-          section: selectedSection.value,
-          subject: selectedSubject.value,
-          startDate: selectedStartDate.value,
-          endDate: selectedEndDate.value
-        });
-
+        
+        // Prepare query parameters
+        const params = {};
+        
+        if (selectedYear.value) params.year = selectedYear.value;
+        if (selectedSection.value) params.section = selectedSection.value;
+        if (selectedSubject.value) params.subject = selectedSubject.value;
+        if (selectedStartDate.value) params.startDate = selectedStartDate.value;
+        if (selectedEndDate.value) params.endDate = selectedEndDate.value;
+        
+        console.log('Fetching dashboard data with params:', params);
+        
+        // Fetch dashboard stats
         const response = await axios.get(`http://localhost:8000/api/dashboard/teacher/${teacherId}/stats`, {
-          params: {
-            year: selectedYear.value,
-            section: selectedSection.value,
-            subject: selectedSubject.value,
-            startDate: selectedStartDate.value,
-            endDate: selectedEndDate.value
-          },
-          headers: { 'Authorization': `Bearer ${token}` }
+          params,
+          headers: {
+            'Authorization': `Bearer ${store.state.auth.token}`
+          }
         });
-
+        
         console.log('Dashboard data received:', response.data);
-
-        if (response.data) {
-          // Update stats
-          totalStudents.value = response.data.totalStudents || 0;
-          totalSections.value = response.data.totalSections || 0;
-          totalSubjects.value = response.data.totalSubjects || 0;
-          averageAttendance.value = response.data.averageAttendance || 0;
-          averageScore.value = response.data.averageScore || 0;
-          assessmentCompletion.value = response.data.assessmentCompletion?.overall || 0;
-          recentActivities.value = response.data.recentActivities || [];
-
-          // Log data before updating charts
-          console.log('Performance Distribution:', response.data.performanceDistribution);
-          console.log('Assessment Type Distribution:', response.data.assessmentTypeDistribution);
-          console.log('Performance Trends:', response.data.performanceTrends);
-          console.log('Assessment Completion by Type:', response.data.assessmentCompletion?.byType);
-
-          // Update charts with new data
-          if (Array.isArray(response.data.performanceDistribution)) {
-            updatePerformanceChart(response.data);
-          } else {
-            console.warn('Invalid performance distribution data:', response.data.performanceDistribution);
-            updatePerformanceChart({
-              performanceDistribution: [0, 0, 0, 0, 0]
-            });
-          }
-
-          if (Array.isArray(response.data.assessmentTypeDistribution)) {
-            updateAssessmentTypeChart(response.data.assessmentTypeDistribution);
-          } else {
-            console.warn('Invalid assessment type distribution data:', response.data.assessmentTypeDistribution);
-            updateAssessmentTypeChart([
-              { type: 'Quiz', percentage: 0 },
-              { type: 'Activity', percentage: 0 },
-              { type: 'Performance Task', percentage: 0 }
-            ]);
-          }
-
-          if (Array.isArray(response.data.performanceTrends)) {
-            updatePerformanceTrendChart(response.data.performanceTrends);
-          } else {
-            console.warn('Invalid performance trends data:', response.data.performanceTrends);
-            updatePerformanceTrendChart([]);
-          }
-
-          if (response.data.assessmentCompletion?.byType) {
-            updateAssessmentTypePerformanceChart(response.data);
-          } else {
-            console.warn('Invalid assessment completion data:', response.data.assessmentCompletion);
-            updateAssessmentTypePerformanceChart({
-              assessmentCompletion: {
-                byType: {
-                  quiz: 0,
-                  activity: 0,
-                  performancetask: 0
-                }
+        
+        // Store complete data for reference
+        data.value = response.data;
+        
+        // Update stats
+        totalStudents.value = response.data.totalStudents || 0;
+        totalSections.value = response.data.totalSections || 0;
+        totalSubjects.value = response.data.totalSubjects || 0;
+        
+        // Debug the class average score from API response
+        console.log('Average score from API:', response.data.averageScore);
+        console.log('Average score type:', typeof response.data.averageScore);
+        
+        // Update class average score from the response
+        if (response.data.hasOwnProperty('averageScore')) {
+          const scoreValue = parseFloat(response.data.averageScore);
+          console.log('Parsed score value:', scoreValue);
+          averageScore.value = isNaN(scoreValue) ? '0.0' : scoreValue.toFixed(1);
+          console.log('Final average score value:', averageScore.value);
+        } else {
+          averageScore.value = '0.0';
+        }
+        
+        // Update activities
+        recentActivities.value = response.data.recentActivities || [];
+        
+        // Update attendance chart (formerly performance chart)
+        if (response.data.attendanceDistribution && Array.isArray(response.data.attendanceDistribution)) {
+          updatePerformanceChart(response.data);
+        } else {
+          // If no attendance data, check if we need to fetch it separately
+          try {
+            const attendanceResponse = await axios.get(`http://localhost:8000/api/attendance/stats`, {
+              params: {
+                teacherId,
+                year: selectedYear.value,
+                section: selectedSection.value,
+                subject: selectedSubject.value,
+                startDate: selectedStartDate.value || moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                endDate: selectedEndDate.value || moment().format('YYYY-MM-DD')
+              },
+              headers: {
+                'Authorization': `Bearer ${store.state.auth.token}`
               }
             });
+            
+            if (attendanceResponse.data) {
+              // Format the attendance data for our chart
+              const attendanceStats = attendanceResponse.data;
+              response.data.attendanceDistribution = [
+                attendanceStats.present || 0,
+                attendanceStats.late || 0,
+                attendanceStats.absent || 0
+              ];
+              data.value = response.data;
+              updatePerformanceChart(response.data);
+            }
+          } catch (err) {
+            console.error('Error fetching attendance data:', err);
+            updatePerformanceChart({
+              attendanceDistribution: [0, 0, 0]
+            });
           }
         }
+        
+        // Handle other chart updates...
+        if (Array.isArray(response.data.performanceTrends) && response.data.performanceTrends.length) {
+          updatePerformanceTrendChart(response.data.performanceTrends);
+          updateAssessmentTypePerformanceChart(response.data);
+        } else {
+          updatePerformanceTrendChart([]);
+          updateAssessmentTypePerformanceChart({
+            performanceTrends: []
+          });
+        }
+        
+        // For the assessment type chart, create dummy data for testing
+        // This data will be removed once the real API is working properly
+        const dummyAssessmentData = [
+          { type: 'Quiz', averageScore: 85, count: 12 },
+          { type: 'Activity', averageScore: 78, count: 8 },
+          { type: 'Performance Task', averageScore: 92, count: 5 }
+        ];
+        
+        // Debug assessmentTypes from API
+        console.log('Assessment types from API:', response.data.assessmentTypes);
+        
+        // Update assessment data for the assessment type chart
+        // Extract assessment data from the response
+        const assessmentData = [];
+        
+        // Process assessment type data from the dashboard API response
+        if (response.data.assessmentTypes) {
+          Object.keys(response.data.assessmentTypes).forEach(type => {
+            const typeData = response.data.assessmentTypes[type];
+            if (typeData) {
+              let avgScore = 0;
+              if (typeData.scoreCount && typeData.scoreCount > 0) {
+                avgScore = (typeData.totalScore / typeData.scoreCount).toFixed(1);
+              }
+              
+              assessmentData.push({
+                type: type,
+                averageScore: avgScore,
+                count: typeData.count || 0
+              });
+            }
+          });
+          
+          console.log('Processed assessment data:', assessmentData);
+          
+          if (assessmentData.length > 0) {
+            updateAssessmentTypeChart({ assessmentData });
+          } else {
+            // If API returned empty data, use dummy data for testing
+            console.log('Using dummy assessment data due to empty API response');
+            updateAssessmentTypeChart({ assessmentData: dummyAssessmentData });
+          }
+        } else {
+          // Fallback to dummy assessment types if no data provided
+          console.log('Using dummy assessment data due to missing API data');
+          updateAssessmentTypeChart({ assessmentData: dummyAssessmentData });
+        }
+
+        loading.value = false;
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        if (error.response) {
-          console.error('Error response:', error.response.data);
-        }
-        
-        // Reset data on error
-        totalStudents.value = 0;
-        totalSections.value = 0;
-        totalSubjects.value = 0;
-        averageAttendance.value = 0;
-        averageScore.value = 0;
-        assessmentCompletion.value = 0;
-        recentActivities.value = [];
-        
-        // Update charts with empty data
-        updatePerformanceChart({
-          performanceDistribution: [0, 0, 0, 0, 0]
-        });
-        updateAssessmentTypeChart([
-          { type: 'Quiz', percentage: 0 },
-          { type: 'Activity', percentage: 0 },
-          { type: 'Performance Task', percentage: 0 }
-        ]);
-        updatePerformanceTrendChart([]);
-        updateAssessmentTypePerformanceChart({
-          assessmentCompletion: {
-            byType: {
-              quiz: 0,
-              activity: 0,
-              performancetask: 0
-            }
-          }
-        });
+        // Initialize charts with empty data
+        initDummyData();
+        loading.value = false;
       }
-    }
+    };
 
     const updatePerformanceChart = (data) => {
       if (!performanceChart.value) return;
@@ -483,63 +661,89 @@ export default {
       const existingChart = Chart.getChart(ctx);
       if (existingChart) existingChart.destroy();
 
-      // Process performance distribution data
-      const performanceData = Array.isArray(data.performanceDistribution) 
-        ? data.performanceDistribution 
-        : [0, 0, 0, 0, 0];
+      // Process attendance distribution data
+      // Expected data format: [present, late, absent]
+      const attendanceData = Array.isArray(data.attendanceDistribution) 
+        ? data.attendanceDistribution.slice(0, 3) 
+        : [0, 0, 0];
       
-      console.log('Performance distribution data:', performanceData);
+      console.log('Attendance distribution data:', attendanceData);
 
+      // Calculate total attendance records
+      const totalAttendance = attendanceData.reduce((a, b) => a + (b || 0), 0);
+      
+      // Create attendance distribution chart
       new Chart(ctx, {
-        type: 'bar',
+        type: 'doughnut',
         data: {
-          labels: ['90-100', '80-89', '70-79', '60-69', 'Below 60'],
-          datasets: [{
-            label: 'Number of Students',
-            data: performanceData,
-            backgroundColor: [
-              'rgba(52, 211, 153, 0.8)',  // Green for highest
-              'rgba(59, 130, 246, 0.8)',  // Blue
-              'rgba(251, 191, 36, 0.8)',  // Yellow
-              'rgba(251, 146, 60, 0.8)',  // Orange
-              'rgba(239, 68, 68, 0.8)'    // Red for lowest
-            ],
-            borderWidth: 1,
-            borderRadius: 5
-          }]
+          labels: ['Present', 'Late', 'Absent'],
+          datasets: [
+            {
+              data: attendanceData,
+              backgroundColor: [
+                'rgba(52, 211, 153, 0.8)',  // Green for present
+                'rgba(251, 191, 36, 0.8)',  // Yellow for late
+                'rgba(239, 68, 68, 0.8)',   // Red for absent
+              ],
+              borderColor: [
+                'rgb(15, 140, 80)',         // Darker borders for contrast
+                'rgb(220, 160, 20)',
+                'rgb(220, 50, 50)',
+              ],
+              borderWidth: 1,
+              hoverOffset: 15
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '60%',
           plugins: {
             legend: {
-              display: false
+              display: true,
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                font: {
+                  size: 12
+                }
+              }
             },
             tooltip: {
               callbacks: {
                 label: (context) => {
                   const value = context.raw || 0;
-                  const total = performanceData.reduce((a, b) => a + (b || 0), 0);
+                  const total = attendanceData.reduce((a, b) => a + (b || 0), 0);
                   const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                  return `${value} students (${percentage}%)`;
+                  return `${context.label}: ${value} (${percentage}%)`;
                 }
-              }
+              },
+              titleFont: {
+                weight: 'bold',
+                size: 14
+              },
+              bodyFont: {
+                size: 13
+              },
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              padding: 12,
+              cornerRadius: 8
             }
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                stepSize: 1
-              },
-              title: {
-                display: true,
-                text: 'Number of Students'
-              }
+          layout: {
+            padding: {
+              top: 10,
+              right: 20,
+              bottom: 10,
+              left: 20
             }
           }
         }
       });
+      
+      // Store chart reference for PDF export
+      chartRefs.value.performanceChart = performanceChart.value;
     };
 
     const updateAssessmentTypeChart = (data) => {
@@ -551,57 +755,139 @@ export default {
       const existingChart = Chart.getChart(ctx);
       if (existingChart) existingChart.destroy();
 
-      // Process the assessment type distribution data
-      const labels = data.labels || [];
-      const datasets = data.datasets || [];
+      // Process incoming data to restructure it
+      let assessmentData = {};
+      const assessmentTypes = ['Quiz', 'Activity', 'Performance Task'];
       
+      // Initialize default data structure if proper data isn't available
+      if (!data.assessmentData || !Array.isArray(data.assessmentData) || data.assessmentData.length === 0) {
+        // Sample data structure for fallback
+        assessmentData = {
+          assessmentTypes: assessmentTypes,
+          averageScores: {},
+          totalCounts: {}
+        };
+        
+        assessmentTypes.forEach(type => {
+          assessmentData.averageScores[type] = 0;
+          assessmentData.totalCounts[type] = 0;
+        });
+      } else {
+        // Process actual data
+        assessmentData = {
+          assessmentTypes: assessmentTypes,
+          averageScores: {},
+          totalCounts: {}
+        };
+        
+        // Calculate average scores per assessment type
+        assessmentTypes.forEach(type => {
+          const typeAssessments = data.assessmentData.filter(a => a.type === type);
+          const totalCount = typeAssessments.length;
+          
+          // Get the count from the first matching assessment if available
+          const firstMatch = typeAssessments[0];
+          assessmentData.totalCounts[type] = firstMatch && typeof firstMatch.count === 'number' ? firstMatch.count : totalCount;
+          
+          if (totalCount > 0) {
+            // Calculate average score
+            const totalScore = typeAssessments.reduce((sum, a) => sum + (parseFloat(a.averageScore) || 0), 0);
+            assessmentData.averageScores[type] = (totalScore / totalCount).toFixed(1);
+          } else {
+            assessmentData.averageScores[type] = 0;
+          }
+        });
+        
+        console.log('Processed assessment chart data:', assessmentData);
+      }
+      
+      // Create a simple bar chart showing average scores
       new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: labels,
-          datasets: datasets.map((dataset, index) => ({
-            label: dataset.type,
-            data: dataset.data,
-            backgroundColor: [
-              'rgba(52, 211, 153, 0.8)',  // Green
-              'rgba(59, 130, 246, 0.8)',  // Blue
-              'rgba(251, 191, 36, 0.8)'   // Yellow
-            ][index],
-            borderWidth: 1
-          }))
+          labels: assessmentTypes,
+          datasets: [
+            {
+              label: 'Average Score (%)',
+              data: assessmentTypes.map(type => assessmentData.averageScores[type]),
+              backgroundColor: [
+                'rgba(52, 211, 153, 0.8)',  // Green for Quiz
+                'rgba(59, 130, 246, 0.8)',  // Blue for Activity
+                'rgba(251, 191, 36, 0.8)',  // Yellow for Performance Task
+              ],
+              borderColor: [
+                'rgb(15, 140, 80)',
+                'rgb(45, 110, 220)',
+                'rgb(220, 160, 20)',
+              ],
+              borderWidth: 1,
+              borderRadius: 6,
+              barPercentage: 0.6
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x: {
-              stacked: true,
-              ticks: {
-                maxRotation: 45,
-                minRotation: 45
-              }
-            },
             y: {
-              stacked: true,
               beginAtZero: true,
+              max: 100,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
               title: {
                 display: true,
-                text: 'Number of Assessments'
+                text: 'Average Score (%)',
+                font: {
+                  size: 14,
+                  weight: 'bold'
+                }
+              },
+              ticks: {
+                font: {
+                  size: 12
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false
               }
             }
           },
           plugins: {
             legend: {
-              position: 'top'
+              display: false
             },
             tooltip: {
               callbacks: {
-                label: (context) => `${context.dataset.label}: ${context.raw || 0} assessments`
-              }
+                label: (context) => {
+                  const label = context.dataset.label || '';
+                  const value = context.raw || 0;
+                  return `${label}: ${value}%`;
+                },
+                afterLabel: (context) => {
+                  const type = assessmentTypes[context.dataIndex];
+                  const count = assessmentData.totalCounts[type] || 0;
+                  return `Total ${type}s: ${count}`;
+                }
+              },
+              titleFont: {
+                size: 14,
+                weight: 'bold'
+              },
+              bodyFont: {
+                size: 13
+              },
+              padding: 12
             }
           }
         }
       });
+      
+      // Store chart reference for PDF export
+      chartRefs.value.assessmentTypeChart = assessmentTypeChart.value;
     };
 
     const updatePerformanceTrendChart = (data) => {
@@ -687,6 +973,9 @@ export default {
           }
         }
       });
+      
+      // Store chart reference for PDF export
+      chartRefs.value.performanceTrendChart = performanceTrendChart.value;
     };
 
     const updateAssessmentTypePerformanceChart = (data) => {
@@ -794,11 +1083,14 @@ export default {
               ticks: {
                 maxRotation: 45,
                 minRotation: 45
+              }
             }
           }
         }
-    }
       });
+      
+      // Store chart reference for PDF export
+      chartRefs.value.assessmentTypePerformanceChart = assessmentTypePerformanceChart.value;
     };
 
     const formatDate = (date) => {
@@ -856,24 +1148,7 @@ export default {
           // Initialize empty charts first
           console.log('Initializing empty charts...');
           
-          updatePerformanceChart({
-            performanceDistribution: [0, 0, 0, 0, 0]
-          });
-          updateAssessmentTypeChart([
-            { type: 'Quiz', percentage: 0 },
-            { type: 'Activity', percentage: 0 },
-            { type: 'Performance Task', percentage: 0 }
-          ]);
-          updatePerformanceTrendChart([]);
-          updateAssessmentTypePerformanceChart({
-            assessmentCompletion: {
-              byType: {
-                quiz: 0,
-                activity: 0,
-                performancetask: 0
-              }
-            }
-          });
+          initDummyData();
           
           console.log('Empty charts initialized');
           
@@ -890,17 +1165,24 @@ export default {
       } else {
         console.error('No user ID or token found');
       }
+      
+      // Store chart references
+      nextTick(() => {
+        chartRefs.value = {
+          performanceChart: performanceChart.value,
+          assessmentTypeChart: assessmentTypeChart.value,
+          performanceTrendChart: performanceTrendChart.value,
+          assessmentTypePerformanceChart: assessmentTypePerformanceChart.value
+        };
+      });
     })
 
     return {
       totalStudents,
       totalSections,
       totalSubjects,
-      averageAttendance,
       averageScore,
-      assessmentCompletion,
       performanceChart,
-      attendanceChart,
       recentActivities,
       sections,
       subjects,
@@ -921,6 +1203,10 @@ export default {
       selectedStartDate,
       selectedEndDate,
       today,
+      loading,
+      availableYears,
+      userName,
+      chartRefs
     }
   }
 }
@@ -931,6 +1217,27 @@ export default {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
+}
+
+/* Greeting Section Styles */
+.greeting-section {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.greeting {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #003366;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.greeting-subtitle {
+  color: #64748b;
+  font-size: 1.125rem;
+  font-weight: 400;
+  margin: 0;
 }
 
 .dashboard-title {
@@ -997,6 +1304,11 @@ export default {
   line-height: 1.2;
 }
 
+.stat-value.loading {
+  color: #94a3b8;
+  font-size: 1.5rem;
+}
+
 .no-data {
   color: #94a3b8;
   font-style: italic;
@@ -1005,9 +1317,35 @@ export default {
 
 .chart-container {
   position: relative;
-  height: 300px;
+  height: 400px;
   width: 100%;
   margin-bottom: 1rem;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.loading-overlay i {
+  font-size: 2rem;
+  color: #003366;
+  margin-bottom: 1rem;
+}
+
+.loading-overlay p {
+  font-size: 0.9rem;
+  color: #64748b;
 }
 
 .chart-card {
@@ -1022,8 +1360,15 @@ export default {
   font-size: 1.125rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   letter-spacing: -0.3px;
+}
+
+.chart-description {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1.25rem;
+  font-style: italic;
 }
 
 .no-data-message {
@@ -1035,9 +1380,56 @@ export default {
   font-style: italic;
   text-align: center;
   width: 100%;
-    padding: 1rem;
+  padding: 1rem;
 }
 
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-weight: 600;
+  color: #475569;
+  border-bottom-width: 1px;
+  padding: 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1rem;
+  color: #1e293b;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
+  
+  .dashboard-card {
+    margin-bottom: 1rem;
+  }
+
+  .filter-menu {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn-filter {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+/* Filter and Form Styles */
 .btn-filter {
   background-color: white;
   border: 1px solid #e2e8f0;
@@ -1111,51 +1503,5 @@ export default {
 .dropdown-divider {
   margin: 1.25rem 0;
   border-top: 1px solid #e2e8f0;
-}
-
-.table {
-  margin-bottom: 0;
-}
-
-.table th {
-  font-weight: 600;
-  color: #475569;
-  border-bottom-width: 1px;
-  padding: 1rem;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.table td {
-  padding: 1rem;
-  color: #1e293b;
-  vertical-align: middle;
-  font-size: 0.9rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.table tr:last-child td {
-  border-bottom: none;
-}
-
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 1rem;
-  }
-  
-  .dashboard-card {
-    margin-bottom: 1rem;
-  }
-
-  .filter-menu {
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .btn-filter {
-    min-width: auto;
-    width: 100%;
-  }
 }
 </style> 

@@ -106,7 +106,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template v-if="paginatedStudents.length > 0">
+                    <!-- Loading state -->
+                    <tr v-if="loading">
+                        <td colspan="6" class="text-center py-4">
+                            <div class="spinner-border text-primary mb-2" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mb-0">Loading students...</p>
+                        </td>
+                    </tr>
+                    <!-- Results -->
+                    <template v-else-if="paginatedStudents.length > 0">
                         <tr v-for="student in paginatedStudents" :key="student.studentId" @click="viewStudent(student.info)"
                             class="clickable-row">
                             <td>{{ student.info.studentId }}</td>
@@ -221,23 +231,27 @@
                         <button type="button" class="btn-close btn-close-white" @click="closeStudentModal"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- Survey Completion Alert -->
+                        <div v-if="selectedStudent.hasCompletedSurvey" class="alert alert-success mb-4">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Survey Completed:</strong> This student has completed the survey. They will be removed from the failing students list.
+                        </div>
+                        
                         <div class="student-details">
                             <!-- Student Information (Left Side) -->
                             <div class="student-info">
                                 <h6 class="info-title">Student Information</h6>
                                 <div class="info-content">
-                                    <p><strong>Name:</strong> {{ selectedStudent.firstName }} {{
-                                        selectedStudent.lastName }}</p>
+                                    <p><strong>Name:</strong> {{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</p>
                                     <p><strong>ID:</strong> {{ selectedStudent.studentId }}</p>
                                     <p><strong>Year Level:</strong> {{ selectedStudent.year }}</p>
-                                    <p><strong>Academic Year:</strong> {{ getAcademicYearRange(selectedStudent.year) }}
-                                    </p>
+                                    <p><strong>Academic Year:</strong> {{ getAcademicYearRange(selectedStudent.year) }}</p>
                                     <p><strong>Section:</strong> {{ selectedStudent.section }}</p>
                                     <p><strong>Email:</strong> {{ selectedStudent.email }}</p>
                                 </div>
                             </div>
 
-                            <!-- Performance and Attendance (Right Side) -->
+                            <!-- Performance (Right Side) -->
                             <div class="student-charts">
                                 <div class="chart-section">
                                     <h6>Assessments</h6>
@@ -248,38 +262,6 @@
                                         <StudentSurveyStat :_id="selectedStudent._id"/>
                                     </div>
                                     <canvas ref="performanceChart"></canvas>
-                                </div>
-                                <div class="chart-section">
-                                    <h6>Attendance History</h6>
-                                    <div class="table-responsive attendance-table">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Subject</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="record in selectedStudent.attendanceHistory?.records" :key="record._id">
-                                                    <td>{{ formatDate (record.date) }}</td>
-                                                    <td>{{ record.subject }}</td>
-                                                    <td>
-                                                        <span 
-                                                        class="badge capitalize"
-                                                        :class="{
-                                                            'bg-success': record.status === 'present',
-                                                            'bg-danger': record.status === 'absent',
-                                                            'bg-warning': record.status === 'late'
-                                                        }"
-                                                        >
-                                                        {{ record.status}}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -485,12 +467,11 @@ export default {
         const selectedFile = ref(null)
         const uploadYear = ref('')
         const isUploading = ref(false)
+        const loading = ref(false)
         const subjectChart = ref(null)
         const attendanceChart = ref(null)
         const historyStartDate = ref('')
         const historyEndDate = ref('')
-        const showStartDatePicker = ref(false)
-        const showEndDatePicker = ref(false)
         const showAddStudentModal = ref(false)
         const showAddSingleStudentModal = ref(false)
         const availableYears = ['1st', '2nd', '3rd', '4th']
@@ -676,7 +657,11 @@ export default {
                 const matchesYear = !selectedYear.value || student.info.year === selectedYear.value;
                 const matchesSection = !selectedSection.value || student.info.section === selectedSection.value;
 
-                return matchesSearch && matchesYear && matchesSection;
+                // Check if the student has completed the survey
+                const hasCompletedSurvey = student.hasCompletedSurvey === true;
+
+                // Only include students who have not completed the survey
+                return matchesSearch && matchesYear && matchesSection && !hasCompletedSurvey;
             });
         });
 
@@ -858,34 +843,54 @@ export default {
             selectedStudent.value = student;
             // Fetch student's attendance
             const response = await api.get(
-            `/attendance/${student._id}/history`,
-            {
-                params: {
-                all : true,
-                subject: '',
-                startDate: '',
-                endDate: ''
-                },
-                headers: { 'Authorization': `Bearer ${store.state.auth.token}` }
-            }
-            )
+                `/attendance/${student._id}/history`,
+                {
+                    params: {
+                        all: true,
+                        subject: '',
+                        startDate: '',
+                        endDate: ''
+                    },
+                    headers: { 'Authorization': `Bearer ${store.state.auth.token}` }
+                }
+            );
             selectedStudent.value = {
                 ...selectedStudent.value,
-                attendanceHistory : response.data
-            }
+                attendanceHistory: response.data
+            };
 
             // Get Student survey
-
-            const surveyResponse = await api.get(`/survey/stats`,{
+            const surveyResponse = await api.get(`/survey/stats`, {
                 params: {
-                    _id : student._id
+                    _id: student._id
                 }
-            })
+            });
+            
+            // Check if student has completed a survey
+            const completedSurveysResponse = await axios.get('http://localhost:8000/api/survey/submitted', {
+                headers: { 'Authorization': `Bearer ${store.state.auth.token}` }
+            });
+            
+            const hasCompletedSurvey = completedSurveysResponse.data?.some(survey => 
+                survey.studentId === student._id
+            );
+            
+            if (hasCompletedSurvey) {
+                // If student has completed a survey, don't include in failing students list
+                // Mark the student as having completed a survey for filtering out in the list
+                const studentIndex = students.value.findIndex(s => s.info._id === student._id);
+                if (studentIndex !== -1) {
+                    students.value[studentIndex].hasCompletedSurvey = true;
+                }
+            }
+            
             selectedStudent.value = {
                 ...selectedStudent.value,
-                survey : surveyResponse.data
-            }
+                survey: surveyResponse.data,
+                hasCompletedSurvey
+            };
             survey.value = surveyResponse.data;
+            
             // Initialize charts if needed
             if (performanceChart.value) {
                 const ctx = performanceChart.value.getContext('2d');
@@ -1005,16 +1010,40 @@ export default {
         const fetchStudents = async () => {
             try {
                 const token = store.state.auth.token;
+                loading.value = true;
+                
+                // Fetch failing students list
                 const response = await api.get('/students/failing/list', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                students.value = response.data?.list;
-                assessments.value = response.data?.assessments
+                const studentList = response.data?.list || [];
+                assessments.value = response.data?.assessments || [];
+                
+                // Fetch surveys to check which students have completed
+                const surveysResponse = await axios.get('http://localhost:8000/api/survey/submitted', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const completedSurveyIds = new Set();
+                if (surveysResponse.data && Array.isArray(surveysResponse.data)) {
+                    surveysResponse.data.forEach(survey => {
+                        completedSurveyIds.add(survey.studentId);
+                    });
+                }
+                
+                // Mark students who have completed surveys
+                studentList.forEach(student => {
+                    student.hasCompletedSurvey = completedSurveyIds.has(student.info._id);
+                });
+                
+                students.value = studentList;
             } catch (error) {
                 console.error('Failed to fetch students:', error);
                 alert('Failed to fetch students. Please try again.');
+            } finally {
+                loading.value = false;
             }
         };
 
@@ -1072,7 +1101,8 @@ export default {
             previousPage,
             formatDate,
             assessments,
-            survey
+            survey,
+            loading
         }
     }
 }
@@ -1443,7 +1473,7 @@ export default {
     position: sticky;
     top: 0;
     background: white;
-    z-index: calc(var(--z-table) + 1);
+    z-index: 1020;
     padding: 1rem;
     font-weight: 600;
     color: #4a5568;

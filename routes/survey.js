@@ -160,4 +160,63 @@ function getSurveyAverage(problem = []){
     }
 }
 
+// Get all submitted surveys with student details
+router.get('/submitted', auth, async (req, res) => {
+    try {
+        // Find all surveys that have been submitted
+        const submittedSurveys = await Survey.find({ submitted: true });
+        
+        if (!submittedSurveys || submittedSurveys.length === 0) {
+            return res.status(200).json([]);
+        }
+        
+        // Get student details for each survey
+        const surveyResults = [];
+        for (const survey of submittedSurveys) {
+            try {
+                const student = await Student.findOne({ _id: survey.studentId });
+                
+                if (student) {
+                    // Get survey statistics for this student
+                    const surveyStat = [];
+                    survey.form.forEach(problemSet => {
+                        const type = problemSet.length > 0 ? problemSet[0].type : 'Unknown';
+                        const average = getSurveyAverage(problemSet);
+                        surveyStat.push({ type, average });
+                    });
+                    
+                    surveyResults.push({
+                        _id: survey._id,
+                        studentId: student._id,
+                        studentDisplayId: student.studentId || 'Unknown ID',
+                        studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Unknown Name',
+                        year: student.year,
+                        section: student.section,
+                        email: student.email,
+                        updatedAt: survey.updatedAt,
+                        createdAt: survey.createdAt,
+                        surveyStats: surveyStat
+                    });
+                }
+            } catch (studentError) {
+                console.error('Error fetching student details:', studentError);
+                // Still include the survey even if student details can't be found
+                surveyResults.push({
+                    _id: survey._id,
+                    studentId: survey.studentId,
+                    studentDisplayId: 'Unknown',
+                    studentName: 'Unknown Student',
+                    updatedAt: survey.updatedAt,
+                    createdAt: survey.createdAt
+                });
+            }
+        }
+        
+        res.status(200).json(surveyResults);
+    } catch (error) {
+        console.error('Error fetching submitted surveys:', error);
+        res.status(500).json({ message: 'Error fetching submitted surveys' });
+    }
+});
+
 module.exports = router;
