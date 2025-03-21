@@ -5,7 +5,6 @@ import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
-import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 const store = useStore()
 const performanceChart = ref(null)
@@ -14,9 +13,6 @@ const assessmentTypeChart = ref(null)
 const performanceTrendChart = ref(null)
 const quizzesChart = ref(null)
 const assessmentTypePerformanceChart = ref(null)
-
-// Chart references for PDF export
-const chartRefs = ref({})
 
 // Data refs
 const totalStudents = ref(0)
@@ -351,9 +347,6 @@ const updatePerformanceChart = (data) => {
       }
     }
   });
-  
-  // After chart creation, store the reference
-  chartRefs.value.performanceChart = performanceChart.value;
 };
 
 const updateAssessmentTypeChart = (data) => {
@@ -416,9 +409,6 @@ const updateAssessmentTypeChart = (data) => {
       }
     }
   });
-  
-  // After chart creation, store the reference
-  chartRefs.value.assessmentTypeChart = assessmentTypeChart.value;
 };
 
 const updatePerformanceTrendChart = (data) => {
@@ -504,9 +494,6 @@ const updatePerformanceTrendChart = (data) => {
       }
     }
   });
-  
-  // After chart creation, store the reference
-  chartRefs.value.performanceTrendChart = performanceTrendChart.value;
 };
 
 const updateAssessmentTypePerformanceChart = (data) => {
@@ -619,9 +606,6 @@ const updateAssessmentTypePerformanceChart = (data) => {
     }
 }
   });
-  
-  // After chart creation, store the reference
-  chartRefs.value.assessmentTypePerformanceChart = assessmentTypePerformanceChart.value;
 };
 
 const formatDate = (date) => {
@@ -708,16 +692,6 @@ onMounted(async () => {
       await fetchDashboardData();
       console.log('Initial data fetch completed');
 
-      // After charts are initialized, store references
-      nextTick(() => {
-        chartRefs.value = {
-          performanceChart: performanceChart.value,
-          assessmentTypeChart: assessmentTypeChart.value,
-          performanceTrendChart: performanceTrendChart.value,
-          assessmentTypePerformanceChart: assessmentTypePerformanceChart.value
-        };
-      });
-
       // Fetch Grades
       const grades = await axios.get('http://localhost:8000/api/dashboard/failing/analytics',);
       const quizzes = grades.data.filter(a => a.type === 'Quiz') || [];
@@ -752,62 +726,57 @@ onMounted(async () => {
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="dashboard-title"></h2>
 
-            <div class="d-flex gap-2 align-items-center">
-                <!-- Combined Filter Dropdown -->
-                <div class="dropdown">
-                    <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-filter me-2"></i>
-                        {{ getFilterDisplay() }}
-                    </button>
-                    <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
-                        <h6 class="dropdown-header">Filter Options</h6>
-                        <div class="mb-3">
-                            <label class="form-label">Academic Year</label>
-                            <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
-                                <option value="">All Years</option>
-                                <option value="1st">1st Year</option>
-                                <option value="2nd">2nd Year</option>
-                                <option value="3rd">3rd Year</option>
-                                <option value="4th">4th Year</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Section</label>
-                            <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
-                                <option value="">All Sections</option>
-                                <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Subject</label>
-                            <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
-                                <option value="">All Subjects</option>
-                                <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date Range</label>
-                            <div class="row g-2">
-                                <div class="col">
-                                    <input type="date" class="form-control form-control-sm" v-model="selectedStartDate"
-                                        :max="today">
-                                </div>
-                                <div class="col">
-                                    <input type="date" class="form-control form-control-sm" v-model="selectedEndDate"
-                                        :min="selectedStartDate" :max="today">
-                                </div>
+            <!-- Combined Filter Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-2"></i>
+                    {{ getFilterDisplay() }}
+                </button>
+                <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
+                    <h6 class="dropdown-header">Filter Options</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Academic Year</label>
+                        <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
+                            <option value="">All Years</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Section</label>
+                        <select class="form-select mb-2" v-model="selectedSection" :disabled="!selectedYear">
+                            <option value="">All Sections</option>
+                            <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <select class="form-select mb-2" v-model="selectedSubject" :disabled="!selectedYear">
+                            <option value="">All Subjects</option>
+                            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Range</label>
+                        <div class="d-flex gap-2">
+                            <div class="flex-grow-1">
+                                <label class="small text-muted">From</label>
+                                <input type="date" class="form-control form-control-sm" v-model="selectedStartDate"
+                                    :max="today">
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="small text-muted">To</label>
+                                <input type="date" class="form-control form-control-sm" v-model="selectedEndDate"
+                                    :max="today">
                             </div>
                         </div>
-                        <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
                     </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
                 </div>
-                
-                <!-- Export Graphs Button -->
-                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
-                    <i class="fas fa-file-export me-2"></i>
-                    Export Graphs
-                </button>
             </div>
         </div>
 
@@ -867,19 +836,6 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-
-        <!-- Export Graphs Modal -->
-        <ExportGraphsModal 
-            dashboardType="ssphead"
-            :chartRefs="chartRefs"
-            :filterInfo="{
-                year: selectedYear,
-                section: selectedSection,
-                subject: selectedSubject,
-                startDate: selectedStartDate,
-                endDate: selectedEndDate
-            }"
-        />
     </div>
 </template>
 

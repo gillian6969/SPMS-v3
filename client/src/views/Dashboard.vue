@@ -19,7 +19,7 @@
             <label class="form-label">Academic Year</label>
             <select class="form-select mb-2" v-model="selectedYear" @change="handleYearChange">
               <option value="">All Years</option>
-              <option v-for="year in availableYears" :key="year" :value="year">{{ year }} Year</option>
+              <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
           </select>
         </div>
           <div class="mb-3">
@@ -31,6 +31,29 @@
               </option>
             </select>
           </div>
+          <div class="mb-3">
+            <label class="form-label">Date Range</label>
+            <div class="d-flex gap-2">
+              <div class="flex-grow-1">
+                <label class="small text-muted">From</label>
+                <input 
+                  type="date" 
+                  class="form-control form-control-sm" 
+                  v-model="selectedStartDate"
+                  :max="today"
+                >
+              </div>
+              <div class="flex-grow-1">
+                <label class="small text-muted">To</label>
+                <input 
+                  type="date" 
+                  class="form-control form-control-sm" 
+                  v-model="selectedEndDate"
+                  :max="today"
+                >
+              </div>
+            </div>
+          </div>
           <div class="d-flex justify-content-between">
             <button class="btn btn-outline-secondary" @click="clearFilters">Clear Filters</button>
             <button class="btn btn-primary" @click="refreshDashboard">Apply</button>
@@ -38,20 +61,12 @@
         </div>
       </div>
       
-      <div class="d-flex gap-2 align-items-center">
-        <!-- Export Dropdown -->
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
-          <i class="fas fa-file-export me-2"></i>
-          Export Graphs
+      <!-- Last Updated -->
+      <div class="last-update-badge" v-if="lastUpdate">
+        Last updated: {{ formatDate(lastUpdate) }}
+        <button class="btn btn-refresh ms-2" @click="refreshDashboard" title="Refresh Dashboard">
+          <i class="fas fa-sync-alt"></i>
         </button>
-        
-        <!-- Last Updated -->
-        <div class="last-update-badge" v-if="lastUpdate">
-          Last updated: {{ formatDate(lastUpdate) }}
-          <button class="btn btn-refresh ms-2" @click="refreshDashboard" title="Refresh Dashboard">
-            <i class="fas fa-sync-alt"></i>
-          </button>
-        </div>
       </div>
     </div>
 
@@ -203,32 +218,22 @@
     <div class="chart-card">
           <div class="card-body">
             <h5 class="card-title">
-              <i class="fas fa-users me-2"></i>
-              Section Performance
+              <i class="fas fa-graduation-cap me-2"></i>
+              Performance by Assessment Type
             </h5>
-            <p class="chart-description">Comparison of performance across different sections</p>
+            <p class="chart-description">Visualizes how students perform across different assessment types</p>
       <div class="chart-container">
               <div v-if="isLoading" class="loading-overlay">
                 <i class="fas fa-spinner fa-spin"></i>
                 <p>Loading chart data...</p>
               </div>
-        <canvas ref="sectionChart"></canvas>
-              <p v-if="!hasSectionData && !isLoading" class="no-data-message">No section data available</p>
+        <canvas ref="assessmentTypePerformanceChart"></canvas>
+              <p v-if="!hasPerformanceData && !isLoading" class="no-data-message">No performance data available</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Export Graphs Modal -->
-    <ExportGraphsModal 
-      dashboardType="cithead"
-      :chartRefs="chartRefs"
-      :filterInfo="{
-        year: selectedYear,
-        section: selectedSection
-      }"
-    />
   </div>
 </template>
 
@@ -238,7 +243,6 @@ import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
-import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 // Create axios instance with default config
 const api = axios.create({
@@ -247,27 +251,25 @@ const api = axios.create({
 
 export default {
   name: 'Dashboard',
-  components: {
-    ExportGraphsModal
-  },
   setup() {
     const store = useStore()
     const performanceChart = ref(null)
     const assessmentTypeChart = ref(null)
     const performanceTrendChart = ref(null)
-    const sectionChart = ref(null)
+    const assessmentTypePerformanceChart = ref(null)
     const selectedYear = ref('')
     const selectedSection = ref('')
+    const selectedStartDate = ref('')
+    const selectedEndDate = ref('')
     const dashboardContainer = ref(null)
     const isLoading = ref(false)
     const lastUpdate = ref(null)
     const autoRefreshInterval = ref(null)
     const sections = ref([])
-    const availableYears = ref(['1st', '2nd', '3rd', '4th'])
+    const subjects = ref([])
+    const availableYears = ref([])
+    const today = computed(() => moment().format('YYYY-MM-DD'))
 
-    // Chart references for PDF export
-    const chartRefs = ref({})
-    
     // Computed properties
     const isCITHead = computed(() => store.getters.isCITHead)
     const token = computed(() => store.state.auth.token)
@@ -300,45 +302,70 @@ export default {
 
     // Computed properties for data availability
     const hasAttendanceData = computed(() => {
-      if (data.value && data.value.attendanceDistribution) {
-        return data.value.attendanceDistribution.some(val => val > 0);
+      try {
+        if (!data.value || !data.value.attendanceDistribution) return false;
+        
+        // Ensure all values are numbers and valid
+        const validDistribution = Array.isArray(data.value.attendanceDistribution) 
+          ? data.value.attendanceDistribution.map(val => (typeof val === 'number') ? val : 0)
+          : [0, 0, 0];
+        
+        // Check if we have any non-zero values
+        const hasData = validDistribution.some(val => val > 0);
+        
+        console.log('hasAttendanceData check:', 
+          validDistribution, 
+          `hasData: ${hasData}`
+        );
+        
+        return hasData;
+      } catch (error) {
+        console.error('Error checking attendance data:', error);
+        return false;
       }
-      return false;
     });
 
     const hasScoreData = computed(() => {
-      return data.value?.averageScore > 0;
+      if (!data.value) return false;
+      
+      // Check for average score
+      if (data.value.averageScore > 0) return true;
+      
+      // Check assessment types for any with scores
+      if (data.value.assessmentTypes && Array.isArray(data.value.assessmentTypes)) {
+        return data.value.assessmentTypes.some(type => (type.averageScore > 0 && type.count > 0));
+      }
+      
+      return false;
     });
 
     const hasPerformanceData = computed(() => {
-      // Check if we have any assessment or performance data
-      if (data.value) {
-        // Check for averageScore > 0
-        if (typeof data.value.averageScore === 'number' && data.value.averageScore > 0) {
-          return true;
-        }
-        
-        // Check for performance trends
-        if (Array.isArray(data.value.performanceTrends) && data.value.performanceTrends.length > 0) {
-          return true;
-        }
+      if (!data.value) return false;
+      
+      // Check for assessment data
+      if (hasAssessmentData.value) return true;
+      
+      // Check for performance trends
+      if (Array.isArray(data.value.performanceTrends) && data.value.performanceTrends.length > 0) {
+        return data.value.performanceTrends.some(trend => trend.averageScore > 0);
       }
+      
+      // Check sections data
+      if (Array.isArray(data.value.sections) && data.value.sections.length > 0) {
+        return data.value.sections.some(section => section.averageScore > 0);
+      }
+      
       return false;
     });
 
     const hasAssessmentData = computed(() => {
-      if (data.value) {
-        // Check directly in assessmentTypes
-        if (data.value.assessmentTypes) {
-          const assessmentTypes = Object.values(data.value.assessmentTypes);
-          return assessmentTypes.some(type => type.count > 0);
-        }
-        
-        // Fallback to assessmentTypeDistribution
-        if (data.value.assessmentTypeDistribution) {
-          return true;
-        }
+      if (!data.value) return false;
+      
+      // Check for assessment types data
+      if (data.value.assessmentTypes && Array.isArray(data.value.assessmentTypes)) {
+        return data.value.assessmentTypes.some(type => type.count > 0 && type.averageScore > 0);
       }
+      
       return false;
     });
 
@@ -346,196 +373,295 @@ export default {
       return data.value?.sections?.length > 0;
     });
 
-    // Fetch years and sections with data from all teacher class records
+    // Fetch available years and sections directly from database records
     const fetchAvailableFilters = async () => {
       try {
-        // Use existing backend endpoints that already pull data from TeacherClassRecord
-        const teacherClassRecordsResponse = await api.get('/teacher-class-records');
+        isLoading.value = true;
         
-        if (teacherClassRecordsResponse.data) {
-          const records = teacherClassRecordsResponse.data;
+        // Get all student records to extract years and sections
+        const response = await api.get('/students', {
+          headers: { 'Authorization': `Bearer ${token.value}` }
+        });
+        
+        if (response.data && Array.isArray(response.data)) {
+          // Extract unique years and sections from student records
+          const students = response.data;
           
-          // Extract unique years, sections, and subjects with teacher info
-          const uniqueYears = [...new Set(records.map(record => record.year))].filter(Boolean).sort();
-          const uniqueSections = [];
-          const uniqueSubjects = [];
+          // Get unique years with data
+          const years = [...new Set(students.map(student => student.year))].filter(Boolean);
+          availableYears.value = years.length > 0 ? years.sort() : ['1st', '2nd', '3rd', '4th'];
           
-          // Process sections with teacher info
-          records.forEach(record => {
-            if (record.section && !uniqueSections.some(s => s.name === record.section)) {
-              uniqueSections.push({
-                id: record._id,
-                name: record.section,
-                teacherName: record.teacherName || ''
-              });
-            }
-            
-            if (record.subject && !uniqueSubjects.some(s => s.name === record.subject)) {
-              uniqueSubjects.push({
-                id: record._id,
-                name: record.subject,
-                teacherName: record.teacherName || ''
-              });
-            }
+          // Get unique sections based on selectedYear
+          await updateSectionsForSelectedYear();
+          
+          console.log('Fetched available filters:', {
+            years: availableYears.value,
+            sections: sections.value
           });
-          
-          // Update reactive data
-          availableYears.value = uniqueYears.length > 0 ? uniqueYears : ['1st', '2nd', '3rd', '4th'];
-          
-          // If no year is selected, populate all available sections with teacher info
-          if (!selectedYear.value) {
-            sections.value = uniqueSections;
-          }
         }
+        
+        isLoading.value = false;
       } catch (error) {
         console.error('Error fetching available filters:', error);
         // Keep default years if API fails
         availableYears.value = ['1st', '2nd', '3rd', '4th'];
+        isLoading.value = false;
       }
     };
 
-    // Fetch sections and subjects with data for a specific year
-    const fetchSectionsAndSubjects = async (year = '') => {
+    // New function to update sections based on selected year
+    const updateSectionsForSelectedYear = async () => {
       try {
-        // Use existing backend endpoints that already pull data from TeacherClassRecord
-        const response = await api.get('/teacher-class-records', {
-          params: { year }
+        console.log('Updating sections for year:', selectedYear.value || 'All Years');
+        sections.value = []; // Clear existing sections first
+        
+        const params = {};
+        if (selectedYear.value) {
+          params.year = selectedYear.value;
+        }
+        
+        // Get students filtered by year if selected
+        const response = await api.get('/students', {
+          params,
+          headers: { 'Authorization': `Bearer ${token.value}` }
         });
         
-        if (response.data) {
-          const records = response.data;
+        if (response.data && Array.isArray(response.data)) {
+          const students = response.data;
           
-          // Process sections with teacher info for the selected year
-          const uniqueSections = [];
-          records.forEach(record => {
-            if (record.section && !uniqueSections.some(s => s.name === record.section)) {
-              uniqueSections.push({
-                id: record._id,
-                name: record.section,
-                teacherName: record.teacherName || ''
-              });
-            }
-          });
+          // Get unique sections matching the selected year
+          let uniqueSections = [];
           
-          sections.value = uniqueSections;
+          if (selectedYear.value) {
+            // Filter students by the selected year before extracting sections
+            uniqueSections = [...new Set(
+              students
+                .filter(student => student.year === selectedYear.value)
+                .map(student => student.section)
+            )].filter(Boolean);
+          } else {
+            // If no year selected, get all unique sections
+            uniqueSections = [...new Set(
+              students.map(student => student.section)
+            )].filter(Boolean);
+          }
+          
+          console.log(`Found ${uniqueSections.length} sections for ${selectedYear.value || 'all years'}:`, uniqueSections);
+          
+          // Map sections to include teacher info if available
+          sections.value = uniqueSections.map(sectionName => ({
+            id: sectionName,
+            name: sectionName,
+            teacherName: '' // We could fetch teacher info in the future
+          }));
+        } else {
+          console.warn('No student data received when updating sections');
+          sections.value = [];
         }
       } catch (error) {
-        console.error('Error fetching sections and subjects:', error);
+        console.error('Error updating sections for year:', error);
         sections.value = [];
       }
     };
 
-    // Fetch subjects for a specific section with data
-    const fetchSubjectsBySection = async (year, section) => {
-      try {
-        // Use existing endpoints
-        const response = await api.get('/teacher-class-records', {
-          params: { year, section }
-        });
-        
-        if (response.data) {
-          const records = response.data;
-          
-          // Extract unique subjects for this section
-          const uniqueSubjects = [];
-          records.forEach(record => {
-            if (record.subject && !uniqueSubjects.some(s => s.name === record.subject)) {
-              uniqueSubjects.push({
-                id: record._id,
-                name: record.subject,
-                teacherName: record.teacherName || ''
-              });
-            }
-          });
-          
-          sections.value = uniqueSections;
-        }
-      } catch (error) {
-        console.error('Error fetching subjects by section:', error);
-        sections.value = [];
-      }
-    };
-
-    // Get attendance data for the charts
+    // Fetch attendance data for the charts
     const fetchAttendanceData = async () => {
       try {
-        // Make a specific request for attendance data with the selected filters
-        const attendanceParams = {
-          year: selectedYear.value,
-          section: selectedSection.value
-        };
+        console.log('Fetching attendance with filters:', {
+          year: selectedYear.value || 'All Years',
+          section: selectedSection.value || 'All Sections'
+        });
         
-        console.log('Fetching attendance with params:', attendanceParams);
+        let attendanceDistribution = [0, 0, 0]; // Default empty distribution [present, late, absent]
         
-        // Try fetching directly from TeacherClassRecord attendance data
+        // First approach: Try direct approach with specific filter handling
         try {
-          const classRecordsResponse = await api.get('/teacher-class-records/attendance', { 
-            params: attendanceParams 
+          console.log('Fetching attendance directly with filters');
+          
+          // Build query params differently for Windows/PowerShell URL handling
+          let url = `${api.defaults.baseURL}/attendance`;
+          let queryParts = [];
+          
+          if (selectedYear.value) {
+            queryParts.push(`year=${encodeURIComponent(selectedYear.value)}`);
+          }
+          
+          if (selectedSection.value) {
+            queryParts.push(`section=${encodeURIComponent(selectedSection.value)}`);
+          }
+          
+          if (selectedStartDate.value) {
+            queryParts.push(`startDate=${encodeURIComponent(selectedStartDate.value)}`);
+          }
+          
+          if (selectedEndDate.value) {
+            queryParts.push(`endDate=${encodeURIComponent(selectedEndDate.value)}`);
+          }
+          
+          // Add query string if we have parameters
+          if (queryParts.length > 0) {
+            url += '?' + queryParts.join('&');
+          }
+          
+          console.log('Fetching attendance from URL:', url);
+          
+          // Make direct fetch request
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${token.value}`
+            }
           });
           
-          if (classRecordsResponse.data && classRecordsResponse.data.distribution) {
-            console.log('Got attendance distribution from class records:', classRecordsResponse.data.distribution);
-            return classRecordsResponse.data.distribution;
-          }
-          
-          if (classRecordsResponse.data && Array.isArray(classRecordsResponse.data)) {
-            // Process attendance records
-            const attendanceCounts = [0, 0, 0]; // [present, late, absent]
+          if (response.ok) {
+            const attendanceData = await response.json();
+            console.log('Attendance data received:', 
+              Array.isArray(attendanceData) ? `${attendanceData.length} records` : 'Non-array data');
             
-            classRecordsResponse.data.forEach(record => {
-              if (record.status === 'present') attendanceCounts[0]++;
-              else if (record.status === 'late') attendanceCounts[1]++;
-              else if (record.status === 'absent') attendanceCounts[2]++;
-            });
-            
-            console.log('Processed attendance from class records:', attendanceCounts);
-            return attendanceCounts;
-          }
-        } catch (error) {
-          console.log('Falling back to dashboard stats for attendance data');
-        }
-        
-        // Try the main attendance endpoint as a fallback
-        try {
-          const attendanceResponse = await api.get('/attendance', { params: attendanceParams });
-          
-          if (attendanceResponse.data && Array.isArray(attendanceResponse.data)) {
-            // Process raw attendance records
-            const attendanceCounts = [0, 0, 0]; // [present, late, absent]
-            
-            attendanceResponse.data.forEach(record => {
-              if (record.status === 'present') attendanceCounts[0]++;
-              else if (record.status === 'late') attendanceCounts[1]++;
-              else if (record.status === 'absent') attendanceCounts[2]++;
-            });
-            
-            console.log('Processed attendance from /attendance:', attendanceCounts);
-            return attendanceCounts;
+            if (Array.isArray(attendanceData) && attendanceData.length > 0) {
+              // Process attendance records
+              const statusCounts = [0, 0, 0]; // [present, late, absent]
+              
+              attendanceData.forEach(record => {
+                if (record.status === 'present') statusCounts[0]++;
+                else if (record.status === 'late') statusCounts[1]++;
+                else if (record.status === 'absent') statusCounts[2]++;
+              });
+              
+              console.log('Calculated attendance counts:', statusCounts);
+              
+              // Only use this data if we have at least one attendance record
+              if (statusCounts.some(count => count > 0)) {
+                attendanceDistribution = statusCounts;
+                return attendanceDistribution;
+              }
+            }
+          } else {
+            console.warn(`Attendance API returned status: ${response.status}`);
           }
         } catch (error) {
-          console.log('Attendance API endpoint not available');
+          console.log('Error fetching attendance directly:', error.message);
         }
         
-        // Try loading from dashboard stats as last resort
+        // Second approach: Try fetching from dashboard stats
         try {
-          const statsResponse = await api.get('/dashboard/stats', {
-            params: attendanceParams
+          console.log('Trying to get attendance from dashboard stats');
+          
+          // Build URL for stats
+          let url = `${api.defaults.baseURL}/dashboard/stats`;
+          let queryParts = [];
+          
+          if (selectedYear.value) {
+            queryParts.push(`year=${encodeURIComponent(selectedYear.value)}`);
+          }
+          
+          if (selectedSection.value) {
+            queryParts.push(`section=${encodeURIComponent(selectedSection.value)}`);
+          }
+          
+          if (queryParts.length > 0) {
+            url += '?' + queryParts.join('&');
+          }
+          
+          console.log('Fetching dashboard stats from URL:', url);
+          
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${token.value}`
+            }
           });
           
-          if (statsResponse.data && statsResponse.data.attendanceDistribution) {
-            console.log('Got attendance from dashboard stats:', statsResponse.data.attendanceDistribution);
-            return statsResponse.data.attendanceDistribution;
+          if (response.ok) {
+            const statsData = await response.json();
+            
+            if (statsData && Array.isArray(statsData.attendanceDistribution)) {
+              console.log('Attendance distribution from stats:', statsData.attendanceDistribution);
+              
+              // Validate attendance distribution data
+              const validDistribution = statsData.attendanceDistribution.map(val => 
+                (typeof val === 'number') ? val : 0
+              );
+              
+              // Only use if we have some valid data
+              if (validDistribution.some(val => val > 0)) {
+                attendanceDistribution = validDistribution;
+                return attendanceDistribution;
+              }
+            }
           }
         } catch (error) {
-          console.log('No attendance data available from any source');
+          console.log('Error fetching from dashboard stats:', error.message);
         }
         
-        // Generate demo data if nothing else works
-        console.log('Using demo attendance data');
-        return [70, 15, 15]; // Demo data for attendance chart [present, late, absent]
+        // Third approach: Try to get attendance by date
+        try {
+          console.log('Trying to get attendance by date for recent days');
+          
+          const today = new Date();
+          const lastWeek = new Array(7).fill(0).map((_, i) => {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          });
+          
+          let allAttendanceRecords = [];
+          
+          // Get attendance for recent dates
+          for (const date of lastWeek) {
+            try {
+              let url = `${api.defaults.baseURL}/attendance/date/${date}`;
+              if (selectedYear.value) {
+                url += `?year=${encodeURIComponent(selectedYear.value)}`;
+                if (selectedSection.value) {
+                  url += `&section=${encodeURIComponent(selectedSection.value)}`;
+                }
+              }
+              
+              const response = await fetch(url, {
+                headers: {
+                  'Authorization': `Bearer ${token.value}`
+                }
+              });
+              
+              if (response.ok) {
+                const dateAttendance = await response.json();
+                if (Array.isArray(dateAttendance)) {
+                  allAttendanceRecords = [...allAttendanceRecords, ...dateAttendance];
+                }
+              }
+            } catch (error) {
+              // Silently continue to next date
+            }
+          }
+          
+          console.log(`Collected ${allAttendanceRecords.length} attendance records from recent dates`);
+          
+          if (allAttendanceRecords.length > 0) {
+            // Process all attendance records
+            const statusCounts = [0, 0, 0]; // [present, late, absent]
+            
+            allAttendanceRecords.forEach(record => {
+              if (record.status === 'present') statusCounts[0]++;
+              else if (record.status === 'late') statusCounts[1]++;
+              else if (record.status === 'absent') statusCounts[2]++;
+            });
+            
+            console.log('Calculated attendance counts from dates:', statusCounts);
+            
+            if (statusCounts.some(count => count > 0)) {
+              attendanceDistribution = statusCounts;
+              return attendanceDistribution;
+            }
+          }
+        } catch (error) {
+          console.log('Error fetching attendance by date:', error.message);
+        }
+        
+        // Return empty distribution if all approaches failed
+        console.log('All attendance data fetching approaches failed. Using empty distribution.');
+        return attendanceDistribution;
       } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        return [70, 15, 15]; // Default on error with demo data
+        console.error('Error in attendance data fetching:', error);
+        return [0, 0, 0];
       }
     };
 
@@ -543,25 +669,80 @@ export default {
       try {
         isLoading.value = true;
         
-        // Use the existing stats endpoint from dashboard.js
-        const statsResponse = await api.get('/dashboard/stats', {
-          params: {
-            year: selectedYear.value,
-            section: selectedSection.value
-          }
-        });
+        // Prepare query parameters using the URL-friendly format
+        let queryParts = [];
+        if (selectedYear.value) {
+          queryParts.push(`year=${encodeURIComponent(selectedYear.value)}`);
+        }
         
-        data.value = statsResponse.data || {};
+        if (selectedSection.value) {
+          queryParts.push(`section=${encodeURIComponent(selectedSection.value)}`);
+        }
         
-        // Update basic stats from the response structure in dashboard.js
-        totalStudents.value = data.value.totalStudents || 0;
-        totalTeachers.value = data.value.totalTeachers || 0;
-        activeSections.value = data.value.activeSections || 0;
-        averageScore.value = data.value.averageScore || 0;
+        if (selectedStartDate.value) {
+          queryParts.push(`startDate=${encodeURIComponent(selectedStartDate.value)}`);
+        }
         
-        // Get attendance data for charts - must run separately
+        if (selectedEndDate.value) {
+          queryParts.push(`endDate=${encodeURIComponent(selectedEndDate.value)}`);
+        }
+        
+        const filterParams = queryParts.length > 0 ? '?' + queryParts.join('&') : '';
+        console.log('Fetching dashboard data with params:', filterParams || 'none');
+        
+        // First, fetch attendance data
         const attendanceDistribution = await fetchAttendanceData();
-        data.value.attendanceDistribution = attendanceDistribution;
+        console.log('Attendance distribution for current filters:', attendanceDistribution);
+        
+        // Get dashboard stats
+        const statsUrl = `${api.defaults.baseURL}/dashboard/stats${filterParams}`;
+        console.log('Fetching dashboard stats from URL:', statsUrl);
+        
+        let statsData = {};
+        try {
+          const response = await fetch(statsUrl, {
+            headers: {
+              'Authorization': `Bearer ${token.value}`
+            }
+          });
+          
+          if (response.ok) {
+            statsData = await response.json();
+            console.log('Dashboard stats response:', statsData);
+          } else {
+            console.warn(`Dashboard stats API returned status: ${response.status}`);
+          }
+        } catch (error) {
+          console.error('Error fetching dashboard stats:', error.message);
+        }
+        
+        // Initialize data value with defaults and merge with stats data
+        data.value = {
+          totalStudents: statsData.totalStudents || 0,
+          totalTeachers: statsData.totalTeachers || 0,
+          activeSections: statsData.activeSections || 0,
+          attendanceDistribution: attendanceDistribution || [0, 0, 0],
+          assessmentTypes: [],
+          performanceTrends: [],
+          sections: []
+        };
+        
+        // Check if we received any meaningful data
+        const hasValidData = 
+          (data.value.totalStudents > 0) || 
+          (data.value.totalTeachers > 0) || 
+          (data.value.activeSections > 0) || 
+          (attendanceDistribution && attendanceDistribution.some(val => val > 0));
+        
+        // If no valid data, it means the filter combination doesn't match any records
+        if (!hasValidData && (selectedYear.value || selectedSection.value)) {
+          console.warn('No data found for the selected filters');
+        }
+        
+        // Update basic stats
+        totalStudents.value = data.value.totalStudents;
+        totalTeachers.value = data.value.totalTeachers;
+        activeSections.value = data.value.activeSections;
         
         // Calculate average attendance from distribution
         const totalAttendance = attendanceDistribution.reduce((a, b) => a + b, 0);
@@ -575,6 +756,32 @@ export default {
         
         // Process assessment data for charts
         await fetchAssessmentData();
+        
+        // Calculate averageScore from assessment data
+        if (data.value.assessmentTypes && Array.isArray(data.value.assessmentTypes)) {
+          let totalScore = 0;
+          let totalCount = 0;
+          
+          data.value.assessmentTypes.forEach(type => {
+            if (type.averageScore > 0 && type.count > 0) {
+              totalScore += type.averageScore * type.count;
+              totalCount += type.count;
+            }
+          });
+          
+          if (totalCount > 0) {
+            averageScore.value = Math.round(totalScore / totalCount);
+            data.value.averageScore = averageScore.value;
+          } else {
+            averageScore.value = 0;
+            data.value.averageScore = 0;
+          }
+          
+          console.log(`Calculated average score: ${averageScore.value}% from ${totalCount} assessments`);
+        } else {
+          averageScore.value = 0;
+          data.value.averageScore = 0;
+        }
 
         // Update charts with new data
           updateCharts(data.value);
@@ -582,9 +789,6 @@ export default {
         lastUpdate.value = new Date();
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
-        if (error.response) {
-          console.error('Error response:', error.response.data);
-        }
         
         // Initialize with empty data if main stats request fails
         data.value = {
@@ -612,79 +816,124 @@ export default {
       }
     };
     
-    // Fetch assessment data directly
+    // Fetch assessment data directly with better approach
     const fetchAssessmentData = async () => {
       try {
-        // Directly fetch assessment data with filters
-        const assessmentResponse = await api.get('/assessments', {
-          params: {
-            year: selectedYear.value,
-            section: selectedSection.value
+        console.log('Fetching assessment data for filters:', {
+          year: selectedYear.value || 'All',
+          section: selectedSection.value || 'All',
+          startDate: selectedStartDate.value,
+          endDate: selectedEndDate.value
+        });
+        
+        // Test directly with fetch to avoid axios URL encoding issues on Windows
+        const params = new URLSearchParams();
+        
+        // Add params only if they exist
+        if (selectedYear.value) params.append('year', selectedYear.value);
+        if (selectedSection.value) params.append('section', selectedSection.value);
+        if (selectedStartDate.value) params.append('startDate', selectedStartDate.value);
+        if (selectedEndDate.value) params.append('endDate', selectedEndDate.value);
+        
+        // Build the URL with query string
+        const queryString = params.toString();
+        const url = `${api.defaults.baseURL}/assessments${queryString ? '?' + queryString : ''}`;
+        
+        console.log('Fetching assessments from URL:', url);
+        
+        // Make the direct fetch request
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token.value}`
           }
         });
         
-        console.log('Fetched assessment data:', assessmentResponse.data);
+        let assessments = [];
         
-        if (assessmentResponse.data && Array.isArray(assessmentResponse.data)) {
-          const assessments = assessmentResponse.data;
+        if (response.ok) {
+          assessments = await response.json();
+          console.log('Fetched assessments count:', assessments?.length || 0);
+        } else {
+          console.error('Assessments API failed with status:', response.status);
+          throw new Error(`API error: ${response.status}`);
+        }
+        
+        if (Array.isArray(assessments) && assessments.length > 0) {
+          console.log('Successfully fetched assessment data');
           
-          // Group assessments by type
+          // Process the assessment data
           const assessmentTypes = {
             'Quiz': { count: 0, totalScore: 0, scores: [] },
             'Activity': { count: 0, totalScore: 0, scores: [] },
             'Performance Task': { count: 0, totalScore: 0, scores: [] }
           };
           
+          // Log sample assessment data to understand structure
+          console.log('Sample assessment data:', assessments.slice(0, 1));
+          
           // Process each assessment
           assessments.forEach(assessment => {
-            const type = assessment.type || 'Other';
-            if (assessmentTypes[type]) {
-              assessmentTypes[type].count++;
-              
-              // Process scores if available
-              if (assessment.scores) {
-                // Handle both array and Map formats
-                let scoreArray = [];
-                if (Array.isArray(assessment.scores)) {
-                  scoreArray = assessment.scores;
-                } else if (assessment.scores instanceof Map) {
-                  scoreArray = Array.from(assessment.scores.values());
-                } else if (typeof assessment.scores === 'object') {
-                  // Handle object format
-                  scoreArray = Object.values(assessment.scores);
-                }
-                
-                scoreArray.forEach(score => {
-                  if (typeof score === 'number') {
-                    const percentage = assessment.maxScore ? (score / assessment.maxScore) * 100 : score;
-                    assessmentTypes[type].totalScore += percentage;
-                    assessmentTypes[type].scores.push(percentage);
-                  }
-                });
+            // Make sure we have a type - default to "Other" if none found
+            const type = assessment.type || assessment.assessmentType || assessment.assessment_type || 'Other';
+            
+            // Initialize type if it doesn't exist
+            if (!assessmentTypes[type]) {
+              assessmentTypes[type] = { count: 0, totalScore: 0, scores: [] };
+            }
+            
+            // Increment count for this type
+            assessmentTypes[type].count++;
+            
+            // Process scores if available
+            if (assessment.scores) {
+              // Handle both array and Map formats
+              let scoreArray = [];
+              if (Array.isArray(assessment.scores)) {
+                scoreArray = assessment.scores;
+              } else if (assessment.scores instanceof Map) {
+                scoreArray = Array.from(assessment.scores.values());
+              } else if (typeof assessment.scores === 'object') {
+                // Handle object format
+                scoreArray = Object.values(assessment.scores);
               }
+              
+              // Filter for valid scores and calculate percentages
+              const validScores = scoreArray.filter(score => typeof score === 'number');
+              validScores.forEach(score => {
+                const percentage = assessment.maxScore ? (score / assessment.maxScore) * 100 : score;
+                assessmentTypes[type].totalScore += percentage;
+                assessmentTypes[type].scores.push(percentage);
+              });
             }
           });
           
           // Calculate averages and prepare for chart
-          data.value.assessmentTypes = Object.keys(assessmentTypes).map(type => {
-            const typeData = assessmentTypes[type];
-            const averageScore = typeData.scores.length > 0 
-              ? typeData.totalScore / typeData.scores.length 
-              : 0;
-              
-            return {
-              type,
-              averageScore: Math.round(averageScore),
-              count: typeData.count,
-              completionRate: typeData.count > 0 ? 100 : 0
-            };
-          });
+          data.value.assessmentTypes = Object.keys(assessmentTypes)
+            .filter(type => assessmentTypes[type].count > 0) // Only include types with data
+            .map(type => {
+              const typeData = assessmentTypes[type];
+              const averageScore = typeData.scores.length > 0 
+                ? typeData.totalScore / typeData.scores.length 
+                : 0;
+                
+              return {
+                type,
+                averageScore: Math.round(averageScore),
+                count: typeData.count,
+                completionRate: typeData.count > 0 ? 100 : 0
+              };
+            });
+          
+          console.log(`Assessment types processed:`, 
+            data.value.assessmentTypes.map(t => `${t.type}: ${t.count} assessments, avg ${t.averageScore}%`));
           
           // Generate performance trends from assessment data
           data.value.performanceTrends = assessments
-            .filter(a => a.date) // Only include assessments with dates
-            .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by date
+            .filter(a => a.date || a.assessmentDate || a.assessment_date) // Only include assessments with dates
             .map(assessment => {
+              // Get the date - check various possible field names
+              const date = assessment.date || assessment.assessmentDate || assessment.assessment_date;
+              
               // Calculate average score for this assessment
               let averageScore = 0;
               let scoreArray = [];
@@ -710,84 +959,90 @@ export default {
               }
               
               return {
-                date: assessment.date,
-                title: assessment.name || assessment.type,
+                date: date,
+                title: assessment.name || assessment.title || assessment.type || 'Assessment',
                 averageScore: Math.round(averageScore),
-                type: assessment.type
+                type: assessment.type || assessment.assessmentType || 'Assessment'
               };
-            });
+            })
+            .filter(trend => trend.date && trend.averageScore > 0) // Only keep trends with dates and scores
+            .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
+          
+          console.log(`Performance trends processed: ${data.value.performanceTrends.length} data points with dates and scores`);
           
           // Process section data if available
           // Group assessments by section
           const sectionPerformance = {};
           
-          assessments.forEach(assessment => {
-            if (assessment.section) {
-              if (!sectionPerformance[assessment.section]) {
-                sectionPerformance[assessment.section] = {
-                  totalScore: 0,
-                  scoreCount: 0,
-                  attendanceCount: 0,
-                  attendanceTotal: 0
-                };
-              }
-              
-              // Process scores
-              let scoreArray = [];
-              if (assessment.scores) {
-                if (Array.isArray(assessment.scores)) {
-                  scoreArray = assessment.scores;
-                } else if (assessment.scores instanceof Map) {
-                  scoreArray = Array.from(assessment.scores.values());
-                } else if (typeof assessment.scores === 'object') {
-                  scoreArray = Object.values(assessment.scores);
+          // Only process section performance if we actually have data
+          if (assessments.length > 0) {
+            assessments.forEach(assessment => {
+              const section = assessment.section || assessment.sectionName || '';
+              if (section) {
+                if (!sectionPerformance[section]) {
+                  sectionPerformance[section] = {
+                    totalScore: 0,
+                    scoreCount: 0,
+                    assessmentCount: 0
+                  };
                 }
                 
-                scoreArray.forEach(score => {
-                  if (typeof score === 'number') {
-                    const percentage = assessment.maxScore ? (score / assessment.maxScore) * 100 : score;
-                    sectionPerformance[assessment.section].totalScore += percentage;
-                    sectionPerformance[assessment.section].scoreCount++;
+                sectionPerformance[section].assessmentCount++;
+                
+                // Process scores
+                let scoreArray = [];
+                if (assessment.scores) {
+                  if (Array.isArray(assessment.scores)) {
+                    scoreArray = assessment.scores;
+                  } else if (assessment.scores instanceof Map) {
+                    scoreArray = Array.from(assessment.scores.values());
+                  } else if (typeof assessment.scores === 'object') {
+                    scoreArray = Object.values(assessment.scores);
                   }
-                });
+                  
+                  // Process valid scores
+                  const validScores = scoreArray.filter(score => typeof score === 'number');
+                  validScores.forEach(score => {
+                    const percentage = assessment.maxScore ? (score / assessment.maxScore) * 100 : score;
+                    sectionPerformance[section].totalScore += percentage;
+                    sectionPerformance[section].scoreCount++;
+                  });
+                }
               }
-            }
-          });
-          
-          // Try to fetch attendance by section to calculate attendance rates
-          try {
-            const sectionAttendance = await api.get('/attendance/by-section', {
-              params: { year: selectedYear.value }
             });
             
-            if (sectionAttendance.data) {
-              Object.entries(sectionAttendance.data).forEach(([section, data]) => {
-                if (sectionPerformance[section]) {
-                  sectionPerformance[section].attendanceRate = data.presentRate || 0;
-                }
-              });
-            }
-          } catch (error) {
-            console.log('No section attendance data available');
-          }
-          
-          // Prepare section data for chart
-          if (Object.keys(sectionPerformance).length > 0) {
-            data.value.sections = Object.keys(sectionPerformance).map(sectionName => {
-              const section = sectionPerformance[sectionName];
-              const averageScore = section.scoreCount > 0 
-                ? section.totalScore / section.scoreCount 
-                : 0;
-              const attendanceRate = section.attendanceRate || 0;
+            // Prepare section data for chart if we have any
+            if (Object.keys(sectionPerformance).length > 0) {
+              data.value.sections = Object.keys(sectionPerformance)
+                .filter(sectionName => sectionPerformance[sectionName].scoreCount > 0) // Only include sections with scores
+                .map(sectionName => {
+                  const section = sectionPerformance[sectionName];
+                  const averageScore = section.scoreCount > 0 
+                    ? section.totalScore / section.scoreCount 
+                    : 0;
+                  
+                  return {
+                    name: sectionName,
+                    averageScore: Math.round(averageScore),
+                    attendanceRate: 0, // We don't have this data
+                    performance: Math.round(averageScore), // For backward compatibility
+                    assessmentCount: section.assessmentCount
+                  };
+                });
               
-              return {
-                name: sectionName,
-                averageScore: Math.round(averageScore),
-                attendanceRate: Math.round(attendanceRate),
-                performance: Math.round(averageScore) // For backward compatibility
-              };
-            });
+              console.log(`Section data processed: ${data.value.sections.length} sections with performance data`);
+            }
           }
+        } else {
+          console.warn('No assessment data found for the selected filters');
+          // Set default values
+          data.value.assessmentTypes = [
+            { type: 'Quiz', averageScore: 0, count: 0 },
+            { type: 'Activity', averageScore: 0, count: 0 },
+            { type: 'Performance Task', averageScore: 0, count: 0 }
+          ];
+          data.value.performanceTrends = [];
+          data.value.sections = [];
         }
       } catch (error) {
         console.error('Error fetching assessment data:', error);
@@ -806,13 +1061,34 @@ export default {
       updatePerformanceChart(data);
       updateAssessmentTypeChart(data);
       updatePerformanceTrendChart(data);
-      updateSectionChart(data);
+      updateAssessmentTypePerformanceChart(data);
     };
 
-    // Initialize dummy data for charts when no data is available
-    const initDummyData = () => {
-      // Create sample data structure
-      const dummyData = {
+    // Update initEmptyCharts to properly handle chart destruction
+    const initEmptyCharts = () => {
+      // First destroy any existing charts to prevent "Canvas is already in use" errors
+      const charts = [
+        performanceChart.value, 
+        assessmentTypeChart.value, 
+        performanceTrendChart.value,
+        assessmentTypePerformanceChart.value
+      ];
+      
+      // Destroy all existing charts first
+      charts.forEach(canvas => {
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            const existingChart = Chart.getChart(ctx);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+      }
+        }
+      });
+      
+      // Create empty data structure
+      const emptyData = {
         totalStudents: 0,
         totalTeachers: 0,
         activeSections: 0,
@@ -828,8 +1104,8 @@ export default {
         sections: []
       };
       
-      // Update charts with dummy data
-      updateCharts(dummyData);
+      // Update charts with empty data
+      updateCharts(emptyData);
     };
 
     // Format date for display
@@ -840,19 +1116,21 @@ export default {
 
     // Handle year change
     const handleYearChange = async () => {
+      console.log('Year changed to:', selectedYear.value);
+      
+      // Reset the section when year changes
       selectedSection.value = '';
       
-      if (selectedYear.value) {
-        await fetchSectionsAndSubjects(selectedYear.value);
-      } else {
-        sections.value = [];
-      }
+      // Update sections based on the new year
+      await updateSectionsForSelectedYear();
       
+      // Update dashboard data with new filters
       await fetchDashboardData();
     };
 
     // Handle section change
-    const handleSectionChange = () => {
+    const handleSectionChange = async () => {
+      // Update dashboard data with new filters
       fetchDashboardData();
     };
 
@@ -863,59 +1141,77 @@ export default {
 
     // Clear all filters
     const clearFilters = () => {
+      console.log('Clearing all filters');
+      
+      // Reset all filter values
       selectedYear.value = '';
       selectedSection.value = '';
+      selectedStartDate.value = '';
+      selectedEndDate.value = '';
       
-      // Refresh available filters after clearing
+      // Reset sections 
+      sections.value = [];
+      
+      // Refresh the dashboard with no filters
       fetchAvailableFilters().then(() => {
+        console.log('Available filters refreshed, fetching dashboard data');
         fetchDashboardData();
       });
     };
 
     // Get filter display text
     const getFilterDisplay = () => {
-      const filters = [];
-      if (selectedYear.value) filters.push(selectedYear.value + ' Year');
+      const filters = []
+      if (selectedYear.value) filters.push(selectedYear.value)
+      if (selectedSection.value) filters.push(selectedSection.value)
       
-      if (selectedSection.value) {
-        // Find the section object to get teacher name
-        const sectionObj = sections.value.find(s => s.name === selectedSection.value);
-        if (sectionObj && sectionObj.teacherName) {
-          filters.push(`${selectedSection.value} - ${sectionObj.teacherName}`);
-        } else {
-          filters.push(selectedSection.value);
-        }
+      // Add date range to display if selected
+      if (selectedStartDate.value && selectedEndDate.value) {
+        const formattedStart = moment(selectedStartDate.value).format('MMM D')
+        const formattedEnd = moment(selectedEndDate.value).format('MMM D, YYYY')
+        filters.push(`${formattedStart} - ${formattedEnd}`)
+      } else if (selectedStartDate.value) {
+        filters.push(`From ${moment(selectedStartDate.value).format('MMM D, YYYY')}`)
+      } else if (selectedEndDate.value) {
+        filters.push(`Until ${moment(selectedEndDate.value).format('MMM D, YYYY')}`)
       }
       
-      return filters.length > 0 ? filters.join(' - ') : 'Filter View';
+      return filters.length > 0 ? filters.join(' - ') : 'Filter View'
     };
 
     // Update charts with data
     const updatePerformanceChart = (data) => {
-      if (performanceChart.value) {
-        const ctx = performanceChart.value.getContext('2d');
-        
-        // Dispose of existing chart if it exists
-        if (ctx.chart) {
-          ctx.chart.destroy();
-        }
-        
-        // Attendance status distribution data
-        const attendanceLabels = ['Present', 'Late', 'Absent'];
-        let attendanceData = data.attendanceDistribution || [0, 0, 0];
-        
-        // Ensure we have at least some data to display
-        const totalAttendanceCount = attendanceData.reduce((a, b) => a + b, 0);
-        if (totalAttendanceCount === 0) {
-          // Use sample distribution if no real data
-          attendanceData = [70, 15, 15]; // Sample data for visual display
-        }
-        
-        // Log for debugging
-        console.log('Final attendance distribution data:', attendanceData);
-        
-        // Create chart
-        ctx.chart = new Chart(ctx, {
+      if (!performanceChart.value) return;
+      
+      const ctx = performanceChart.value.getContext('2d');
+      if (!ctx) return;
+      
+      // Dispose of existing chart if it exists
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+      
+      // Attendance status distribution data
+      const attendanceLabels = ['Present', 'Late', 'Absent'];
+      let attendanceData = data.attendanceDistribution || [0, 0, 0];
+      
+      // Log attendance data for debugging
+      console.log('Raw attendance data:', attendanceData);
+      
+      // Ensure each value is a number
+      attendanceData = attendanceData.map(val => (typeof val === 'number') ? val : 0);
+      
+      // Ensure we have at least some data to display
+      const totalAttendanceCount = attendanceData.reduce((a, b) => a + b, 0);
+      
+      // Check if we have valid data to show
+      const hasValidData = totalAttendanceCount > 0;
+      
+      // Log for debugging
+      console.log('Final attendance distribution data:', attendanceData, 'hasValidData:', hasValidData);
+      
+      // Create chart
+      if (hasValidData) {
+        new Chart(ctx, {
           type: 'doughnut',
           data: {
             labels: attendanceLabels,
@@ -955,143 +1251,192 @@ export default {
             }
           }
         });
-        
-        // Store chart reference for PDF export
-        chartRefs.value.performanceChart = performanceChart.value;
-      }
-    };
-
-    const updateAssessmentTypeChart = (data) => {
-      if (assessmentTypeChart.value) {
-        const ctx = assessmentTypeChart.value.getContext('2d');
-        
-        // Dispose of existing chart if it exists
-        if (ctx.chart) {
-          ctx.chart.destroy();
-        }
-        
-        // Assessment types data
-        const assessmentData = data.assessmentTypes || [];
-        const labels = [];
-        const values = [];
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1'];
-        
-        try {
-          // Extract assessment types data
-          if (Array.isArray(assessmentData)) {
-            // If array format
-            assessmentData.forEach((item, index) => {
-              if (item && typeof item === 'object') {
-                labels.push(item.type || `Type ${index + 1}`);
-                values.push(parseFloat(item.averageScore) || 0);
-              }
-            });
-          } else if (typeof assessmentData === 'object' && assessmentData !== null) {
-            // If object format
-            Object.entries(assessmentData).forEach(([type, data], index) => {
-              labels.push(type);
-              values.push(parseFloat(data.averageScore) || 0);
-            });
-          }
-          
-          // If no data was extracted, use default types
-          if (labels.length === 0) {
-            labels.push('Quiz', 'Activity', 'Performance Task');
-            values.push(0, 0, 0);
-          }
-        } catch (error) {
-          console.error('Error processing assessment data:', error);
-          // Fallback to default labels and values
-          labels.push('Quiz', 'Activity', 'Performance Task');
-          values.push(0, 0, 0);
-        }
-        
-        // Create chart
-        ctx.chart = new Chart(ctx, {
-          type: 'bar',
+      } else {
+        // Create an empty chart with "No data available" message
+        new Chart(ctx, {
+          type: 'doughnut',
           data: {
-            labels: labels,
+            labels: ['No Data'],
             datasets: [{
-              label: 'Average Score (%)',
-              data: values,
-              backgroundColor: colors.slice(0, labels.length),
-              borderWidth: 0,
-              borderRadius: 6,
-              maxBarThickness: 50
+              data: [1],
+              backgroundColor: ['#e2e8f0'],
+              borderWidth: 0
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '70%',
             plugins: {
               legend: {
-                  display: false
+                display: false
+              },
+              tooltip: {
+                enabled: false
+              }
+            }
+          }
+        });
+      }
+    };
+
+    const updateAssessmentTypeChart = (data) => {
+      if (!assessmentTypeChart.value) return;
+      
+      const ctx = assessmentTypeChart.value.getContext('2d');
+      if (!ctx) return;
+      
+      // Dispose of existing chart if it exists
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+      
+      // Assessment types data
+      const assessmentData = data.assessmentTypes || [];
+      const labels = [];
+      const values = [];
+      const counts = [];
+      const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1'];
+      
+      try {
+        // Extract assessment types data
+        if (Array.isArray(assessmentData) && assessmentData.length > 0) {
+          // If array format
+          assessmentData.forEach((item, index) => {
+            if (item && typeof item === 'object') {
+              // Only include items with a count > 0
+              if (item.count > 0) {
+                labels.push(item.type || `Type ${index + 1}`);
+                values.push(parseFloat(item.averageScore) || 0);
+                counts.push(item.count || 0);
+              }
+            }
+          });
+        } else if (typeof assessmentData === 'object' && assessmentData !== null) {
+          // If object format
+          Object.entries(assessmentData).forEach(([type, data], index) => {
+            if (data.count > 0) {
+              labels.push(type);
+              values.push(parseFloat(data.averageScore) || 0);
+              counts.push(data.count || 0);
+            }
+          });
+        }
+        
+        console.log(`Assessment type chart data: ${labels.length} types with data`);
+        console.log('Assessment types:', labels);
+        console.log('Average scores:', values);
+        console.log('Assessment counts:', counts);
+        
+        // If no data was extracted, use default types
+        if (labels.length === 0) {
+          labels.push('Quiz', 'Activity', 'Performance Task');
+          values.push(0, 0, 0);
+          counts.push(0, 0, 0);
+        }
+      } catch (error) {
+        console.error('Error processing assessment data:', error);
+        // Fallback to default labels and values
+        labels.push('Quiz', 'Activity', 'Performance Task');
+        values.push(0, 0, 0);
+        counts.push(0, 0, 0);
+      }
+      
+      // Check if we have any valid data
+      const hasData = labels.length > 0 && values.some(v => v > 0);
+      
+      // Create chart
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Average Score (%)',
+            data: values,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 0,
+            borderRadius: 6,
+            maxBarThickness: 50
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+            plugins: {
+              legend: {
+              display: false
               },
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    return `Average Score: ${context.raw}%`;
-                  }
+                  const type = labels[context.dataIndex];
+                  const count = counts[context.dataIndex];
+                  return `${type}: ${context.raw}% (${count} assessments)`;
                 }
               }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-                ticks: {
-                  callback: function(value) {
-                    return value + '%';
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
                   }
                 }
               }
             }
           }
         });
-        
-        // Store chart reference for PDF export
-        chartRefs.value.assessmentTypeChart = assessmentTypeChart.value;
-      }
     };
 
     const updatePerformanceTrendChart = (data) => {
-      if (performanceTrendChart.value) {
-        const ctx = performanceTrendChart.value.getContext('2d');
-        
-        // Dispose of existing chart if it exists
-        if (ctx.chart) {
-          ctx.chart.destroy();
-        }
-        
-        // Performance trends data
-        const performanceTrends = data.performanceTrends || [];
-        const labels = [];
-        const scores = [];
-        
-        // Extract performance trends data
-        performanceTrends.forEach(item => {
-          // Format date if available
-          const date = item.date ? moment(item.date).format('MMM D') : '';
-          // Use assessment title or date as label
-          labels.push(item.title ? `${item.title} (${date})` : date);
-          scores.push(item.averageScore || 0);
-        });
-        
-        // Create chart
-        ctx.chart = new Chart(ctx, {
+      if (!performanceTrendChart.value) return;
+      
+      const ctx = performanceTrendChart.value.getContext('2d');
+      if (!ctx) return;
+      
+      // Properly destroy any existing chart
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+
+      let trends = [];
+      if (data.performanceTrends && Array.isArray(data.performanceTrends)) {
+        // Filter out trends that have no valid score or date
+        trends = data.performanceTrends
+          .filter(trend => 
+            trend.date && 
+            (typeof trend.averageScore === 'number' || typeof trend.score === 'number')
+          )
+          .map(trend => ({
+            date: new Date(trend.date),
+            value: parseFloat(trend.averageScore || trend.score) || 0,
+            name: trend.title || trend.name || 'Assessment'
+          }))
+          .sort((a, b) => a.date - b.date);
+      }
+      
+      console.log(`Performance trend chart data: ${trends.length} valid data points`);
+      
+      // Check if we have any valid data points
+      const hasData = trends.length > 0 && trends.some(t => t.value > 0);
+      
+      if (hasData) {
+        // Create new chart after destroying the old one
+        new Chart(ctx, {
           type: 'line',
           data: {
-            labels: labels,
+            labels: trends.map(trend => moment(trend.date).format('MMM D, YYYY')),
             datasets: [{
               label: 'Average Score',
-              data: scores,
+              data: trends.map(trend => trend.value),
+              borderColor: 'rgb(59, 130, 246)',
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              borderColor: '#3b82f6',
               borderWidth: 2,
               tension: 0.4,
               fill: true,
-              pointBackgroundColor: '#3b82f6',
               pointRadius: 4,
+              pointBackgroundColor: 'rgb(59, 130, 246)',
               pointHoverRadius: 6
             }]
           },
@@ -1100,12 +1445,18 @@ export default {
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                display: false
+                display: true,
+                position: 'top'
               },
               tooltip: {
                 callbacks: {
-                  label: function(context) {
-                    return `Average Score: ${context.raw}%`;
+                  title: (tooltipItems) => {
+                    if (!tooltipItems.length || !trends[tooltipItems[0].dataIndex]) return '';
+                    const trend = trends[tooltipItems[0].dataIndex];
+                    return `${moment(trend.date).format('MMM D, YYYY')} - ${trend.name}`;
+                  },
+                  label: (context) => {
+                    return `Score: ${context.raw.toFixed(1)}%`;
                   }
                 }
               }
@@ -1114,10 +1465,9 @@ export default {
               y: {
                 beginAtZero: true,
                 max: 100,
-                ticks: {
-                  callback: function(value) {
-                    return value + '%';
-                  }
+                title: {
+                  display: true,
+                  text: 'Average Score (%)'
                 }
               },
               x: {
@@ -1129,78 +1479,151 @@ export default {
             }
           }
         });
-        
-        // Store chart reference for PDF export
-        chartRefs.value.performanceTrendChart = performanceTrendChart.value;
-      }
-    };
-
-    const updateSectionChart = (data) => {
-      if (sectionChart.value) {
-        const ctx = sectionChart.value.getContext('2d');
-        
-        // Dispose of existing chart if it exists
-        if (ctx.chart) {
-          ctx.chart.destroy();
-        }
-        
-        // Section performance data
-        const sectionData = data.sections || [];
-        const labels = [];
-        const performanceData = [];
-        const attendanceData = [];
-        
-        // Extract section performance data
-        sectionData.forEach(section => {
-          labels.push(section.name);
-          performanceData.push(section.averageScore || 0);
-          attendanceData.push(section.attendanceRate || 0);
-        });
-        
-        // Create chart
-        ctx.chart = new Chart(ctx, {
-          type: 'bar',
+      } else {
+        // Create an empty chart to show the "No data available" message
+        new Chart(ctx, {
+          type: 'line',
           data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Average Score',
-                data: performanceData,
-                backgroundColor: '#3b82f6',
-                borderWidth: 0,
-                borderRadius: 6,
-                maxBarThickness: 30
-              },
-              {
-                label: 'Attendance Rate',
-                data: attendanceData,
-                backgroundColor: '#10b981',
-                borderWidth: 0,
-                borderRadius: 6,
-                maxBarThickness: 30
-              }
-            ]
+            labels: [],
+            datasets: [{
+              label: 'Average Score',
+              data: [],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 2
+            }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                position: 'bottom',
-                labels: {
-                  usePointStyle: true,
-                  padding: 15,
-                  font: {
-                    size: 12
-                  }
+                display: true,
+                position: 'top'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+              title: {
+                display: true,
+                  text: 'Average Score (%)'
                 }
+              }
+            }
+          }
+        });
+      }
+    };
+
+    const updateAssessmentTypePerformanceChart = (data) => {
+      if (!assessmentTypePerformanceChart.value) return;
+      
+      const ctx = assessmentTypePerformanceChart.value.getContext('2d');
+      if (!ctx) return;
+
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+
+      // Process the performance trends data by assessment type
+      const trendsByType = {
+        Quiz: [],
+        Activity: [],
+        'Performance Task': []
+      };
+
+      // Process performance trends data
+      let hasValidData = false;
+      if (Array.isArray(data.performanceTrends)) {
+        data.performanceTrends.forEach(trend => {
+          // Only process trends with valid scores and dates
+          if (trend.date && (typeof trend.averageScore === 'number' || typeof trend.score === 'number')) {
+            const type = trend.type || trend.title || 'Other';
+            const score = parseFloat(trend.averageScore || trend.score) || 0;
+            
+            // Create the array for this type if it doesn't exist
+            if (!trendsByType[type]) {
+              trendsByType[type] = [];
+            }
+            
+            trendsByType[type].push({
+              date: new Date(trend.date),
+              score: score
+            });
+            
+            if (score > 0) {
+              hasValidData = true;
+            }
+          }
+        });
+      }
+
+      // Sort data points by date for each type
+      Object.keys(trendsByType).forEach(type => {
+        trendsByType[type].sort((a, b) => a.date - b.date);
+      });
+
+      // Get unique dates across all types
+      const allDates = [...new Set(
+        Object.values(trendsByType)
+          .flat()
+          .map(item => item.date)
+      )].sort((a, b) => a - b);
+      
+      // Only proceed if we have valid dates
+      if (allDates.length > 0 && hasValidData) {
+        console.log(`Assessment type performance chart: ${allDates.length} dates with data`);
+        
+        // Create datasets
+        const datasets = Object.entries(trendsByType)
+          .filter(([_, data]) => data.length > 0) // Only include types with data
+          .map(([type, data], index) => {
+            const colors = [
+              'rgb(52, 211, 153)',   // Green for Quiz
+              'rgb(59, 130, 246)',   // Blue for Activity
+              'rgb(251, 191, 36)'    // Yellow for Performance Task
+            ];
+            const color = colors[index % colors.length];
+  
+            return {
+              label: type,
+              data: allDates.map(date => {
+                const point = data.find(d => d.date.getTime() === date.getTime());
+                return point ? point.score : null;
+              }),
+              borderColor: color,
+              backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              spanGaps: true // This will connect points even if there are null values
+            };
+          });
+  
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: allDates.map(date => moment(date).format('MMM D, YYYY')),
+            datasets
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            },
+            plugins: {
+              legend: {
+                position: 'top'
               },
               tooltip: {
                 callbacks: {
-                  label: function(context) {
-                    const label = context.dataset.label || '';
-                    const value = context.raw || 0;
-                    return `${label}: ${value}%`;
+                  label: (context) => {
+                    const value = context.raw !== null ? context.raw.toFixed(1) : 'N/A';
+                    return `${context.dataset.label}: ${value}%`;
                   }
                 }
               }
@@ -1209,23 +1632,78 @@ export default {
               y: {
                 beginAtZero: true,
                 max: 100,
+              title: {
+                display: true,
+                  text: 'Score (%)'
+              }
+            },
+              x: {
                 ticks: {
-                  callback: function(value) {
-                    return value + '%';
-                  }
+                  maxRotation: 45,
+                  minRotation: 45
                 }
               }
             }
           }
         });
-        
-        // Store chart reference for PDF export
-        chartRefs.value.sectionChart = sectionChart.value;
+      } else {
+        // Create an empty chart if no valid data
+        console.log('No valid assessment type performance data, showing empty chart');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [{
+              label: 'No Data',
+              data: [],
+              borderColor: 'rgb(203, 213, 225)',
+              backgroundColor: 'rgba(203, 213, 225, 0.1)'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: 'Score (%)'
+                }
+              }
+            }
+          }
+        });
       }
     };
 
-    const refreshDashboard = () => {
-      fetchDashboardData();
+    // Update the refreshDashboard function to properly handle chart destruction
+    const refreshDashboard = async () => {
+      try {
+        isLoading.value = true;
+        
+        // Destroy existing charts before fetching new data
+        initEmptyCharts();
+        
+        // Wait a tick to ensure DOM updates
+        await nextTick();
+        
+        // Fetch new data
+        await fetchDashboardData();
+        
+        // Update the last refresh time
+        lastUpdate.value = new Date();
+      } catch (error) {
+        console.error('Error refreshing dashboard:', error);
+      } finally {
+        isLoading.value = false;
+      }
     };
 
     const scrollToSection = (sectionId) => {
@@ -1235,26 +1713,16 @@ export default {
       }
     };
 
-    // Auto-refresh logic
-    const setupAutoRefresh = () => {
-      // Clear any existing interval
-      if (autoRefreshInterval.value) {
-        clearInterval(autoRefreshInterval.value);
-      }
-      
-      // Set new interval (every 5 minutes)
-      autoRefreshInterval.value = setInterval(() => {
-        fetchDashboardData();
-      }, 5 * 60 * 1000);
-    };
-
-    // Fetch data on component mount
+    // Restore auto-refresh in onMounted function
     onMounted(async () => {
       try {
-        // Initialize with dummy data while loading
-        nextTick(() => {
-          initDummyData();
-        });
+        // Make sure DOM is rendered before initializing charts
+        await nextTick();
+
+        console.log('Dashboard mounted, initializing');
+        
+        // Initialize with empty data while waiting for API
+        initEmptyCharts();
         
         // Set up API interceptor to handle 404 errors gracefully
         api.interceptors.response.use(
@@ -1262,7 +1730,6 @@ export default {
           error => {
             if (error.response && error.response.status === 404) {
               console.warn(`API endpoint not found: ${error.config.url}`);
-              // Don't rethrow, allow handling in the catch block
             }
             return Promise.reject(error);
           }
@@ -1276,29 +1743,31 @@ export default {
         // Fetch available years and sections with data
         await fetchAvailableFilters();
         
-        // Fetch sections and subjects if year is selected
-        if (selectedYear.value) {
-          await fetchSectionsAndSubjects(selectedYear.value);
+        // Ensure all available years are set properly
+        if (availableYears.value.length === 0) {
+          availableYears.value = ['1st', '2nd', '3rd', '4th'];
         }
         
         // Fetch dashboard data
         await fetchDashboardData();
-        setupAutoRefresh();
+        
+        // Set up auto-refresh
+        if (autoRefreshInterval.value) {
+          clearInterval(autoRefreshInterval.value);
+        }
+        
+        // Refresh every 5 minutes, but only if tab is visible
+        autoRefreshInterval.value = setInterval(() => {
+          if (document.visibilityState === 'visible') {
+            refreshDashboard();
+          }
+        }, 5 * 60 * 1000); // 5 minutes
       } catch (error) {
         console.error('Error initializing dashboard:', error);
-        // Initialize with dummy data if there's an error
-        initDummyData();
+        // Make sure we still have empty charts if data loading fails
+        await nextTick();
+        initEmptyCharts();
       }
-      
-      // After charts are initialized, store references
-      nextTick(() => {
-        chartRefs.value = {
-          performanceChart: performanceChart.value,
-          assessmentTypeChart: assessmentTypeChart.value,
-          performanceTrendChart: performanceTrendChart.value,
-          sectionChart: sectionChart.value
-        };
-      });
     });
 
     // Clean up on component unmount
@@ -1308,14 +1777,28 @@ export default {
       }
     });
 
+    // Add watch for date changes
+    watch([selectedStartDate, selectedEndDate], () => {
+      if (selectedStartDate.value && selectedEndDate.value) {
+        // Validate date range
+        const start = moment(selectedStartDate.value);
+        const end = moment(selectedEndDate.value);
+        
+        if (end.isBefore(start)) {
+          selectedEndDate.value = selectedStartDate.value;
+        }
+      }
+    });
+
     return {
       performanceChart,
       assessmentTypeChart,
       performanceTrendChart,
-      sectionChart,
+      assessmentTypePerformanceChart,
       selectedYear,
       selectedSection,
       sections,
+      subjects,
       availableYears,
       isCITHead,
       userName,
@@ -1341,7 +1824,9 @@ export default {
       getFilterDisplay,
       refreshDashboard,
       fetchAvailableFilters,
-      chartRefs
+      selectedStartDate,
+      selectedEndDate,
+      today
     }
   }
 }

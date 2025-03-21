@@ -254,7 +254,7 @@
     <!-- Student Details Modal -->
     <div v-if="selectedStudent" class="modal-wrapper" @click.self="closeStudentModal">
       <div class="modal-backdrop" @click="closeStudentModal"></div>
-      <div class="modal-dialog modal-xxl modal-dialog-scrollable">
+      <div class="modal-dialog modal-xxl">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
             <h5 class="modal-title">
@@ -263,7 +263,7 @@
             </h5>
             <button type="button" class="btn-close btn-close-white" @click="closeStudentModal"></button>
           </div>
-          <div class="modal-body no-scroll">
+          <div class="modal-body">
             <div class="student-details">
               <!-- Student Information (Left Side) -->
               <div class="student-info">
@@ -397,7 +397,7 @@
       </div>
     </div>
 
-    <!-- Add Single Student Modal - Reorganize form fields -->
+    <!-- Add Single Student Modal -->
     <div v-if="showAddSingleStudentModal" class="modal-wrapper">
       <div class="modal-backdrop" @click="showAddSingleStudentModal = false"></div>
       <div class="modal-dialog">
@@ -411,7 +411,6 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="handleAddSingleStudent">
-              <!-- Student ID field -->
               <div class="mb-3">
                 <label class="form-label">Student ID <span class="text-danger">*</span></label>
                 <input 
@@ -421,78 +420,65 @@
                   required
                 >
               </div>
-              
-              <!-- Name fields in a grid -->
-              <div class="row mb-3">
-                <div class="col-md-4">
-                  <label class="form-label">First Name <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="newStudent.firstName"
-                    required
-                  >
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Middle Name <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="newStudent.middleName"
-                    required
-                  >
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="newStudent.lastName"
-                    required
-                  >
-                </div>
+              <div class="mb-3">
+                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  v-model="newStudent.firstName"
+                  required
+                >
               </div>
-              
-              <!-- Contact information -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Email <span class="text-danger">*</span></label>
-                  <input 
-                    type="email" 
-                    class="form-control" 
-                    v-model="newStudent.email"
-                    required
-                  >
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Contact Number <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="newStudent.contactNumber"
-                    required
-                  >
-                </div>
+              <div class="mb-3">
+                <label class="form-label">Middle Name <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  v-model="newStudent.middleName"
+                  required
+                >
               </div>
-              
-              <!-- Academic information -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Year <span class="text-danger">*</span></label>
-                  <select class="form-select" v-model="newStudent.year" required>
-                    <option value="">Select Year</option>
-                    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Section <span class="text-danger">*</span></label>
-                  <select class="form-select" v-model="newStudent.section" required>
-                    <option value="">Select Section</option>
-                    <option v-for="section in availableSections" :key="section" :value="section">{{ section }}</option>
-                  </select>
-                </div>
+              <div class="mb-3">
+                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  v-model="newStudent.lastName"
+                  required
+                >
               </div>
-              
+              <div class="mb-3">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  v-model="newStudent.email"
+                  required
+                >
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  v-model="newStudent.contactNumber"
+                  required
+                >
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Year <span class="text-danger">*</span></label>
+                <select class="form-select" v-model="newStudent.year" required>
+                  <option value="">Select Year</option>
+                  <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Section <span class="text-danger">*</span></label>
+                <select class="form-select" v-model="newStudent.section" required>
+                  <option value="">Select Section</option>
+                  <option v-for="section in availableSections" :key="section" :value="section">{{ section }}</option>
+                </select>
+              </div>
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" @click="showAddSingleStudentModal = false">
                   Cancel
@@ -2565,44 +2551,5 @@ cursor: not-allowed;
   top: 0;
   background: white;
   z-index: 1020;
-}
-
-.modal-body.no-scroll {
-  overflow: hidden !important;
-  max-height: calc(100vh - 150px);
-}
-
-.modal-dialog-scrollable .modal-body.no-scroll {
-  overflow: hidden !important;
-}
-
-.student-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  max-height: calc(100vh - 180px);
-}
-
-.student-info {
-  flex: 1;
-  min-width: 300px;
-}
-
-.student-charts {
-  flex: 2;
-  min-width: 450px;
-  max-height: calc(100vh - 200px);
-}
-
-/* Add Single Student Form Styles */
-.row {
-  margin-left: -10px;
-  margin-right: -10px;
-}
-
-.col-md-4,
-.col-md-6 {
-  padding-left: 10px;
-  padding-right: 10px;
 }
 </style>

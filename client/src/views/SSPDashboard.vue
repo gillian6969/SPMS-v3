@@ -4,14 +4,10 @@ import { useStore } from 'vuex'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
 import moment from 'moment'
-import ExportGraphsModal from '@/components/ExportGraphsModal.vue'
 
 const store = useStore()
 const surveyAverageChart = ref(null)
 const surveyDistributionChart = ref(null)
-
-// Chart references for PDF export
-const chartRefs = ref({})
 
 // Data refs
 const failingStudents = ref(0)
@@ -409,9 +405,6 @@ const createSurveyAverageChart = () => {
       }
     }
   });
-
-  // After chart creation, store the reference for PDF export
-  chartRefs.value.surveyAverageChart = surveyAverageChart.value;
 };
 
 // Create pie chart for survey response distribution by severity level
@@ -485,9 +478,6 @@ const createSurveyDistributionChart = () => {
     }
 }
   });
-
-  // After chart creation, store the reference for PDF export
-  chartRefs.value.surveyDistributionChart = surveyDistributionChart.value;
 };
 
 const formatDate = (date) => {
@@ -564,14 +554,6 @@ onMounted(async () => {
     console.log('Filters changed, refreshing data');
     await fetchDashboardData();
   });
-  
-  // Store chart references after initial render
-  nextTick(() => {
-    chartRefs.value = {
-      surveyAverageChart: surveyAverageChart.value,
-      surveyDistributionChart: surveyDistributionChart.value
-    };
-  });
 });
 </script>
 
@@ -583,161 +565,140 @@ onMounted(async () => {
       <p class="greeting-subtitle">Here's your dashboard overview</p>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="dashboard-title"></h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="dashboard-title"></h2>
 
-      <div class="d-flex gap-2 align-items-center">
-        <!-- Filters -->
-        <div class="dropdown">
-          <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-filter me-2"></i>
-            {{ getFilterDisplay() }}
-          </button>
-          <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
-            <h6 class="dropdown-header">Filter Options</h6>
+      <!-- Filters -->
+            <div class="dropdown">
+        <button class="btn btn-filter dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-2"></i>
+                    {{ getFilterDisplay() }}
+                </button>
+                <div class="dropdown-menu filter-menu p-3" aria-labelledby="filterDropdown">
+                    <h6 class="dropdown-header">Filter Options</h6>
           
-            <div class="mb-3">
-              <label for="yearFilter" class="form-label">Year</label>
-              <select id="yearFilter" class="form-select" v-model="selectedYear" @change="handleYearChange">
-                <option value="">All Years</option>
-                <option value="1st">1st Year</option>
-                <option value="2nd">2nd Year</option>
-                <option value="3rd">3rd Year</option>
-                <option value="4th">4th Year</option>
-              </select>
+                    <div class="mb-3">
+            <label for="yearFilter" class="form-label">Year</label>
+            <select id="yearFilter" class="form-select" v-model="selectedYear" @change="handleYearChange">
+                            <option value="">All Years</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                    </div>
+          
+                    <div class="mb-3">
+            <label for="sectionFilter" class="form-label">Section</label>
+            <select id="sectionFilter" class="form-select" v-model="selectedSection">
+                            <option value="">All Sections</option>
+                            <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
+                        </select>
+                    </div>
+          
+                    <div class="mb-3">
+            <label for="subjectFilter" class="form-label">Subject</label>
+            <select id="subjectFilter" class="form-select" v-model="selectedSubject">
+                            <option value="">All Subjects</option>
+                            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
+                        </select>
+                    </div>
+          
+          <div class="dropdown-divider"></div>
+          
+                    <div class="mb-3">
+            <label for="startDateFilter" class="form-label">Start Date</label>
+            <input type="date" id="startDateFilter" class="form-control" v-model="selectedStartDate" :max="selectedEndDate || today">
+                            </div>
+          
+          <div class="mb-3">
+            <label for="endDateFilter" class="form-label">End Date</label>
+            <input type="date" id="endDateFilter" class="form-control" v-model="selectedEndDate" :min="selectedStartDate" :max="today">
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
+                </div>
             </div>
-          
-            <div class="mb-3">
-              <label for="sectionFilter" class="form-label">Section</label>
-              <select id="sectionFilter" class="form-select" v-model="selectedSection">
-                <option value="">All Sections</option>
-                <option v-for="section in sections" :key="section" :value="section">{{ section }}</option>
-              </select>
-            </div>
-          
-            <div class="mb-3">
-              <label for="subjectFilter" class="form-label">Subject</label>
-              <select id="subjectFilter" class="form-select" v-model="selectedSubject">
-                <option value="">All Subjects</option>
-                <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
-              </select>
-            </div>
-          
-            <div class="dropdown-divider"></div>
-          
-            <div class="mb-3">
-              <label for="startDateFilter" class="form-label">Start Date</label>
-              <input type="date" id="startDateFilter" class="form-control" v-model="selectedStartDate" :max="selectedEndDate || today">
-            </div>
-          
-            <div class="mb-3">
-              <label for="endDateFilter" class="form-label">End Date</label>
-              <input type="date" id="endDateFilter" class="form-control" v-model="selectedEndDate" :min="selectedStartDate" :max="today">
-            </div>
-            <div class="dropdown-divider"></div>
-            <button class="btn btn-primary w-100" @click="applyFilters">Apply Filters</button>
-          </div>
         </div>
-        
-        <!-- Export Graphs Button -->
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exportGraphsModal">
-          <i class="fas fa-file-export me-2"></i>
-          Export Graphs
-        </button>
-      </div>
-    </div>
 
     <!-- Stats Cards -->
     <div class="row mb-4 g-3">
       <!-- Failing Students Card -->
       <div class="col-md-6">
-        <div class="dashboard-card">
+                <div class="dashboard-card">
           <div class="icon-container bg-danger">
             <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <div class="card-info">
+                    </div>
+                    <div class="card-info">
             <h3 class="stat-title">Failing Students</h3>
             <div class="stat-value">{{ failingStudents }}</div>
-          </div>
-        </div>
-      </div>
+                    </div>
+                </div>
+            </div>
 
       <!-- Total Surveys Card -->
       <div class="col-md-6">
-        <div class="dashboard-card">
+                <div class="dashboard-card">
           <div class="icon-container bg-success">
             <i class="fas fa-clipboard-check"></i>
-          </div>
-          <div class="card-info">
+                    </div>
+                    <div class="card-info">
             <h3 class="stat-title">Completed Surveys</h3>
             <div class="stat-value">{{ completedSurveys }}</div>
-          </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
     <!-- Survey Average Scores Chart -->
-    <div class="row mb-4">
+        <div class="row mb-4">
       <div class="col-md-6">
-        <div class="chart-card">
+                <div class="chart-card">
           <h3 class="card-title">
             <i class="fas fa-chart-bar me-2"></i>
             Survey Average Scores
           </h3>
-          <div class="chart-container">
+                        <div class="chart-container">
             <div v-if="loadingSurveyData" class="no-data-message">
               <div class="spinner-border text-primary spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Loading...</span>
-              </div>
+                        </div>
               Loading survey data...
-            </div>
+                    </div>
             <div v-else-if="!hasSurveyData" class="no-data-message">
               <i class="fas fa-info-circle me-2"></i>
               No survey data available for the selected filters.
-            </div>
+                </div>
             <canvas ref="surveyAverageChart"></canvas>
-          </div>
-        </div>
-      </div>
+                    </div>
+                </div>
+            </div>
 
       <!-- Survey Response Distribution Chart -->
       <div class="col-md-6">
-        <div class="chart-card">
+                <div class="chart-card">
           <h3 class="card-title">
             <i class="fas fa-chart-pie me-2"></i>
             Survey Response Distribution
           </h3>
           <p class="chart-description">Distribution of student issues by priority level</p>
-          <div class="chart-container">
+                        <div class="chart-container">
             <div v-if="loadingSurveyData" class="no-data-message">
               <div class="spinner-border text-primary spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Loading...</span>
-              </div>
+                        </div>
               Loading survey data...
-            </div>
+                    </div>
             <div v-else-if="!hasSurveyData" class="no-data-message">
               <i class="fas fa-info-circle me-2"></i>
               No survey data available for the selected filters.
-            </div>
+                </div>
             <canvas ref="surveyDistributionChart"></canvas>
-          </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-
-    <!-- Export Graphs Modal -->
-    <ExportGraphsModal 
-      dashboardType="ssp"
-      :chartRefs="chartRefs"
-      :filterInfo="{
-        year: selectedYear,
-        section: selectedSection,
-        subject: selectedSubject,
-        startDate: selectedStartDate,
-        endDate: selectedEndDate
-      }"
-    />
-  </div>
 </template>
 
 <style scoped>

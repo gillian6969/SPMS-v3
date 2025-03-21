@@ -72,21 +72,12 @@
             </div>
           </div>
 
-          <!-- Replace reCAPTCHA section with a mock version -->
+          <!-- Replace mock reCAPTCHA with real Google reCAPTCHA v2 -->
           <div class="form-group recaptcha-container">
-            <div class="mock-recaptcha">
-              <div class="mock-recaptcha-checkbox">
-                <input type="checkbox" id="mock-captcha-checkbox" v-model="mockCaptchaChecked">
-                <label for="mock-captcha-checkbox">I'm not a robot</label>
-              </div>
-              <div class="mock-recaptcha-logo">
-                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <span>reCAPTCHA</span>
-              </div>
-            </div>
+            <div ref="recaptchaContainer" id="recaptcha"></div>
           </div>
 
-          <button type="submit" class="btn-login" :data-login-type="loginType" :disabled="isLoading">
+          <button type="submit" class="btn-login" :data-login-type="loginType" :disabled="isLoading || !recaptchaVerified">
             <span v-if="isLoading" class="spinner">
               <i class="fas fa-spinner fa-spin"></i>
             </span>
@@ -210,20 +201,96 @@ export default {
     const password = ref('')
     const error = ref('')
     const isLoading = ref(false)
-    const mockCaptchaChecked = ref(false)
     const showPassword = ref(false)
+    const recaptchaVerified = ref(false)
+    const recaptchaContainer = ref(null)
+    const recaptchaWidgetId = ref(null)
+
+    // Function to handle reCAPTCHA verification
+    const onRecaptchaVerified = (response) => {
+      console.log('reCAPTCHA verified:', response)
+      recaptchaVerified.value = true
+    }
+
+    // Function to handle reCAPTCHA expiration
+    const onRecaptchaExpired = () => {
+      console.log('reCAPTCHA expired')
+      recaptchaVerified.value = false
+    }
+
+    // Function to reset reCAPTCHA
+    const resetRecaptcha = () => {
+      if (window.grecaptcha && recaptchaWidgetId.value !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId.value)
+        recaptchaVerified.value = false
+      }
+    }
+
+    // Load reCAPTCHA script
+    const loadRecaptchaScript = () => {
+      return new Promise((resolve, reject) => {
+        if (window.grecaptcha) {
+          resolve()
+          return
+        }
+
+        const script = document.createElement('script')
+        script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit'
+        script.async = true
+        script.defer = true
+        
+        window.onRecaptchaLoaded = () => {
+          resolve()
+        }
+        
+        script.onerror = (error) => {
+          reject(error)
+        }
+        
+        document.head.appendChild(script)
+      })
+    }
+
+    // Initialize reCAPTCHA
+    const initRecaptcha = () => {
+      if (window.grecaptcha && recaptchaContainer.value) {
+        recaptchaWidgetId.value = window.grecaptcha.render('recaptcha', {
+          'sitekey': '6LcsLNkqAAAAAH5OO5HjmocsPxA_y80LzVold7rW', // reCAPTCHA site key
+          'callback': onRecaptchaVerified,
+          'expired-callback': onRecaptchaExpired
+        })
+      }
+    }
+
+    onMounted(async () => {
+      try {
+        await loadRecaptchaScript()
+        setTimeout(() => {
+          initRecaptcha()
+        }, 500) // Small delay to ensure the container is ready
+      } catch (error) {
+        console.error('Failed to load reCAPTCHA:', error)
+      }
+    })
 
     const handleLogin = async () => {
       try {
         error.value = '';
         isLoading.value = true;
 
+        if (!recaptchaVerified.value) {
+          error.value = 'Please complete the reCAPTCHA verification'
+          isLoading.value = false
+          return
+        }
+
+        const recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidgetId.value)
+
         const credentials = {
           email: email.value,
           password: password.value,
           loginType: loginType.value,
-          // Skip recaptcha verification entirely by using a special bypass token
-          recaptchaVerified: true
+          recaptchaResponse
         }
 
         console.log('Attempting login with:', { 
@@ -247,6 +314,7 @@ export default {
             console.log('Access denied: Non-CIT Head using CIT Head login')
             error.value = 'Access denied. Please use the Teacher/Student login.'
             await store.dispatch('logout')
+            resetRecaptcha()
             return
           }
         }
@@ -256,6 +324,7 @@ export default {
             console.log('Access denied: CIT Head using regular login')
             error.value = 'Access denied. Please use the CIT Head login.'
             await store.dispatch('logout')
+            resetRecaptcha()
             return
           }
         }
@@ -276,6 +345,8 @@ export default {
         } else {
           error.value = 'Login failed. Please try again.'
         }
+        
+        resetRecaptcha()
       } finally {
         isLoading.value = false
       }
@@ -402,7 +473,8 @@ export default {
       handleLogin,
       goToForgotPassword,
       showPassword,
-      mockCaptchaChecked,
+      recaptchaVerified,
+      recaptchaContainer,
       // Forgot password
       showForgotPasswordModal,
       forgotPasswordStep,
@@ -680,45 +752,5 @@ export default {
 .toggle-password:hover {
   color: white;
   background: rgba(255, 255, 255, 0.1);
-}
-
-/* Mock reCAPTCHA styles */
-.mock-recaptcha {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  padding: 8px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-.mock-recaptcha-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-}
-
-.mock-recaptcha-checkbox input {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.mock-recaptcha-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-  font-size: 10px;
-  opacity: 0.8;
-}
-
-.mock-recaptcha-logo img {
-  width: 28px;
-  height: 28px;
 }
 </style>
